@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#120913">
+  <title>Sylvain &amp; Steph</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #100810;
+      --panel: rgba(35, 15, 36, .78);
+      --panel-solid: #251025;
+      --rose: #ff5b92;
+      --rose-light: #ff9cbd;
+      --violet: #a76bff;
+      --red: #8c1736;
+      --text: #fff7fb;
+      --muted: #c9afc1;
+      --shadow: 0 18px 55px rgba(0, 0, 0, .42);
+      --radius: 25px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      min-height: 100%;
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body {
+      min-height: 100svh;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 12% 5%, rgba(255, 71, 137, .20), transparent 34%),
+        radial-gradient(circle at 92% 28%, rgba(153, 74, 255, .18), transparent 34%),
+        radial-gradient(circle at 50% 100%, rgba(132, 13, 48, .24), transparent 44%),
+        linear-gradient(165deg, #160a17 0%, #0b070d 100%);
+    }
+
+    button {
+      border: 0;
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus-visible {
+      outline: 3px solid rgba(255, 156, 189, .82);
+      outline-offset: 3px;
+    }
+
+    .screen {
+      width: min(100%, 520px);
+      min-height: 100svh;
+      margin: 0 auto;
+      padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
+    }
+
+    .hidden { display: none !important; }
+
+    .welcome,
+    .end-screen {
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+
+    .welcome-content,
+    .end-content {
+      width: 100%;
+      padding: 38px 24px;
+      border: 1px solid rgba(255, 255, 255, .09);
+      border-radius: 34px;
+      background: linear-gradient(145deg, rgba(72, 26, 65, .72), rgba(28, 12, 31, .76));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .heart {
+      display: inline-grid;
+      width: 76px;
+      height: 76px;
+      place-items: center;
+      margin-bottom: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--rose), var(--violet));
+      box-shadow: 0 10px 35px rgba(255, 62, 128, .35);
+      font-size: 34px;
+      animation: pulse 2.1s ease-in-out infinite;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(38px, 11vw, 58px);
+      line-height: .98;
+      letter-spacing: -.055em;
+    }
+
+    .subtitle {
+      max-width: 300px;
+      margin: 18px auto 28px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .primary {
+      width: 100%;
+      min-height: 60px;
+      padding: 15px 22px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #f34882, #a54eff);
+      box-shadow: 0 11px 28px rgba(208, 48, 126, .28);
+      font-weight: 800;
+      font-size: 18px;
+      transition: transform .18s ease, filter .18s ease;
+    }
+
+    .primary:active { transform: scale(.98); }
+    .primary:disabled { cursor: default; filter: grayscale(.35); opacity: .7; }
+
+    .game {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .brand {
+      font-size: 16px;
+      font-weight: 850;
+      letter-spacing: -.025em;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 7px;
+    }
+
+    .quiet-button {
+      min-height: 38px;
+      padding: 8px 11px;
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .055);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .status {
+      padding: 14px 15px;
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .045);
+      backdrop-filter: blur(15px);
+    }
+
+    .status-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .level-name { color: var(--rose-light); }
+    .progress-text { color: var(--muted); }
+
+    .progress-track {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--rose), var(--violet));
+      box-shadow: 0 0 16px rgba(255, 91, 146, .52);
+      transition: width .42s ease;
+    }
+
+    .play-area {
+      display: grid;
+      grid-template-columns: 1fr 72px;
+      gap: 11px;
+      min-height: 330px;
+    }
+
+    .card-scene { perspective: 1100px; }
+
+    .card {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 330px;
+      transform-style: preserve-3d;
+      transition: transform .7s cubic-bezier(.2, .78, .2, 1);
+    }
+
+    .card.flipped { transform: rotateY(180deg); }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, .11);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    .card-back {
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at 50% 25%, rgba(255, 120, 174, .26), transparent 36%),
+        linear-gradient(145deg, #4f193f, #1c102c 70%);
+    }
+
+    .card-back-mark {
+      display: grid;
+      width: 105px;
+      height: 105px;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, .17);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .055);
+      font-size: 44px;
+    }
+
+    .card-front {
+      transform: rotateY(180deg);
+      background:
+        radial-gradient(circle at 88% 8%, rgba(255, 92, 149, .16), transparent 28%),
+        linear-gradient(150deg, rgba(61, 22, 54, .98), rgba(27, 14, 34, .99));
+    }
+
+    .card-accent {
+      height: 6px;
+      flex: none;
+      background: linear-gradient(90deg, var(--rose), var(--violet), #bb284a);
+    }
+
+    .card-content {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      padding: 22px 20px 18px;
+    }
+
+    .target {
+      align-self: flex-start;
+      margin-bottom: 18px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(255, 102, 159, .12);
+      color: var(--rose-light);
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .challenge {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      margin: 0;
+      font-size: clamp(22px, 6.5vw, 29px);
+      font-weight: 800;
+      line-height: 1.28;
+      letter-spacing: -.035em;
+    }
+
+    .bonus {
+      margin: 18px 0 0;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, .09);
+      color: #e9c9db;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .die-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 4px;
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 21px;
+      background: rgba(255, 255, 255, .04);
+    }
+
+    .die-label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .die {
+      display: grid;
+      width: 52px;
+      height: 52px;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      padding: 7px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #fff2f7, #d8bdd1);
+      box-shadow: 0 9px 20px rgba(0, 0, 0, .28);
+      transform: rotate(4deg);
+    }
+
+    .die.rolling { animation: roll .65s ease-in-out; }
+
+    .pip {
+      align-self: center;
+      justify-self: center;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #421b3a;
+      opacity: 0;
+    }
+
+    .die[data-value="1"] .pip:nth-child(5),
+    .die[data-value="2"] .pip:nth-child(1), .die[data-value="2"] .pip:nth-child(9),
+    .die[data-value="3"] .pip:nth-child(1), .die[data-value="3"] .pip:nth-child(5), .die[data-value="3"] .pip:nth-child(9),
+    .die[data-value="4"] .pip:nth-child(1), .die[data-value="4"] .pip:nth-child(3), .die[data-value="4"] .pip:nth-child(7), .die[data-value="4"] .pip:nth-child(9),
+    .die[data-value="5"] .pip:nth-child(1), .die[data-value="5"] .pip:nth-child(3), .die[data-value="5"] .pip:nth-child(5), .die[data-value="5"] .pip:nth-child(7), .die[data-value="5"] .pip:nth-child(9),
+    .die[data-value="6"] .pip:nth-child(1), .die[data-value="6"] .pip:nth-child(3), .die[data-value="6"] .pip:nth-child(4), .die[data-value="6"] .pip:nth-child(6), .die[data-value="6"] .pip:nth-child(7), .die[data-value="6"] .pip:nth-child(9) {
+      opacity: 1;
+    }
+
+    .die-value {
+      color: var(--rose-light);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .timer-panel {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 12px;
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .045);
+    }
+
+    .timer-display {
+      min-width: 76px;
+      color: var(--rose-light);
+      font-variant-numeric: tabular-nums;
+      font-size: 27px;
+      font-weight: 900;
+      letter-spacing: -.035em;
+    }
+
+    .timer-track {
+      height: 5px;
+      flex: 1;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .timer-bar {
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--violet), var(--rose));
+      transition: width .25s linear;
+    }
+
+    .timer-button {
+      min-width: 84px;
+      min-height: 38px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: rgba(255, 91, 146, .14);
+      color: #ffc1d5;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .next-button { margin-top: auto; }
+
+    .pause-overlay {
+      position: fixed;
+      z-index: 20;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      background: rgba(9, 4, 10, .86);
+      backdrop-filter: blur(16px);
+    }
+
+    .pause-box {
+      width: min(100%, 390px);
+      padding: 28px;
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 25px;
+      background: var(--panel-solid);
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .pause-box h2,
+    .end-content h2 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      letter-spacing: -.04em;
+    }
+
+    .pause-box p,
+    .end-content p {
+      margin: 0 0 23px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .level-flash {
+      position: fixed;
+      z-index: 15;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+      background: rgba(12, 5, 13, .76);
+      opacity: 0;
+      transition: opacity .25s ease;
+    }
+
+    .level-flash.visible { opacity: 1; }
+
+    .level-flash-text {
+      text-align: center;
+      transform: scale(.9);
+      transition: transform .35s ease;
+    }
+
+    .level-flash.visible .level-flash-text { transform: scale(1); }
+
+    .level-flash strong {
+      display: block;
+      color: var(--rose-light);
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: .15em;
+    }
+
+    .level-flash span {
+      display: block;
+      margin-top: 8px;
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -.05em;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+
+    @keyframes roll {
+      0% { transform: rotate(4deg) scale(1); }
+      35% { transform: rotate(-155deg) scale(.78); }
+      70% { transform: rotate(115deg) scale(1.12); }
+      100% { transform: rotate(364deg) scale(1); }
+    }
+
+    @media (min-width: 430px) {
+      .screen { padding-inline: 22px; }
+      .play-area { min-height: 370px; }
+      .card { min-height: 370px; }
+      .card-content { padding: 27px 25px 22px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section id="welcomeScreen" class="screen welcome">
+      <div class="welcome-content">
+        <div class="heart" aria-hidden="true">♥</div>
+        <h1>Sylvain<br>&amp; Steph</h1>
+        <p class="subtitle">Une soirée à deux, cinq niveaux, et une intensité qui monte toute seule.</p>
+        <button id="startButton" class="primary" type="button">Commencer</button>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen game hidden" aria-live="polite">
+      <header class="topbar">
+        <div class="brand">Sylvain &amp; Steph</div>
+        <div class="top-actions">
+          <button id="pauseButton" class="quiet-button" type="button">Pause</button>
+          <button id="restartButton" class="quiet-button" type="button">Recommencer</button>
+        </div>
+      </header>
+
+      <section class="status" aria-label="Progression">
+        <div class="status-line">
+          <span id="levelName" class="level-name">Niveau 1 · Doux</span>
+          <span id="progressText" class="progress-text">0 / 6</span>
+        </div>
+        <div class="progress-track">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+      </section>
+
+      <section class="play-area">
+        <div class="card-scene">
+          <article id="card" class="card">
+            <div class="card-face card-back">
+              <div class="card-back-mark" aria-hidden="true">♥</div>
+            </div>
+            <div class="card-face card-front">
+              <div class="card-accent"></div>
+              <div class="card-content">
+                <span id="target" class="target">Les deux</span>
+                <p id="challenge" class="challenge">Touchez « Carte suivante » pour commencer.</p>
+                <p id="bonus" class="bonus">Le dé ajoutera une règle bonus.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <aside class="die-wrap" aria-label="Dé bonus">
+          <span class="die-label">Bonus</span>
+          <div id="die" class="die" data-value="1" aria-label="Dé : 1">
+            <i class="pip"></i><i class="pip"></i><i class="pip"></i>
+            <i class="pip"></i><i class="pip"></i><i class="pip"></i>
+            <i class="pip"></i><i class="pip"></i><i class="pip"></i>
+          </div>
+          <span id="dieValue" class="die-value">—</span>
+        </aside>
+      </section>
+
+      <section id="timerPanel" class="timer-panel hidden" aria-label="Chronomètre">
+        <div id="timerDisplay" class="timer-display">00:30</div>
+        <div class="timer-track"><div id="timerBar" class="timer-bar"></div></div>
+        <button id="timerButton" class="timer-button" type="button">Démarrer</button>
+      </section>
+
+      <button id="nextButton" class="primary next-button" type="button">Carte suivante</button>
+    </section>
+
+    <section id="endScreen" class="screen end-screen hidden">
+      <div class="end-content">
+        <div class="heart" aria-hidden="true">♥</div>
+        <h2>Partie terminée</h2>
+        <p>Sylvain &amp; Steph ont traversé les cinq niveaux.</p>
+        <button id="endRestartButton" class="primary" type="button">Recommencer</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="pauseOverlay" class="pause-overlay hidden">
+    <div class="pause-box">
+      <h2>Pause</h2>
+      <p>Le chrono est arrêté.</p>
+      <button id="resumeButton" class="primary" type="button">Reprendre</button>
+    </div>
+  </div>
+
+  <div id="levelFlash" class="level-flash">
+    <div class="level-flash-text">
+      <strong id="flashLevel">Niveau 2</strong>
+      <span id="flashName">Coquin</span>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+
+    const LEVELS = [
+      { name: "Doux", count: 6 },
+      { name: "Coquin", count: 7 },
+      { name: "Chaud", count: 7 },
+      { name: "Très chaud", count: 6 },
+      { name: "Hard", count: 5 }
+    ];
+
+    const BONUS_RULES = {
+      1: "Normal",
+      2: "+10 secondes si chrono",
+      3: "Plus lentement",
+      4: "L’autre choisit le rythme",
+      5: "Sans parler",
+      6: "Version plus intense"
+    };
+
+    const cards = [
+      { level: 1, target: "Les deux", tag: "regard", duration: 45, text: "Restez très proches et soutenez le regard de l’autre." },
+      { level: 1, target: "Sylvain", tag: "massage", duration: 60, text: "Offre à Steph un massage lent des épaules et de la nuque." },
+      { level: 1, target: "Steph", tag: "danse", duration: 45, text: "Guide Sylvain dans une danse lente, tout près de toi." },
+      { level: 1, target: "Les deux", tag: "baiser", duration: 30, text: "Échangez des baisers doux sans vous presser." },
+      { level: 1, target: "Sylvain", tag: "frisson", duration: 40, text: "Fais frissonner Steph du bout des doigts, de la main au cou." },
+      { level: 1, target: "Steph", tag: "oreille", duration: 0, text: "Murmure à Sylvain une envie pour la suite de la soirée." },
+      { level: 1, target: "Les deux", tag: "proximite", duration: 50, text: "Serrez-vous l’un contre l’autre et bougez au même rythme." },
+      { level: 1, target: "Sylvain", tag: "guidage", duration: 45, text: "Laisse Steph guider tes mains là où elle veut être caressée." },
+      { level: 1, target: "Steph", tag: "baiser", duration: 40, text: "Dépose une suite de baisers du front jusqu’au cou de Sylvain." },
+      { level: 1, target: "Les deux", tag: "jeu", duration: 0, text: "À tour de rôle, dites où vous aimeriez recevoir le prochain baiser." },
+
+      { level: 2, target: "Steph", tag: "massage", duration: 75, text: "Offre à Sylvain un massage lent du dos, en variant la pression." },
+      { level: 2, target: "Sylvain", tag: "baiser", duration: 45, text: "Embrasse Steph dans le cou et laisse monter la tension." },
+      { level: 2, target: "Les deux", tag: "interdit", duration: 60, text: "Embrassez-vous sans utiliser vos mains." },
+      { level: 2, target: "Steph", tag: "guidage", duration: 50, text: "Guide les mains de Sylvain pendant une caresse lente." },
+      { level: 2, target: "Sylvain", tag: "teasing", duration: 45, text: "Approche-toi pour un baiser, puis fais durer l’attente." },
+      { level: 2, target: "Les deux", tag: "danse", duration: 75, text: "Dansez très près l’un de l’autre, sans rompre le contact." },
+      { level: 2, target: "Steph", tag: "frisson", duration: 50, text: "Fais lentement frissonner Sylvain, du cou jusqu’au bas du dos." },
+      { level: 2, target: "Sylvain", tag: "oreille", duration: 0, text: "Murmure à Steph exactement comment tu veux l’embrasser." },
+      { level: 2, target: "Les deux", tag: "baiser", duration: 60, text: "Alternez baisers très doux et baisers plus passionnés." },
+      { level: 2, target: "Steph", tag: "exploration", duration: 60, text: "Explore lentement les zones que Sylvain te laisse découvrir." },
+
+      { level: 3, target: "Sylvain", tag: "teasing", duration: 75, text: "Fais monter l’envie de Steph avec des caresses qui s’approchent puis s’éloignent." },
+      { level: 3, target: "Steph", tag: "baiser", duration: 60, text: "Embrasse Sylvain avec une intensité qui augmente peu à peu." },
+      { level: 3, target: "Les deux", tag: "guidage", duration: 75, text: "À tour de rôle, guidez la main de l’autre sans parler." },
+      { level: 3, target: "Sylvain", tag: "exploration", duration: 90, text: "Explore lentement le corps de Steph en évitant ses zones préférées." },
+      { level: 3, target: "Steph", tag: "rythme", duration: 75, text: "Impose un rythme de caresses à Sylvain et fais-le varier." },
+      { level: 3, target: "Les deux", tag: "proximite", duration: 90, text: "Restez collés l’un à l’autre et laissez la tension monter." },
+      { level: 3, target: "Sylvain", tag: "oreille", duration: 0, text: "Dis à Steph ce que tu as le plus envie qu’elle fasse maintenant." },
+      { level: 3, target: "Steph", tag: "interdit", duration: 60, text: "Fais perdre patience à Sylvain sans l’embrasser sur la bouche." },
+      { level: 3, target: "Les deux", tag: "baiser", duration: 75, text: "Embrassez-vous passionnément en laissant vos mains explorer." },
+      { level: 3, target: "Steph", tag: "massage", duration: 90, text: "Transforme un massage lent en caresses de plus en plus troublantes." },
+
+      { level: 4, target: "Sylvain", tag: "guidage", duration: 90, text: "Prends les commandes et guide entièrement les mouvements de Steph." },
+      { level: 4, target: "Steph", tag: "teasing", duration: 90, text: "Fais monter fortement l’envie de Sylvain, puis ralentis au dernier moment." },
+      { level: 4, target: "Les deux", tag: "rythme", duration: 120, text: "Alternez trente secondes très lentes et trente secondes très intenses." },
+      { level: 4, target: "Sylvain", tag: "baiser", duration: 90, text: "Couvre Steph de baisers passionnés en suivant ses réactions." },
+      { level: 4, target: "Steph", tag: "exploration", duration: 120, text: "Explore les sensations préférées de Sylvain et change souvent de rythme." },
+      { level: 4, target: "Les deux", tag: "interdit", duration: 90, text: "Faites-vous perdre patience sans aller directement à ce que l’autre attend." },
+      { level: 4, target: "Sylvain", tag: "frisson", duration: 100, text: "Fais frissonner Steph avec une alternance de douceur et d’intensité." },
+      { level: 4, target: "Steph", tag: "guidage", duration: 100, text: "Choisis précisément où et comment Sylvain doit te caresser." },
+      { level: 4, target: "Les deux", tag: "proximite", duration: 120, text: "Restez au plus près et suivez uniquement les réactions de l’autre." },
+      { level: 4, target: "Sylvain", tag: "teasing", duration: 90, text: "Donne à Steph exactement ce qu’elle demande, mais très lentement." },
+
+      { level: 5, target: "Steph", tag: "controle", duration: 120, text: "Prends totalement les commandes et impose le rythme à Sylvain." },
+      { level: 5, target: "Sylvain", tag: "controle", duration: 120, text: "Prends totalement les commandes et fais varier l’intensité pour Steph." },
+      { level: 5, target: "Les deux", tag: "interdit", duration: 150, text: "Poussez la tension au maximum sans vous précipiter vers la suite." },
+      { level: 5, target: "Steph", tag: "rythme", duration: 120, text: "Choisis un rythme très intense, puis impose un arrêt net avant de reprendre." },
+      { level: 5, target: "Sylvain", tag: "teasing", duration: 150, text: "Fais perdre patience à Steph en alternant contrôle, lenteur et intensité." },
+      { level: 5, target: "Les deux", tag: "guidage", duration: 150, text: "À tour de rôle, prenez le contrôle total pendant trente secondes." },
+      { level: 5, target: "Steph", tag: "exploration", duration: 150, text: "Concentre-toi sur les réactions de Sylvain et intensifie ce qui lui plaît le plus." },
+      { level: 5, target: "Sylvain", tag: "exploration", duration: 150, text: "Concentre-toi sur les réactions de Steph et intensifie ce qui lui plaît le plus." }
+    ];
+
+    const elements = {
+      welcome: document.getElementById("welcomeScreen"),
+      game: document.getElementById("gameScreen"),
+      end: document.getElementById("endScreen"),
+      start: document.getElementById("startButton"),
+      restart: document.getElementById("restartButton"),
+      endRestart: document.getElementById("endRestartButton"),
+      pause: document.getElementById("pauseButton"),
+      resume: document.getElementById("resumeButton"),
+      pauseOverlay: document.getElementById("pauseOverlay"),
+      levelName: document.getElementById("levelName"),
+      progressText: document.getElementById("progressText"),
+      progressBar: document.getElementById("progressBar"),
+      card: document.getElementById("card"),
+      target: document.getElementById("target"),
+      challenge: document.getElementById("challenge"),
+      bonus: document.getElementById("bonus"),
+      die: document.getElementById("die"),
+      dieValue: document.getElementById("dieValue"),
+      next: document.getElementById("nextButton"),
+      timerPanel: document.getElementById("timerPanel"),
+      timerDisplay: document.getElementById("timerDisplay"),
+      timerBar: document.getElementById("timerBar"),
+      timerButton: document.getElementById("timerButton"),
+      levelFlash: document.getElementById("levelFlash"),
+      flashLevel: document.getElementById("flashLevel"),
+      flashName: document.getElementById("flashName")
+    };
+
+    let levelIndex = 0;
+    let playedInLevel = 0;
+    let decks = {};
+    let lastTag = "";
+    let drawing = false;
+    let isPaused = false;
+    let timerId = null;
+    let timerRemaining = 0;
+    let timerTotal = 0;
+    let timerRunning = false;
+    let timerWarned = false;
+    let audioContext = null;
+
+    function shuffled(items) {
+      const result = [...items];
+      for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+      return result;
+    }
+
+    function buildDecks() {
+      decks = {};
+      LEVELS.forEach((_, index) => {
+        decks[index + 1] = shuffled(cards.filter(card => card.level === index + 1));
+      });
+    }
+
+    function pickCard(level) {
+      const deck = decks[level];
+      let choiceIndex = deck.findIndex(card => card.tag !== lastTag);
+      if (choiceIndex === -1) choiceIndex = 0;
+      const [choice] = deck.splice(choiceIndex, 1);
+      lastTag = choice.tag;
+      return choice;
+    }
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60).toString().padStart(2, "0");
+      const secs = (seconds % 60).toString().padStart(2, "0");
+      return `${mins}:${secs}`;
+    }
+
+    function updateStatus() {
+      const level = LEVELS[levelIndex];
+      elements.levelName.textContent = `Niveau ${levelIndex + 1} · ${level.name}`;
+      elements.progressText.textContent = `${playedInLevel} / ${level.count}`;
+      elements.progressBar.style.width = `${(playedInLevel / level.count) * 100}%`;
+    }
+
+    function resetTimer() {
+      window.clearInterval(timerId);
+      timerId = null;
+      timerRunning = false;
+      timerWarned = false;
+      timerRemaining = 0;
+      timerTotal = 0;
+      elements.timerPanel.classList.add("hidden");
+      elements.timerButton.textContent = "Démarrer";
+      elements.timerBar.style.width = "100%";
+    }
+
+    function setTimer(duration) {
+      resetTimer();
+      if (!duration) return;
+      timerRemaining = duration;
+      timerTotal = duration;
+      elements.timerDisplay.textContent = formatTime(timerRemaining);
+      elements.timerPanel.classList.remove("hidden");
+    }
+
+    function renderTimer() {
+      elements.timerDisplay.textContent = formatTime(timerRemaining);
+      elements.timerBar.style.width = `${Math.max(0, (timerRemaining / timerTotal) * 100)}%`;
+    }
+
+    function getAudioContext() {
+      if (!audioContext) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) audioContext = new AudioContextClass();
+      }
+      return audioContext;
+    }
+
+    function beep(frequency, duration, volume = .06) {
+      const context = getAudioContext();
+      if (!context) return;
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = "sine";
+      oscillator.frequency.value = frequency;
+      gain.gain.setValueAtTime(volume, context.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.001, context.currentTime + duration);
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      oscillator.start();
+      oscillator.stop(context.currentTime + duration);
+    }
+
+    function tickTimer() {
+      if (isPaused) return;
+      timerRemaining -= 1;
+      renderTimer();
+      if (timerRemaining === 10 && !timerWarned) {
+        timerWarned = true;
+        beep(660, .16);
+      }
+      if (timerRemaining <= 0) {
+        window.clearInterval(timerId);
+        timerId = null;
+        timerRunning = false;
+        elements.timerButton.textContent = "Relancer";
+        beep(880, .18);
+        window.setTimeout(() => beep(1040, .22), 180);
+      }
+    }
+
+    function toggleTimer() {
+      if (timerRunning) {
+        window.clearInterval(timerId);
+        timerId = null;
+        timerRunning = false;
+        elements.timerButton.textContent = "Reprendre";
+        return;
+      }
+      if (timerRemaining <= 0) {
+        timerRemaining = timerTotal;
+        timerWarned = false;
+        renderTimer();
+      }
+      getAudioContext();
+      timerRunning = true;
+      elements.timerButton.textContent = "Pause";
+      timerId = window.setInterval(tickTimer, 1000);
+    }
+
+    function rollDie() {
+      return new Promise(resolve => {
+        elements.die.classList.remove("rolling");
+        void elements.die.offsetWidth;
+        elements.die.classList.add("rolling");
+        elements.dieValue.textContent = "…";
+        let rolls = 0;
+        const flicker = window.setInterval(() => {
+          elements.die.dataset.value = String(Math.floor(Math.random() * 6) + 1);
+          rolls += 1;
+          if (rolls >= 7) {
+            window.clearInterval(flicker);
+            const finalValue = Math.floor(Math.random() * 6) + 1;
+            elements.die.dataset.value = String(finalValue);
+            elements.die.setAttribute("aria-label", `Dé : ${finalValue}`);
+            elements.dieValue.textContent = String(finalValue);
+            resolve(finalValue);
+          }
+        }, 80);
+      });
+    }
+
+    function showLevelFlash() {
+      elements.flashLevel.textContent = `Niveau ${levelIndex + 1}`;
+      elements.flashName.textContent = LEVELS[levelIndex].name;
+      elements.levelFlash.classList.add("visible");
+      window.setTimeout(() => elements.levelFlash.classList.remove("visible"), 950);
+    }
+
+    function advanceLevelIfNeeded() {
+      if (playedInLevel < LEVELS[levelIndex].count) return true;
+      if (levelIndex >= LEVELS.length - 1) {
+        finishGame();
+        return false;
+      }
+      levelIndex += 1;
+      playedInLevel = 0;
+      updateStatus();
+      showLevelFlash();
+      return true;
+    }
+
+    async function drawCard() {
+      if (drawing || isPaused) return;
+      if (!advanceLevelIfNeeded()) return;
+
+      drawing = true;
+      elements.next.disabled = true;
+      resetTimer();
+      elements.card.classList.remove("flipped");
+
+      const card = pickCard(levelIndex + 1);
+      const dieValue = await rollDie();
+      const effectiveDuration = card.duration + (dieValue === 2 && card.duration ? 10 : 0);
+
+      window.setTimeout(() => {
+        elements.target.textContent = card.target;
+        elements.challenge.textContent = card.text;
+        elements.bonus.textContent = `Dé ${dieValue} · ${BONUS_RULES[dieValue]}`;
+        setTimer(effectiveDuration);
+        playedInLevel += 1;
+        updateStatus();
+        elements.card.classList.add("flipped");
+        elements.next.textContent =
+          levelIndex === LEVELS.length - 1 && playedInLevel === LEVELS[levelIndex].count
+            ? "Terminer"
+            : "Carte suivante";
+        elements.next.disabled = false;
+        drawing = false;
+      }, 280);
+    }
+
+    function setScreen(screen) {
+      [elements.welcome, elements.game, elements.end].forEach(item => item.classList.add("hidden"));
+      screen.classList.remove("hidden");
+    }
+
+    function startGame() {
+      resetTimer();
+      levelIndex = 0;
+      playedInLevel = 0;
+      lastTag = "";
+      drawing = false;
+      isPaused = false;
+      buildDecks();
+      elements.pauseOverlay.classList.add("hidden");
+      elements.card.classList.remove("flipped");
+      elements.target.textContent = "Les deux";
+      elements.challenge.textContent = "Touchez « Carte suivante » pour commencer.";
+      elements.bonus.textContent = "Le dé ajoutera une règle bonus.";
+      elements.dieValue.textContent = "—";
+      elements.die.dataset.value = "1";
+      elements.next.textContent = "Carte suivante";
+      elements.next.disabled = false;
+      updateStatus();
+      setScreen(elements.game);
+    }
+
+    function finishGame() {
+      resetTimer();
+      setScreen(elements.end);
+    }
+
+    function pauseGame() {
+      if (drawing) return;
+      isPaused = true;
+      elements.pauseOverlay.classList.remove("hidden");
+    }
+
+    function resumeGame() {
+      isPaused = false;
+      elements.pauseOverlay.classList.add("hidden");
+    }
+
+    elements.start.addEventListener("click", startGame);
+    elements.restart.addEventListener("click", startGame);
+    elements.endRestart.addEventListener("click", startGame);
+    elements.next.addEventListener("click", drawCard);
+    elements.timerButton.addEventListener("click", toggleTimer);
+    elements.pause.addEventListener("click", pauseGame);
+    elements.resume.addEventListener("click", resumeGame);
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && !elements.game.classList.contains("hidden")) pauseGame();
+    });
+  </script>
+</body>
+</html>
