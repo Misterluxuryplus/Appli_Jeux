@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#120812">
-  <title>Sylvain &amp; Steph · V5</title>
+  <title>Sylvain &amp; Steph · V6</title>
   <style>
     :root {
       color-scheme: dark;
@@ -492,17 +492,17 @@
       4: [
         { target: "Steph", tag: "oral", duration: 60, text: "Suce Sylvain pendant 1 minute en faisant varier lentement le rythme." },
         { target: "Sylvain", tag: "oral", duration: 60, text: "Lèche le sexe de Steph pendant 1 minute en suivant ses réactions." },
-        { target: "Sylvain", tag: "clitoris", duration: 90, text: "Caresse le clitoris de Steph pendant 1 min 30 en suivant ses réactions." },
-        { target: "Sylvain", tag: "doigt", duration: 90, text: "Insère un doigt dans le vagin de Steph et bouge-le lentement pendant 1 min 30." },
+        { target: "Sylvain", tag: "clitoris", duration: 45, text: "Caresse le clitoris de Steph pendant 45 secondes en suivant ses réactions." },
+        { target: "Sylvain", tag: "doigt", duration: 45, text: "Insère un doigt dans le vagin de Steph et bouge-le lentement pendant 45 secondes." },
         { target: "Steph", tag: "intime", duration: 90, text: "Caresse les parties intimes de Sylvain pendant 1 min 30, sans t’arrêter." },
         { target: "Sylvain", tag: "teasing", duration: 90, text: "Embrasse et caresse Steph autour de ses parties intimes sans les toucher directement." }
       ],
       5: [
-        { target: "Sylvain", tag: "penetration", duration: 120, text: "Pénètre Steph pendant 2 minutes, lentement." },
-        { target: "Sylvain", tag: "penetration", duration: 120, text: "Pénètre Steph pendant 2 minutes ; Steph choisit et annonce le rythme." },
-        { target: "Steph", tag: "penetration", duration: 120, text: "Choisis une position, puis guide le rythme de la pénétration pendant 2 minutes." },
-        { target: "Les deux", tag: "penetration", duration: 150, text: "Pendant la pénétration, alternez 30 secondes lentes et 30 secondes intenses pendant 2 min 30." },
-        { target: "Final hard", tag: "penetration", duration: 180, text: "Sylvain pénètre Steph pendant 3 minutes, avec le rythme choisi par Steph." }
+        { target: "Sylvain", tag: "penetration-lente", duration: 90, text: "Pénètre Steph lentement, face à face, pendant 1 min 30." },
+        { target: "Steph", tag: "penetration-rythme", duration: 90, text: "Choisis la position et guide le rythme de la pénétration pendant 1 min 30." },
+        { target: "Les deux", tag: "penetration-alternee", duration: 90, text: "Pendant la pénétration, alternez 20 secondes lentes et 20 secondes intenses pendant 1 min 30." },
+        { target: "Steph", tag: "penetration-controle", duration: 90, text: "Place-toi au-dessus de Sylvain et contrôle le rythme et la profondeur pendant 1 min 30." },
+        { target: "Final hard", tag: "final", duration: 90, text: "Sylvain pénètre Steph comme vous voulez pendant 1 min 30, puis fin du jeu." }
       ]
     };
 
@@ -542,7 +542,6 @@
     let timerRemaining = 0;
     let timerTotal = 0;
     let timerRunning = false;
-    let timerWarned = false;
     let audioContext = null;
 
     function shuffle(items) {
@@ -558,7 +557,14 @@
       gameDecks = {};
       Object.keys(decks).forEach(level => {
         // L'ordre du niveau 3 éloigne volontairement les deux cartes de fessées.
-        gameDecks[level] = level === "3" ? [...decks[level]] : shuffle(decks[level]);
+        if (level === "3") {
+          gameDecks[level] = [...decks[level]];
+        } else if (level === "5") {
+          // Le final hard reste toujours la dernière carte du jeu.
+          gameDecks[level] = [...shuffle(decks[level].slice(0, -1)), decks[level][decks[level].length - 1]];
+        } else {
+          gameDecks[level] = shuffle(decks[level]);
+        }
       });
     }
 
@@ -593,7 +599,6 @@
       window.clearInterval(timerId);
       timerId = null;
       timerRunning = false;
-      timerWarned = false;
       timerRemaining = 0;
       timerTotal = 0;
       el.timerPanel.classList.add("hidden");
@@ -642,17 +647,16 @@
       if (isPaused) return;
       timerRemaining -= 1;
       renderTimer();
-      if (timerRemaining === 10 && !timerWarned) {
-        timerWarned = true;
-        beep(660, .16);
+      if (timerRemaining >= 1 && timerRemaining <= 5) {
+        beep(610 + (5 - timerRemaining) * 55, .12);
       }
       if (timerRemaining <= 0) {
         window.clearInterval(timerId);
         timerId = null;
         timerRunning = false;
         el.timerButton.textContent = "Relancer";
-        beep(880, .18);
-        window.setTimeout(() => beep(1040, .22), 180);
+        beep(980, .2);
+        window.setTimeout(() => beep(1220, .28), 190);
       }
     }
 
@@ -666,7 +670,6 @@
       }
       if (timerRemaining <= 0) {
         timerRemaining = timerTotal;
-        timerWarned = false;
         renderTimer();
       }
       getAudioContext();
