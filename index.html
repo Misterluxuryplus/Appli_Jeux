@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#120913">
-  <title>Sylvain &amp; Steph</title>
+  <title>Sylvain &amp; Steph · V3</title>
   <style>
     :root {
       color-scheme: dark;
@@ -516,7 +516,7 @@
       <div class="welcome-content">
         <div class="heart" aria-hidden="true">♥</div>
         <h1>Sylvain<br>&amp; Steph</h1>
-        <p class="subtitle">Une soirée à deux, cinq niveaux, et une intensité qui monte toute seule.</p>
+        <p class="subtitle">Une soirée à deux. Cinq niveaux qui montent automatiquement jusqu’au hard.</p>
         <button id="startButton" class="primary" type="button">Commencer</button>
       </div>
     </section>
@@ -622,59 +622,46 @@
       6: "Version plus intense"
     };
 
+    /*
+      V3 : la banque contient exactement 31 cartes, soit le nombre joué.
+      Chaque carte apparaît donc obligatoirement une fois par partie.
+    */
     const cards = [
       { level: 1, target: "Les deux", tag: "regard", duration: 45, text: "Restez très proches et soutenez le regard de l’autre." },
       { level: 1, target: "Sylvain", tag: "massage", duration: 60, text: "Offre à Steph un massage lent des épaules et de la nuque." },
       { level: 1, target: "Steph", tag: "danse", duration: 45, text: "Guide Sylvain dans une danse lente, tout près de toi." },
-      { level: 1, target: "Les deux", tag: "baiser", duration: 30, text: "Échangez des baisers doux sans vous presser." },
-      { level: 1, target: "Sylvain", tag: "frisson", duration: 40, text: "Fais frissonner Steph du bout des doigts, de la main au cou." },
-      { level: 1, target: "Steph", tag: "oreille", duration: 0, text: "Murmure à Sylvain une envie pour la suite de la soirée." },
-      { level: 1, target: "Les deux", tag: "proximite", duration: 50, text: "Serrez-vous l’un contre l’autre et bougez au même rythme." },
-      { level: 1, target: "Sylvain", tag: "guidage", duration: 45, text: "Laisse Steph guider tes mains là où elle veut être caressée." },
-      { level: 1, target: "Steph", tag: "baiser", duration: 40, text: "Dépose une suite de baisers du front jusqu’au cou de Sylvain." },
-      { level: 1, target: "Les deux", tag: "jeu", duration: 0, text: "À tour de rôle, dites où vous aimeriez recevoir le prochain baiser." },
+      { level: 1, target: "Les deux", tag: "baiser", duration: 45, text: "Échangez des baisers doux qui deviennent progressivement plus passionnés." },
+      { level: 1, target: "Sylvain", tag: "frisson", duration: 45, text: "Fais frissonner Steph du bout des doigts, de la main jusqu’au cou." },
+      { level: 1, target: "Steph", tag: "murmure", duration: 0, text: "Murmure à Sylvain une envie précise pour la suite de la soirée." },
 
-      { level: 2, target: "Steph", tag: "massage", duration: 75, text: "Offre à Sylvain un massage lent du dos, en variant la pression." },
-      { level: 2, target: "Sylvain", tag: "baiser", duration: 45, text: "Embrasse Steph dans le cou et laisse monter la tension." },
+      { level: 2, target: "Sylvain", tag: "baiser", duration: 60, text: "Embrasse Steph dans le cou et laisse monter la tension." },
+      { level: 2, target: "Steph", tag: "massage", duration: 75, text: "Offre à Sylvain un massage lent du dos en variant la pression." },
       { level: 2, target: "Les deux", tag: "interdit", duration: 60, text: "Embrassez-vous sans utiliser vos mains." },
-      { level: 2, target: "Steph", tag: "guidage", duration: 50, text: "Guide les mains de Sylvain pendant une caresse lente." },
-      { level: 2, target: "Sylvain", tag: "teasing", duration: 45, text: "Approche-toi pour un baiser, puis fais durer l’attente." },
-      { level: 2, target: "Les deux", tag: "danse", duration: 75, text: "Dansez très près l’un de l’autre, sans rompre le contact." },
-      { level: 2, target: "Steph", tag: "frisson", duration: 50, text: "Fais lentement frissonner Sylvain, du cou jusqu’au bas du dos." },
-      { level: 2, target: "Sylvain", tag: "oreille", duration: 0, text: "Murmure à Steph exactement comment tu veux l’embrasser." },
-      { level: 2, target: "Les deux", tag: "baiser", duration: 60, text: "Alternez baisers très doux et baisers plus passionnés." },
-      { level: 2, target: "Steph", tag: "exploration", duration: 60, text: "Explore lentement les zones que Sylvain te laisse découvrir." },
+      { level: 2, target: "Steph", tag: "guidage", duration: 60, text: "Guide les mains de Sylvain pendant une caresse lente." },
+      { level: 2, target: "Sylvain", tag: "teasing", duration: 60, text: "Approche-toi pour un baiser, puis fais durer l’attente." },
+      { level: 2, target: "Steph", tag: "fessees", duration: 0, text: "Donne 10 fessées à Sylvain, en faisant monter progressivement l’intensité." },
+      { level: 2, target: "Sylvain", tag: "fessees", duration: 0, text: "Donne 10 fessées à Steph, en faisant monter progressivement l’intensité." },
 
-      { level: 3, target: "Sylvain", tag: "teasing", duration: 75, text: "Fais monter l’envie de Steph avec des caresses qui s’approchent puis s’éloignent." },
-      { level: 3, target: "Steph", tag: "baiser", duration: 60, text: "Embrasse Sylvain avec une intensité qui augmente peu à peu." },
       { level: 3, target: "Les deux", tag: "guidage", duration: 75, text: "À tour de rôle, guidez la main de l’autre sans parler." },
-      { level: 3, target: "Sylvain", tag: "exploration", duration: 90, text: "Explore lentement le corps de Steph en évitant ses zones préférées." },
-      { level: 3, target: "Steph", tag: "rythme", duration: 75, text: "Impose un rythme de caresses à Sylvain et fais-le varier." },
+      { level: 3, target: "Sylvain", tag: "exploration", duration: 90, text: "Explore lentement le corps de Steph en évitant ses parties intimes." },
+      { level: 3, target: "Steph", tag: "intime", duration: 75, text: "Caresse les parties intimes de Sylvain en changeant lentement de rythme." },
+      { level: 3, target: "Sylvain", tag: "intime", duration: 75, text: "Caresse les parties intimes de Steph en suivant ses réactions." },
       { level: 3, target: "Les deux", tag: "proximite", duration: 90, text: "Restez collés l’un à l’autre et laissez la tension monter." },
-      { level: 3, target: "Sylvain", tag: "oreille", duration: 0, text: "Dis à Steph ce que tu as le plus envie qu’elle fasse maintenant." },
-      { level: 3, target: "Steph", tag: "interdit", duration: 60, text: "Fais perdre patience à Sylvain sans l’embrasser sur la bouche." },
-      { level: 3, target: "Les deux", tag: "baiser", duration: 75, text: "Embrassez-vous passionnément en laissant vos mains explorer." },
-      { level: 3, target: "Steph", tag: "massage", duration: 90, text: "Transforme un massage lent en caresses de plus en plus troublantes." },
+      { level: 3, target: "Steph", tag: "teasing", duration: 75, text: "Fais perdre patience à Sylvain en t’approchant de ses zones les plus sensibles." },
+      { level: 3, target: "Sylvain", tag: "controle", duration: 90, text: "Steph garde les yeux fermés et les mains derrière le dos. Guide toutes ses sensations pendant 1 min 30 ; elle peut interrompre à tout moment." },
 
-      { level: 4, target: "Sylvain", tag: "guidage", duration: 90, text: "Prends les commandes et guide entièrement les mouvements de Steph." },
-      { level: 4, target: "Steph", tag: "teasing", duration: 90, text: "Fais monter fortement l’envie de Sylvain, puis ralentis au dernier moment." },
-      { level: 4, target: "Les deux", tag: "rythme", duration: 120, text: "Alternez trente secondes très lentes et trente secondes très intenses." },
-      { level: 4, target: "Sylvain", tag: "baiser", duration: 90, text: "Couvre Steph de baisers passionnés en suivant ses réactions." },
-      { level: 4, target: "Steph", tag: "exploration", duration: 120, text: "Explore les sensations préférées de Sylvain et change souvent de rythme." },
-      { level: 4, target: "Les deux", tag: "interdit", duration: 90, text: "Faites-vous perdre patience sans aller directement à ce que l’autre attend." },
-      { level: 4, target: "Sylvain", tag: "frisson", duration: 100, text: "Fais frissonner Steph avec une alternance de douceur et d’intensité." },
-      { level: 4, target: "Steph", tag: "guidage", duration: 100, text: "Choisis précisément où et comment Sylvain doit te caresser." },
-      { level: 4, target: "Les deux", tag: "proximite", duration: 120, text: "Restez au plus près et suivez uniquement les réactions de l’autre." },
-      { level: 4, target: "Sylvain", tag: "teasing", duration: 90, text: "Donne à Steph exactement ce qu’elle demande, mais très lentement." },
+      { level: 4, target: "Steph", tag: "controle", duration: 90, text: "Sylvain garde les yeux fermés et les mains derrière le dos. Guide toutes ses sensations pendant 1 min 30 ; il peut interrompre à tout moment." },
+      { level: 4, target: "Sylvain", tag: "lecher", duration: 90, text: "Lèche lentement les parties intimes de Steph en suivant ses réactions." },
+      { level: 4, target: "Steph", tag: "sucer", duration: 90, text: "Suce lentement Sylvain en faisant varier le rythme." },
+      { level: 4, target: "Les deux", tag: "rythme", duration: 120, text: "Alternez trente secondes de caresses intimes très lentes et trente secondes plus intenses." },
+      { level: 4, target: "Sylvain", tag: "teasing", duration: 90, text: "Fais monter fortement l’envie de Steph, puis ralentis au dernier moment." },
+      { level: 4, target: "Steph", tag: "exploration", duration: 120, text: "Explore les parties intimes de Sylvain et intensifie ce qui lui plaît le plus." },
 
-      { level: 5, target: "Steph", tag: "controle", duration: 120, text: "Prends totalement les commandes et impose le rythme à Sylvain." },
-      { level: 5, target: "Sylvain", tag: "controle", duration: 120, text: "Prends totalement les commandes et fais varier l’intensité pour Steph." },
-      { level: 5, target: "Les deux", tag: "interdit", duration: 150, text: "Poussez la tension au maximum sans vous précipiter vers la suite." },
-      { level: 5, target: "Steph", tag: "rythme", duration: 120, text: "Choisis un rythme très intense, puis impose un arrêt net avant de reprendre." },
-      { level: 5, target: "Sylvain", tag: "teasing", duration: 150, text: "Fais perdre patience à Steph en alternant contrôle, lenteur et intensité." },
-      { level: 5, target: "Les deux", tag: "guidage", duration: 150, text: "À tour de rôle, prenez le contrôle total pendant trente secondes." },
-      { level: 5, target: "Steph", tag: "exploration", duration: 150, text: "Concentre-toi sur les réactions de Sylvain et intensifie ce qui lui plaît le plus." },
-      { level: 5, target: "Sylvain", tag: "exploration", duration: 150, text: "Concentre-toi sur les réactions de Steph et intensifie ce qui lui plaît le plus." }
+      { level: 5, target: "Steph", tag: "controle", duration: 120, text: "Prends les commandes et impose à Sylvain un rythme intense, avec des pauses imprévisibles." },
+      { level: 5, target: "Sylvain", tag: "lecher", duration: 120, text: "Lèche Steph avec une intensité progressive, puis ralentis juste avant qu’elle ne le demande." },
+      { level: 5, target: "Steph", tag: "sucer", duration: 120, text: "Suce Sylvain en alternant lenteur et intensité selon ses réactions." },
+      { level: 5, target: "Les deux", tag: "intime", duration: 150, text: "Donnez-vous du plaisir avec la bouche et les mains, en alternant qui mène le jeu." },
+      { level: 5, target: "Sylvain", tag: "controle", duration: 150, text: "Prends les commandes et concentre-toi uniquement sur les parties intimes de Steph, en faisant varier le rythme." }
     ];
 
     const elements = {
