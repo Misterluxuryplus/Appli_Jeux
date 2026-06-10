@@ -272,6 +272,46 @@
       font-weight: 800;
     }
 
+    .answers {
+      display: grid;
+      gap: 8px;
+      margin: 0 0 12px;
+    }
+
+    .answer-button {
+      width: 100%;
+      min-height: 42px;
+      padding: 9px 12px;
+      border: 1px solid rgba(255,255,255,.11);
+      border-radius: 13px;
+      background: rgba(255,255,255,.065);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 800;
+      text-align: left;
+    }
+
+    .answer-button:disabled { cursor: default; opacity: .65; }
+    .answer-button.correct { border-color: rgba(88,224,157,.7); background: rgba(62,190,127,.18); }
+    .answer-button.wrong { border-color: rgba(255,100,126,.72); background: rgba(210,50,88,.2); }
+
+    .feedback {
+      min-height: 20px;
+      margin: 0 0 10px;
+      color: var(--pink);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .card.question-card .challenge {
+      flex: none;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      font-size: clamp(18px, 5.2vw, 23px);
+    }
+
+    .card.question-card .duration { padding-top: 10px; }
+
     .timer-panel {
       display: flex;
       align-items: center;
@@ -407,6 +447,8 @@
             <div class="card-content">
               <span id="target" class="target">Les deux</span>
               <p id="challenge" class="challenge">Touchez « Carte suivante » pour commencer.</p>
+              <div id="answers" class="answers hidden"></div>
+              <p id="feedback" class="feedback hidden"></p>
               <p id="duration" class="duration">La première carte vous attend.</p>
             </div>
           </div>
@@ -476,16 +518,16 @@
         { target: "Steph", tag: "massage", duration: 75, text: "Masse lentement le dos de Sylvain en variant la pression." },
         { target: "Sylvain", tag: "teasing", duration: 60, text: "Approche tes lèvres de celles de Steph, puis fais durer l’attente avant de l’embrasser." },
         { target: "Steph", tag: "guidage", duration: 60, text: "Guide les mains de Sylvain sur les endroits où tu veux être caressée." },
-        { target: "Sylvain", tag: "cou", duration: 60, text: "Embrasse Steph dans le cou et sur les épaules." },
-        { target: "Steph", tag: "frisson", duration: 60, text: "Caresse lentement le torse et le dos de Sylvain." },
+        { target: "Question · Sylvain", tag: "question", duration: 0, text: "Quel organe est principalement dédié au plaisir sexuel féminin ?", answers: ["Le clitoris", "L’utérus", "Le col de l’utérus"], correct: 0, other: "Steph" },
+        { target: "Question · Steph", tag: "question", duration: 0, text: "Quel moyen aide à réduire à la fois le risque d’IST et de grossesse ?", answers: ["Le préservatif", "La pilule seule", "Le retrait"], correct: 0, other: "Sylvain" },
         { target: "Les deux", tag: "proximite", duration: 75, text: "Collez vos corps et bougez ensemble sans vous embrasser." }
       ],
       3: [
         { target: "Sylvain", tag: "fessees", duration: 0, text: "Donne 10 fessées à Steph, de plus en plus fortes." },
-        { target: "Sylvain", tag: "exploration", duration: 90, text: "Caresse tout le corps de Steph en évitant ses parties intimes." },
+        { target: "Question · Sylvain", tag: "question", duration: 0, text: "Que signifie l’acronyme IST ?", answers: ["Infection sexuellement transmissible", "Intimité sans tabou", "Indice de santé testiculaire"], correct: 0, other: "Steph" },
         { target: "Steph", tag: "intime", duration: 75, text: "Caresse les parties intimes de Sylvain en changeant lentement de rythme." },
         { target: "Sylvain", tag: "controle", duration: 90, text: "Steph ferme les yeux et garde les mains derrière le dos. Touche-la et embrasse-la sur tout le corps pendant 1 min 30." },
-        { target: "Les deux", tag: "baiser", duration: 90, text: "Embrassez-vous passionnément en laissant vos mains explorer le corps de l’autre." },
+        { target: "Question · Steph", tag: "question", duration: 0, text: "Les exercices de Kegel renforcent principalement quelle zone ?", answers: ["Le plancher pelvien", "Les abdominaux", "Les cuisses"], correct: 0, other: "Sylvain" },
         { target: "Steph", tag: "fessees", duration: 0, text: "Donne 10 fessées à Sylvain, de plus en plus fortes." },
         { target: "Steph", tag: "controle", duration: 90, text: "Sylvain ferme les yeux et garde les mains derrière le dos. Touche-le et embrasse-le sur tout le corps pendant 1 min 30." }
       ],
@@ -522,6 +564,8 @@
       card: document.getElementById("card"),
       target: document.getElementById("target"),
       challenge: document.getElementById("challenge"),
+      answers: document.getElementById("answers"),
+      feedback: document.getElementById("feedback"),
       duration: document.getElementById("duration"),
       next: document.getElementById("nextButton"),
       timerPanel: document.getElementById("timerPanel"),
@@ -685,6 +729,41 @@
       window.setTimeout(() => el.levelFlash.classList.remove("visible"), 950);
     }
 
+    function resetQuestion() {
+      el.card.classList.remove("question-card");
+      el.answers.replaceChildren();
+      el.answers.classList.add("hidden");
+      el.feedback.textContent = "";
+      el.feedback.classList.add("hidden");
+    }
+
+    function renderQuestion(card) {
+      el.card.classList.add("question-card");
+      el.answers.classList.remove("hidden");
+      card.answers.forEach((answer, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "answer-button";
+        button.textContent = answer;
+        button.addEventListener("click", () => answerQuestion(card, index));
+        el.answers.appendChild(button);
+      });
+    }
+
+    function answerQuestion(card, selectedIndex) {
+      const buttons = [...el.answers.querySelectorAll(".answer-button")];
+      buttons.forEach(button => { button.disabled = true; });
+      buttons[card.correct].classList.add("correct");
+      if (selectedIndex === card.correct) {
+        el.feedback.textContent = "Bonne réponse";
+      } else {
+        buttons[selectedIndex].classList.add("wrong");
+        el.feedback.textContent = `Mauvaise réponse · ${card.other} choisit un gage`;
+      }
+      el.feedback.classList.remove("hidden");
+      el.next.disabled = false;
+    }
+
     function advanceLevelIfNeeded() {
       if (playedInLevel < levels[levelIndex].count) return true;
       if (levelIndex === levels.length - 1) {
@@ -703,14 +782,20 @@
       drawing = true;
       el.next.disabled = true;
       resetTimer();
+      resetQuestion();
       el.card.classList.remove("flipped");
 
       const card = gameDecks[levelIndex + 1].shift();
       window.setTimeout(() => {
         el.target.textContent = card.target;
         el.challenge.textContent = card.text;
-        el.duration.textContent = `Durée · ${durationLabel(card.duration)}`;
-        setTimer(card.duration);
+        if (card.answers) {
+          renderQuestion(card);
+          el.duration.textContent = "Question culture sexe · choisissez une réponse";
+        } else {
+          el.duration.textContent = `Durée · ${durationLabel(card.duration)}`;
+          setTimer(card.duration);
+        }
         playedInLevel += 1;
         updateStatus();
         el.card.classList.add("flipped");
@@ -718,7 +803,7 @@
           levelIndex === levels.length - 1 && playedInLevel === levels[levelIndex].count
             ? "Terminer"
             : "Carte suivante";
-        el.next.disabled = false;
+        el.next.disabled = Boolean(card.answers);
         drawing = false;
       }, 280);
     }
@@ -731,6 +816,7 @@
       isPaused = false;
       buildGameDecks();
       el.pauseOverlay.classList.add("hidden");
+      resetQuestion();
       el.card.classList.remove("flipped");
       el.target.textContent = "Les deux";
       el.challenge.textContent = "Touchez « Carte suivante » pour commencer.";
