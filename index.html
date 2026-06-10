@@ -1,858 +1,774 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#120812">
-  <title>Sylvain &amp; Steph · V6</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Sylvain & Steph — V11</title>
   <style>
-    :root {
-      color-scheme: dark;
-      --bg: #0e070f;
-      --panel: rgba(39, 15, 39, .82);
-      --rose: #f44b89;
-      --pink: #ff9abb;
-      --purple: #a94dff;
-      --red: #8d183a;
-      --text: #fff7fb;
-      --muted: #cbb2c2;
-      --line: rgba(255,255,255,.10);
-      --shadow: 0 20px 60px rgba(0,0,0,.43);
+    :root{
+      --bg1:#100511;
+      --bg2:#2b0929;
+      --bg3:#571242;
+      --card:#1b0d1c;
+      --card2:#32152e;
+      --accent:#ff4fa3;
+      --accent2:#ffc1e3;
+      --text:#fff7fb;
+      --muted:#d8adc8;
+      --gold:#ffd166;
+      --red:#ff2f6d;
     }
-
-    * { box-sizing: border-box; }
-    html, body { min-height: 100%; margin: 0; }
-
-    body {
-      min-height: 100svh;
-      overflow-x: hidden;
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
       background:
-        radial-gradient(circle at 8% 7%, rgba(244,75,137,.20), transparent 34%),
-        radial-gradient(circle at 94% 27%, rgba(169,77,255,.17), transparent 35%),
-        radial-gradient(circle at 50% 105%, rgba(141,24,58,.24), transparent 48%),
-        linear-gradient(160deg, #180a18, var(--bg));
-      color: var(--text);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        radial-gradient(circle at 20% 0%,#7c2a66 0%,transparent 32%),
+        radial-gradient(circle at 80% 20%,#812656 0%,transparent 30%),
+        linear-gradient(160deg,var(--bg1),var(--bg2) 50%,#110410);
+      color:var(--text);
+      overflow-x:hidden;
     }
-
-    button {
-      border: 0;
-      color: inherit;
-      font: inherit;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    button:focus-visible { outline: 3px solid var(--pink); outline-offset: 3px; }
-    .hidden { display: none !important; }
-
-    .ambience {
-      position: fixed;
-      z-index: -1;
-      inset: 0;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
-    .float {
-      position: absolute;
-      bottom: -60px;
-      color: rgba(255,126,172,.18);
-      font-size: 24px;
-      filter: blur(.1px);
-      animation: rise var(--speed) linear infinite;
-      animation-delay: var(--delay);
-    }
-
-    .float:nth-child(3n) { color: rgba(180,84,255,.16); }
-    .float:nth-child(4n) { color: rgba(255,78,96,.14); }
-
-    @keyframes rise {
-      0% { transform: translate3d(0, 0, 0) rotate(-8deg) scale(.75); opacity: 0; }
-      12% { opacity: 1; }
-      70% { opacity: .8; }
-      100% { transform: translate3d(var(--drift), -115vh, 0) rotate(22deg) scale(1.25); opacity: 0; }
-    }
-
-    .screen {
-      width: min(100%, 520px);
-      min-height: 100svh;
-      margin: 0 auto;
-      padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
-    }
-
-    .welcome, .end-screen { display: grid; place-items: center; text-align: center; }
-
-    .welcome-box, .end-box {
-      width: 100%;
-      padding: 40px 24px;
-      border: 1px solid var(--line);
-      border-radius: 34px;
-      background: linear-gradient(145deg, rgba(74,26,67,.76), rgba(27,12,31,.82));
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
-    }
-
-    .logo {
-      display: grid;
-      width: 78px;
-      height: 78px;
-      place-items: center;
-      margin: 0 auto 18px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--rose), var(--purple));
-      box-shadow: 0 11px 34px rgba(244,75,137,.38);
-      font-size: 35px;
-      animation: heartbeat 2.2s ease-in-out infinite;
-    }
-
-    h1, h2 { margin: 0; letter-spacing: -.055em; }
-    h1 { font-size: clamp(40px, 12vw, 60px); line-height: .98; }
-    h2 { font-size: 36px; }
-
-    .intro, .end-box p, .pause-box p {
-      margin: 18px auto 28px;
-      color: var(--muted);
-      line-height: 1.55;
-    }
-
-    .primary {
-      width: 100%;
-      min-height: 60px;
-      padding: 15px 22px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, var(--rose), var(--purple));
-      box-shadow: 0 11px 29px rgba(207,48,127,.29);
-      font-size: 18px;
-      font-weight: 850;
-      transition: transform .18s ease, opacity .18s ease;
-    }
-
-    .primary:active { transform: scale(.98); }
-    .primary:disabled { cursor: default; opacity: .62; }
-
-    .game { display: flex; flex-direction: column; gap: 15px; }
-
-    .topbar, .status-line {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .brand { font-size: 16px; font-weight: 900; letter-spacing: -.03em; }
-    .top-actions { display: flex; gap: 7px; }
-
-    .quiet {
-      min-height: 38px;
-      padding: 8px 11px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(255,255,255,.055);
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .status, .timer-panel {
-      border: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.045);
-      backdrop-filter: blur(14px);
-    }
-
-    .status { padding: 14px 15px; border-radius: 18px; }
-    .status-line { margin-bottom: 10px; font-size: 14px; font-weight: 850; }
-    .level-name { color: var(--pink); }
-    .progress-text { color: var(--muted); }
-
-    .track {
-      height: 7px;
-      overflow: hidden;
-      border-radius: 999px;
-      background: rgba(255,255,255,.08);
-    }
-
-    .progress-bar, .timer-bar {
-      height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, var(--rose), var(--purple));
-      box-shadow: 0 0 15px rgba(244,75,137,.47);
-      transition: width .4s ease;
-    }
-
-    .progress-bar { width: 0; }
-    .card-scene { min-height: 395px; perspective: 1100px; }
-
-    .card {
-      position: relative;
-      width: 100%;
-      height: 395px;
-      transform-style: preserve-3d;
-      transition: transform .7s cubic-bezier(.2,.78,.2,1);
-    }
-
-    .card.flipped { transform: rotateY(180deg); }
-
-    .card-face {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,.11);
-      border-radius: 27px;
-      box-shadow: var(--shadow);
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-    }
-
-    .card-back {
-      align-items: center;
-      justify-content: center;
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
       background:
-        radial-gradient(circle at 50% 25%, rgba(255,120,174,.28), transparent 37%),
-        linear-gradient(145deg, #521940, #1c102d 72%);
+        radial-gradient(circle at 50% 10%,#ff4fa326 0%,transparent 28%),
+        radial-gradient(circle at 50% 100%,#ff2f6d1f 0%,transparent 35%);
+      pointer-events:none;
+      animation:bgPulse 5s ease-in-out infinite alternate;
     }
-
-    .card-mark {
-      display: grid;
-      width: 108px;
-      height: 108px;
-      place-items: center;
-      border: 1px solid rgba(255,255,255,.18);
-      border-radius: 50%;
-      background: rgba(255,255,255,.055);
-      font-size: 46px;
+    @keyframes bgPulse{
+      from{opacity:.55;filter:saturate(1)}
+      to{opacity:.95;filter:saturate(1.35)}
     }
-
-    .card-front {
-      transform: rotateY(180deg);
+    .sexyFx{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:0;
+    }
+    .sexyFx span{
+      position:absolute;
+      bottom:-40px;
+      opacity:.0;
+      font-size:20px;
+      animation:floatUp 7s linear infinite;
+      filter:drop-shadow(0 0 10px #ff4fa3aa);
+    }
+    .sexyFx span:nth-child(1){left:8%;animation-delay:.2s}
+    .sexyFx span:nth-child(2){left:22%;animation-delay:1.6s;font-size:25px}
+    .sexyFx span:nth-child(3){left:40%;animation-delay:.9s}
+    .sexyFx span:nth-child(4){left:58%;animation-delay:2.4s;font-size:27px}
+    .sexyFx span:nth-child(5){left:78%;animation-delay:.6s}
+    .sexyFx span:nth-child(6){left:90%;animation-delay:3.2s;font-size:23px}
+    @keyframes floatUp{
+      0%{transform:translateY(0) scale(.8) rotate(0deg);opacity:0}
+      12%{opacity:.55}
+      70%{opacity:.35}
+      100%{transform:translateY(-115vh) scale(1.6) rotate(26deg);opacity:0}
+    }
+    .app{
+      position:relative;
+      z-index:1;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+    .screen{width:min(480px,100%);display:none;animation:fade .3s ease both}
+    .screen.active{display:block}
+    @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .panel{
+      background:linear-gradient(160deg,#ffffff16,#ffffff07);
+      border:1px solid #ffffff25;
+      border-radius:28px;
+      padding:24px;
+      box-shadow:0 24px 80px #00000066;
+      backdrop-filter:blur(12px);
+    }
+    h1{
+      font-size:clamp(38px,9vw,58px);
+      line-height:1.02;
+      text-align:center;
+      margin:0 0 10px;
+      letter-spacing:-1px;
+    }
+    h2{font-size:34px;text-align:center;margin:0 0 10px}
+    p{margin:0}
+    .heart{
+      text-align:center;
+      font-size:48px;
+      margin:6px 0 14px;
+      filter:drop-shadow(0 0 16px #ff4fa388);
+      animation:heartBeat 1.7s ease-in-out infinite;
+    }
+    @keyframes heartBeat{
+      0%,100%{transform:scale(1)}
+      45%{transform:scale(1.1)}
+      60%{transform:scale(.98)}
+    }
+    .subtitle{text-align:center;color:var(--muted);font-size:17px;margin-bottom:24px}
+    button{
+      width:100%;
+      min-height:56px;
+      border:0;
+      border-radius:18px;
+      padding:14px 18px;
+      color:var(--text);
+      background:linear-gradient(135deg,var(--accent),#9d3bff);
+      font-size:17px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:0 10px 30px #ff4fa333;
+      touch-action:manipulation;
+    }
+    button:active{transform:scale(.98)}
+    button.ghost{background:#ffffff10;border:1px solid #ffffff22;box-shadow:none;color:var(--accent2)}
+    button.small{min-height:42px;font-size:14px;border-radius:14px;padding:10px 12px}
+    .row{display:flex;gap:10px}
+    .row button{flex:1}
+    .topbar{display:flex;justify-content:space-between;gap:10px;margin-bottom:12px}
+    .pill{
+      background:#ffffff12;
+      border:1px solid #ffffff22;
+      color:var(--accent2);
+      padding:9px 12px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .progressWrap{height:9px;background:#ffffff14;border-radius:999px;overflow:hidden;margin-bottom:16px}
+    .progress{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--gold));transition:.35s width}
+    .levelMood{
+      min-height:52px;
+      border-radius:18px;
+      background:linear-gradient(135deg,#ffffff12,#ff4fa314);
+      border:1px solid #ffffff1f;
+      padding:12px 14px;
+      color:var(--accent2);
+      font-size:15px;
+      line-height:1.35;
+      text-align:center;
+      margin-bottom:12px;
+    }
+    .cardWrap{perspective:1200px;margin:12px 0 18px}
+    .card{
+      min-height:345px;
+      position:relative;
+      transform-style:preserve-3d;
+      transition:transform .55s ease;
+    }
+    .card.flipped{transform:rotateY(180deg)}
+    .face{
+      position:absolute;inset:0;
+      border-radius:26px;
+      border:1px solid #ffffff27;
       background:
-        radial-gradient(circle at 90% 7%, rgba(255,92,149,.16), transparent 29%),
-        linear-gradient(150deg, rgba(63,22,56,.99), rgba(26,13,33,.99));
+        radial-gradient(circle at 20% 8%,#ff4fa336 0%,transparent 34%),
+        radial-gradient(circle at 80% 90%,#ffd16621 0%,transparent 35%),
+        linear-gradient(160deg,var(--card2),var(--card));
+      backface-visibility:hidden;
+      padding:22px;
+      box-shadow:0 16px 50px #00000066,0 0 34px #ff4fa318;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      text-align:center;
+      overflow:hidden;
+    }
+    .face::after{
+      content:"";
+      position:absolute;
+      inset:-80px;
+      background:linear-gradient(115deg,transparent 20%,#ffffff10 50%,transparent 80%);
+      transform:translateX(-80%);
+      animation:shine 4.5s ease-in-out infinite;
+      pointer-events:none;
+    }
+    @keyframes shine{
+      0%,45%{transform:translateX(-80%) rotate(8deg)}
+      75%,100%{transform:translateX(80%) rotate(8deg)}
+    }
+    .back{transform:rotateY(180deg);justify-content:space-between}
+    .symbol{font-size:74px;margin-bottom:12px}
+    .target{
+      color:var(--gold);
+      font-size:14px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.7px;
+      margin-bottom:12px;
+    }
+    .gageText{
+      font-size:clamp(23px,5.7vw,31px);
+      line-height:1.16;
+      font-weight:1000;
+      margin:0;
+    }
+    .duration{
+      display:inline-flex;
+      align-self:center;
+      margin-top:18px;
+      padding:10px 14px;
+      border-radius:999px;
+      background:#ffffff14;
+      color:var(--accent2);
+      font-weight:900;
+      border:1px solid #ffffff1f;
     }
 
-    .accent {
-      height: 6px;
-      flex: none;
-      background: linear-gradient(90deg, var(--rose), var(--purple), var(--red));
+    .quizBox{
+      display:none;
+      margin:12px 0;
+      padding:14px;
+      border-radius:22px;
+      background:#ffffff10;
+      border:1px solid #ffffff20;
     }
-
-    .card-content { display: flex; flex: 1; flex-direction: column; padding: 24px 22px 20px; }
-
-    .target {
-      align-self: flex-start;
-      padding: 7px 11px;
-      border-radius: 999px;
-      background: rgba(255,102,159,.12);
-      color: var(--pink);
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: .05em;
-      text-transform: uppercase;
+    .quizBox.active{display:block}
+    .quizChoices{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
     }
-
-    .challenge {
-      display: flex;
-      flex: 1;
-      align-items: center;
-      margin: 16px 0;
-      font-size: clamp(21px, 6vw, 28px);
-      font-weight: 850;
-      line-height: 1.28;
-      letter-spacing: -.035em;
+    .quizChoices button{
+      min-height:48px;
+      font-size:15px;
+      text-align:left;
+      background:#ffffff12;
+      border:1px solid #ffffff24;
+      box-shadow:none;
     }
-
-    .duration {
-      margin: 0;
-      padding-top: 15px;
-      border-top: 1px solid rgba(255,255,255,.09);
-      color: #eacadb;
-      font-size: 13px;
-      font-weight: 800;
+    .quizResult{
+      display:none;
+      margin-top:12px;
+      padding:12px;
+      border-radius:16px;
+      background:#00000024;
+      border:1px solid #ffffff20;
+      color:var(--accent2);
+      font-weight:800;
+      line-height:1.35;
     }
+    .quizResult.active{display:block}
 
-    .answers {
-      display: grid;
-      gap: 8px;
-      margin: 0 0 12px;
+    .penaltyGages{
+      display:grid;
+      gap:8px;
+      margin-top:10px;
     }
-
-    .answer-button {
-      width: 100%;
-      min-height: 42px;
-      padding: 9px 12px;
-      border: 1px solid rgba(255,255,255,.11);
-      border-radius: 13px;
-      background: rgba(255,255,255,.065);
-      color: var(--text);
-      font-size: 13px;
-      font-weight: 800;
-      text-align: left;
+    .penaltyGages div{
+      padding:10px 12px;
+      border-radius:14px;
+      background:#ffffff12;
+      border:1px solid #ffffff24;
+      color:var(--text);
+      font-weight:800;
+      line-height:1.25;
     }
+    .good{color:#7dffb2}
+    .bad{color:#ff9ac6}
 
-    .answer-button:disabled { cursor: default; opacity: .65; }
-    .answer-button.correct { border-color: rgba(88,224,157,.7); background: rgba(62,190,127,.18); }
-    .answer-button.wrong { border-color: rgba(255,100,126,.72); background: rgba(210,50,88,.2); }
-
-    .feedback {
-      min-height: 20px;
-      margin: 0 0 10px;
-      color: var(--pink);
-      font-size: 14px;
-      font-weight: 900;
+    .timer{
+      display:none;
+      text-align:center;
+      margin:12px 0;
+      padding:16px;
+      border-radius:22px;
+      border:1px solid #ffffff18;
+      background:#ffffff10;
     }
-
-    .card.question-card .challenge {
-      flex: none;
-      align-items: flex-start;
-      margin-bottom: 12px;
-      font-size: clamp(18px, 5.2vw, 23px);
+    .timer.active{display:block}
+    .timeBig{font-size:46px;font-weight:1000;margin-bottom:10px}
+    .footer{display:flex;gap:10px;margin-top:12px}
+    .footer button{flex:1}
+    .intro{text-align:center;padding:34px 12px}
+    .intro p{color:var(--muted);font-size:18px;margin-bottom:20px}
+    .note{color:var(--muted);font-size:13px;text-align:center;margin-top:12px}
+    .flash{
+      animation:flash .45s ease;
     }
-
-    .card.question-card .duration { padding-top: 10px; }
-
-    .timer-panel {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 11px 12px;
-      border-radius: 18px;
+    @keyframes flash{
+      0%{filter:brightness(1)}
+      50%{filter:brightness(1.35) saturate(1.35)}
+      100%{filter:brightness(1)}
     }
-
-    .timer-display {
-      min-width: 76px;
-      color: var(--pink);
-      font-size: 27px;
-      font-weight: 900;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: -.04em;
-    }
-
-    .timer-panel .track { flex: 1; height: 5px; }
-    .timer-bar { width: 100%; transition: width .25s linear; }
-
-    .timer-button {
-      min-width: 84px;
-      min-height: 38px;
-      padding: 8px 11px;
-      border-radius: 12px;
-      background: rgba(244,75,137,.15);
-      color: #ffc2d6;
-      font-size: 13px;
-      font-weight: 850;
-    }
-
-    .next { margin-top: auto; }
-
-    .overlay, .level-flash {
-      position: fixed;
-      z-index: 20;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      padding: 22px;
-      background: rgba(9,4,10,.87);
-      backdrop-filter: blur(16px);
-    }
-
-    .pause-box {
-      width: min(100%,390px);
-      padding: 30px;
-      border: 1px solid var(--line);
-      border-radius: 26px;
-      background: #251025;
-      box-shadow: var(--shadow);
-      text-align: center;
-    }
-
-    .level-flash {
-      z-index: 15;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity .25s ease;
-    }
-
-    .level-flash.visible { opacity: 1; }
-    .flash-text { text-align: center; transform: scale(.9); transition: transform .35s ease; }
-    .level-flash.visible .flash-text { transform: scale(1); }
-    .flash-text strong { display: block; color: var(--pink); font-size: 15px; letter-spacing: .15em; text-transform: uppercase; }
-    .flash-text span { display: block; margin-top: 8px; font-size: 43px; font-weight: 900; letter-spacing: -.055em; }
-
-    @keyframes heartbeat {
-      0%,100% { transform: scale(1); }
-      50% { transform: scale(1.06); }
-    }
-
-    @media (min-width: 430px) {
-      .screen { padding-inline: 22px; }
-      .card-scene, .card { min-height: 425px; height: 425px; }
-      .card-content { padding: 28px 26px 22px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: .01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: .01ms !important;
-      }
-      .ambience { display: none; }
+    .confetti{pointer-events:none;position:fixed;inset:0;overflow:hidden;z-index:50}
+    .confetti span{position:absolute;top:-20px;font-size:24px;animation:fall 1.7s linear forwards}
+    @keyframes fall{to{transform:translateY(110vh) rotate(360deg);opacity:0}}
+    @media (max-width:380px){
+      .panel{padding:18px;border-radius:24px}
+      .card{min-height:320px}
+      .gageText{font-size:22px}
     }
   </style>
 </head>
 <body>
-  <div class="ambience" aria-hidden="true">
-    <span class="float" style="left:8%;--speed:13s;--delay:-2s;--drift:28px">♥</span>
-    <span class="float" style="left:22%;--speed:16s;--delay:-9s;--drift:-35px">🔥</span>
-    <span class="float" style="left:38%;--speed:14s;--delay:-5s;--drift:45px">💋</span>
-    <span class="float" style="left:55%;--speed:18s;--delay:-12s;--drift:-25px">♥</span>
-    <span class="float" style="left:71%;--speed:15s;--delay:-7s;--drift:36px">🔥</span>
-    <span class="float" style="left:87%;--speed:17s;--delay:-3s;--drift:-42px">💋</span>
-    <span class="float" style="left:15%;--speed:19s;--delay:-15s;--drift:40px">💋</span>
-    <span class="float" style="left:63%;--speed:20s;--delay:-17s;--drift:-48px">♥</span>
-  </div>
+<div class="sexyFx">
+  <span>❤️‍🔥</span><span>🔥</span><span>💋</span><span>❤️</span><span>🔥</span><span>💋</span>
+</div>
 
-  <main>
-    <section id="welcomeScreen" class="screen welcome">
-      <div class="welcome-box">
-        <div class="logo" aria-hidden="true">♥</div>
-        <h1>Sylvain<br>&amp; Steph</h1>
-        <p class="intro">Une soirée à deux, cinq niveaux, et une intensité qui monte automatiquement.</p>
-        <button id="startButton" class="primary" type="button">Commencer</button>
+<div class="app">
+  <section id="start" class="screen active">
+    <div class="panel">
+      <div class="heart">❤️‍🔥</div>
+      <h1>Sylvain<br>& Steph</h1>
+      <p class="subtitle">Cartes, questions et gages choisis.</p>
+      <button id="startBtn">Commencer</button>
+      <p class="note">V11 — mauvaise réponse = gage choisi.</p>
+    </div>
+  </section>
+
+  <section id="intro" class="screen">
+    <div class="panel intro">
+      <h2 id="introTitle">Niveau 1</h2>
+      <p id="introText">Mise en ambiance</p>
+      <button id="continueBtn">Continuer</button>
+    </div>
+  </section>
+
+  <section id="game" class="screen">
+    <div class="panel">
+      <div class="topbar">
+        <div class="pill" id="levelPill">Niveau 1</div>
+        <div class="pill" id="turnPill">0 / 6</div>
       </div>
-    </section>
+      <div class="progressWrap"><div class="progress" id="progress"></div></div>
 
-    <section id="gameScreen" class="screen game hidden" aria-live="polite">
-      <header class="topbar">
-        <div class="brand">Sylvain &amp; Steph</div>
-        <div class="top-actions">
-          <button id="pauseButton" class="quiet" type="button">Pause</button>
-          <button id="restartButton" class="quiet" type="button">Recommencer</button>
-        </div>
-      </header>
+      <div class="levelMood" id="mood">Le jeu avance automatiquement, sans dé.</div>
 
-      <section class="status" aria-label="Progression">
-        <div class="status-line">
-          <span id="levelName" class="level-name">Niveau 1 · Mise en ambiance</span>
-          <span id="progressText" class="progress-text">0 / 6</span>
-        </div>
-        <div class="track"><div id="progressBar" class="progress-bar"></div></div>
-      </section>
-
-      <div class="card-scene">
-        <article id="card" class="card">
-          <div class="card-face card-back"><div class="card-mark" aria-hidden="true">♥</div></div>
-          <div class="card-face card-front">
-            <div class="accent"></div>
-            <div class="card-content">
-              <span id="target" class="target">Les deux</span>
-              <p id="challenge" class="challenge">Touchez « Carte suivante » pour commencer.</p>
-              <div id="answers" class="answers hidden"></div>
-              <p id="feedback" class="feedback hidden"></p>
-              <p id="duration" class="duration">La première carte vous attend.</p>
-            </div>
+      <div class="cardWrap">
+        <div class="card" id="card">
+          <div class="face front">
+            <div class="symbol">🃏</div>
+            <p class="gageText">Carte prête.</p>
           </div>
-        </article>
+          <div class="face back">
+            <div>
+              <div class="target" id="target">Sylvain & Steph</div>
+              <p class="gageText" id="text">Le gage apparaîtra ici.</p>
+            </div>
+            <div class="duration" id="duration">⏱️ Libre</div>
+          </div>
+        </div>
       </div>
 
-      <section id="timerPanel" class="timer-panel hidden" aria-label="Chronomètre">
-        <div id="timerDisplay" class="timer-display">01:00</div>
-        <div class="track"><div id="timerBar" class="timer-bar"></div></div>
-        <button id="timerButton" class="timer-button" type="button">Démarrer</button>
-      </section>
 
-      <button id="nextButton" class="primary next" type="button">Carte suivante</button>
-    </section>
-
-    <section id="endScreen" class="screen end-screen hidden">
-      <div class="end-box">
-        <div class="logo" aria-hidden="true">♥</div>
-        <h2>Partie terminée</h2>
-        <p>Sylvain &amp; Steph ont traversé les cinq niveaux.</p>
-        <button id="endRestartButton" class="primary" type="button">Recommencer</button>
+      <div class="quizBox" id="quizBox">
+        <div class="quizChoices" id="quizChoices"></div>
+        <div class="quizResult" id="quizResult"></div>
       </div>
-    </section>
-  </main>
 
-  <div id="pauseOverlay" class="overlay hidden">
-    <div class="pause-box">
+      <div class="timer" id="timer">
+        <div class="timeBig" id="time">00:30</div>
+        <div class="row">
+          <button class="small ghost" id="timerBtn">Lancer chrono</button>
+          <button class="small ghost" id="resetTimerBtn">Reset</button>
+        </div>
+      </div>
+
+      <button id="nextBtn">Carte suivante ❤️‍🔥</button>
+      <div class="footer">
+        <button class="small ghost" id="pauseBtn">Pause</button>
+        <button class="small ghost" id="restartBtn">Recommencer</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="pause" class="screen">
+    <div class="panel intro">
       <h2>Pause</h2>
-      <p>Le chrono est arrêté.</p>
-      <button id="resumeButton" class="primary" type="button">Reprendre</button>
+      <p>Le jeu est en pause.</p>
+      <button id="resumeBtn">Reprendre</button>
+      <div class="footer">
+        <button class="small ghost" id="pauseRestartBtn">Recommencer</button>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div id="levelFlash" class="level-flash">
-    <div class="flash-text">
-      <strong id="flashLevel">Niveau 2</strong>
-      <span id="flashName">Coquin</span>
+  <section id="end" class="screen">
+    <div class="panel intro">
+      <div class="heart">🔥</div>
+      <h2>Fin du jeu</h2>
+      <p>Partie terminée.</p>
+      <button id="endRestartBtn">Rejouer</button>
     </div>
-  </div>
+  </section>
+</div>
+<div class="confetti" id="confetti"></div>
 
-  <script>
-    "use strict";
+<script>
+const levels = [
+  { id:1, name:"Niveau 1", vibe:"Mise en ambiance", count:6, mood:"Ambiance douce, jeu de regards et rapprochement." },
+  { id:2, name:"Niveau 2", vibe:"Coquin", count:9, mood:"Les gestes deviennent plus directs, avec quelques questions culture sexe." },
+  { id:3, name:"Niveau 3", vibe:"Chaud", count:11, mood:"Les gages deviennent clairement sexuels, avec questions et gages." },
+  { id:4, name:"Niveau 4", vibe:"Très chaud", count:6, mood:"Plus de contrôle, plus de bouche, plus d’intime." },
+  { id:5, name:"Niveau 5", vibe:"Hard", count:5, mood:"Niveau final : pénétration et gages hard." }
+];
 
-    const levels = [
-      { name: "Mise en ambiance", count: 6 },
-      { name: "Coquin", count: 7 },
-      { name: "Chaud", count: 7 },
-      { name: "Très chaud", count: 6 },
-      { name: "Hard", count: 5 }
-    ];
-
-    /*
-      Chaque niveau contient exactement le nombre de cartes joué.
-      Toutes les cartes apparaissent donc une fois à chaque partie.
-    */
-    const decks = {
-      1: [
-        { target: "Les deux", tag: "regard", duration: 45, text: "Restez très proches et soutenez le regard de l’autre." },
-        { target: "Sylvain", tag: "massage", duration: 60, text: "Masse doucement les épaules et la nuque de Steph." },
-        { target: "Steph", tag: "baiser", duration: 45, text: "Embrasse Sylvain lentement dans le cou." },
-        { target: "Les deux", tag: "danse", duration: 60, text: "Dansez lentement, corps contre corps." },
-        { target: "Sylvain", tag: "frisson", duration: 45, text: "Caresse Steph du bout des doigts, de la main jusqu’au cou." },
-        { target: "Steph", tag: "murmure", duration: 0, text: "Murmure à Sylvain l’action que tu as le plus envie de faire ce soir." }
-      ],
-      2: [
-        { target: "Les deux", tag: "baiser", duration: 60, text: "Embrassez-vous sans utiliser vos mains." },
-        { target: "Steph", tag: "massage", duration: 75, text: "Masse lentement le dos de Sylvain en variant la pression." },
-        { target: "Sylvain", tag: "teasing", duration: 60, text: "Approche tes lèvres de celles de Steph, puis fais durer l’attente avant de l’embrasser." },
-        { target: "Steph", tag: "guidage", duration: 60, text: "Guide les mains de Sylvain sur les endroits où tu veux être caressée." },
-        { target: "Question · Sylvain", tag: "question", duration: 0, text: "Quel organe est principalement dédié au plaisir sexuel féminin ?", answers: ["Le clitoris", "L’utérus", "Le col de l’utérus"], correct: 0, other: "Steph" },
-        { target: "Question · Steph", tag: "question", duration: 0, text: "Quel moyen aide à réduire à la fois le risque d’IST et de grossesse ?", answers: ["Le préservatif", "La pilule seule", "Le retrait"], correct: 0, other: "Sylvain" },
-        { target: "Les deux", tag: "proximite", duration: 75, text: "Collez vos corps et bougez ensemble sans vous embrasser." }
-      ],
-      3: [
-        { target: "Sylvain", tag: "fessees", duration: 0, text: "Donne 10 fessées à Steph, de plus en plus fortes." },
-        { target: "Question · Sylvain", tag: "question", duration: 0, text: "Que signifie l’acronyme IST ?", answers: ["Infection sexuellement transmissible", "Intimité sans tabou", "Indice de santé testiculaire"], correct: 0, other: "Steph" },
-        { target: "Steph", tag: "intime", duration: 75, text: "Caresse les parties intimes de Sylvain en changeant lentement de rythme." },
-        { target: "Sylvain", tag: "controle", duration: 90, text: "Steph ferme les yeux et garde les mains derrière le dos. Touche-la et embrasse-la sur tout le corps pendant 1 min 30." },
-        { target: "Question · Steph", tag: "question", duration: 0, text: "Les exercices de Kegel renforcent principalement quelle zone ?", answers: ["Le plancher pelvien", "Les abdominaux", "Les cuisses"], correct: 0, other: "Sylvain" },
-        { target: "Steph", tag: "fessees", duration: 0, text: "Donne 10 fessées à Sylvain, de plus en plus fortes." },
-        { target: "Steph", tag: "controle", duration: 90, text: "Sylvain ferme les yeux et garde les mains derrière le dos. Touche-le et embrasse-le sur tout le corps pendant 1 min 30." }
-      ],
-      4: [
-        { target: "Steph", tag: "oral", duration: 60, text: "Suce Sylvain pendant 1 minute en faisant varier lentement le rythme." },
-        { target: "Sylvain", tag: "oral", duration: 60, text: "Lèche le sexe de Steph pendant 1 minute en suivant ses réactions." },
-        { target: "Sylvain", tag: "clitoris", duration: 45, text: "Caresse le clitoris de Steph pendant 45 secondes en suivant ses réactions." },
-        { target: "Sylvain", tag: "doigt", duration: 45, text: "Insère un doigt dans le vagin de Steph et bouge-le lentement pendant 45 secondes." },
-        { target: "Steph", tag: "intime", duration: 90, text: "Caresse les parties intimes de Sylvain pendant 1 min 30, sans t’arrêter." },
-        { target: "Sylvain", tag: "teasing", duration: 90, text: "Embrasse et caresse Steph autour de ses parties intimes sans les toucher directement." }
-      ],
-      5: [
-        { target: "Sylvain", tag: "penetration-lente", duration: 90, text: "Pénètre Steph lentement, face à face, pendant 1 min 30." },
-        { target: "Steph", tag: "penetration-rythme", duration: 90, text: "Choisis la position et guide le rythme de la pénétration pendant 1 min 30." },
-        { target: "Les deux", tag: "penetration-alternee", duration: 90, text: "Pendant la pénétration, alternez 20 secondes lentes et 20 secondes intenses pendant 1 min 30." },
-        { target: "Steph", tag: "penetration-controle", duration: 90, text: "Place-toi au-dessus de Sylvain et contrôle le rythme et la profondeur pendant 1 min 30." },
-        { target: "Final hard", tag: "final", duration: 90, text: "Sylvain pénètre Steph comme vous voulez pendant 1 min 30, puis fin du jeu." }
+const decks = {
+  1: [
+    {target:"Sylvain", duration:20, text:"Sylvain regarde Steph dans les yeux pendant 20 secondes sans parler."},
+    {target:"Steph", duration:null, text:"Steph choisit comment Sylvain doit s’asseoir ou se placer jusqu’au prochain tour."},
+    {target:"Les deux", duration:30, text:"Sylvain et Steph restent face à face pendant 30 secondes sans rire."},
+    {target:"Sylvain", duration:null, text:"Sylvain se rapproche de Steph et lui murmure une phrase qui donne envie de continuer."},
+    {target:"Steph", duration:null, text:"Steph donne une consigne simple à Sylvain pour son prochain gage."},
+    {target:"Les deux", duration:30, text:"Sylvain et Steph restent collés l’un contre l’autre pendant 30 secondes."}
+  ],
+  2: [
+    {target:"Sylvain", duration:30, text:"Sylvain embrasse Steph où elle veut pendant 30 secondes."},
+    {
+      type:"quiz",
+      target:"Question pour Steph",
+      text:"Culture sexe : quelle zone possède une très forte concentration de terminaisons nerveuses chez la femme ?",
+      choices:["Le clitoris","Le nombril","Le genou","Le coude"],
+      answer:0,
+      success:"Bonne réponse Steph.",
+      penalty:"Mauvaise réponse : Sylvain choisit un gage.",
+      penaltyGages:[
+        "Steph embrasse Sylvain où il veut pendant 30 secondes.",
+        "Steph laisse Sylvain choisir une zone à caresser pendant 30 secondes.",
+        "Steph doit recommencer le prochain gage plus lentement."
       ]
-    };
+    },
+    {target:"Steph", duration:30, text:"Steph embrasse Sylvain où il veut pendant 30 secondes."},
+    {target:"Les deux", duration:45, text:"Pendant 45 secondes, Sylvain et Steph se touchent sans parler."},
+    {target:"Sylvain", duration:null, text:"Steph choisit une partie du corps que Sylvain doit embrasser."},
+    {
+      type:"quiz",
+      target:"Question pour Sylvain",
+      text:"Culture sexe : qu’est-ce qui aide le plus souvent à faire monter le désir avant un rapport ?",
+      choices:["Aller très vite","Prendre le temps des préliminaires","Ne pas communiquer","Changer de sujet"],
+      answer:1,
+      success:"Bonne réponse Sylvain.",
+      penalty:"Mauvaise réponse : Steph choisit un gage.",
+      penaltyGages:[
+        "Sylvain embrasse Steph où elle veut pendant 30 secondes.",
+        "Sylvain laisse Steph choisir une zone à caresser pendant 30 secondes.",
+        "Sylvain doit faire le prochain gage plus lentement."
+      ]
+    },
+    {target:"Steph", duration:null, text:"Sylvain choisit une partie du corps que Steph doit embrasser."},
+    {target:"Les deux", duration:60, text:"Sylvain et Steph restent collés l’un contre l’autre pendant 1 minute."},
+    {target:"Les deux", duration:null, text:"Le prochain gage doit être fait plus lentement et plus intensément."}
+  ],
+  3: [
+    {target:"Sylvain", duration:45, text:"Sylvain embrasse la poitrine ou les fesses de Steph pendant 45 secondes."},
+    {target:"Sylvain", duration:null, text:"Sylvain donne 10 fessées à Steph."},
+    {
+      type:"quiz",
+      target:"Question pour Steph",
+      text:"Culture sexe : chez l’homme, quelle zone du pénis est souvent très sensible pendant les caresses ?",
+      choices:["Le frein","Le genou","Le poignet","Le talon"],
+      answer:0,
+      success:"Bonne réponse Steph.",
+      penalty:"Mauvaise réponse : Sylvain choisit un gage.",
+      penaltyGages:[
+        "Steph caresse le sexe de Sylvain avec la main pendant 30 secondes.",
+        "Steph embrasse le sexe de Sylvain pendant 30 secondes, sans le sucer.",
+        "Steph lèche les tétons de Sylvain et les pince légèrement pendant 30 secondes."
+      ]
+    },
+    {target:"Steph", duration:45, text:"Steph caresse le sexe de Sylvain avec la main pendant 45 secondes."},
+    {target:"Sylvain", duration:45, text:"Sylvain lèche les tétons de Steph et les pince légèrement pendant 45 secondes."},
+    {target:"Sylvain", duration:45, text:"Sylvain caresse le clitoris de Steph avec ses doigts pendant 45 secondes."},
+    {
+      type:"quiz",
+      target:"Question pour Sylvain",
+      text:"Culture sexe : pendant un gage intime, quel indice aide le mieux à savoir si Steph aime ce que tu fais ?",
+      choices:["Sa respiration et ses réactions","La vitesse uniquement","Le hasard","Faire toujours pareil"],
+      answer:0,
+      success:"Bonne réponse Sylvain.",
+      penalty:"Mauvaise réponse : Steph choisit un gage.",
+      penaltyGages:[
+        "Sylvain caresse le clitoris de Steph avec ses doigts pendant 30 secondes.",
+        "Sylvain embrasse une partie intime de Steph pendant 30 secondes.",
+        "Sylvain lèche les tétons de Steph et les pince légèrement pendant 30 secondes."
+      ]
+    },
+    {target:"Steph", duration:45, text:"Steph embrasse le sexe de Sylvain pendant 45 secondes, sans le sucer."},
+    {target:"Steph", duration:null, text:"Steph donne 10 fessées à Sylvain."},
+    {target:"Steph", duration:45, text:"Steph lèche les tétons de Sylvain et les pince légèrement pendant 45 secondes."},
+    {target:"Les deux", duration:null, text:"Le prochain gage doit être recommencé une deuxième fois, mais plus lentement."}
+  ],
+  4: [
+    {target:"Sylvain", duration:90, text:"Sylvain bande les yeux de Steph, lui attache les mains, puis la touche et l’embrasse partout pendant 1 min 30."},
+    {target:"Steph", duration:60, text:"Steph suce Sylvain pendant 1 minute."},
+    {target:"Steph", duration:90, text:"Steph bande les yeux de Sylvain, lui attache les mains, puis le touche et l’embrasse partout pendant 1 min 30."},
+    {target:"Sylvain", duration:60, text:"Sylvain lèche le sexe de Steph pendant 1 minute."},
+    {target:"Sylvain", duration:45, text:"Sylvain insère un doigt dans le vagin de Steph pendant 45 secondes."},
+    {target:"Les deux", duration:60, text:"Pendant 1 minute, Sylvain et Steph continuent sans parler, uniquement avec les gestes."}
+  ],
+  5: [
+    {target:"Sylvain", duration:60, text:"Sylvain pénètre Steph lentement pendant 1 minute."},
+    {target:"Steph", duration:60, text:"Steph choisit la position, puis Sylvain pénètre Steph pendant 1 minute."},
+    {target:"Les deux", duration:90, text:"Steph choisit le rythme pendant que Sylvain la pénètre pendant 1 min 30."},
+    {target:"Les deux", duration:60, text:"Sylvain et Steph changent de position, puis continuent la pénétration pendant 1 minute."},
+    {target:"Final", duration:90, text:"Final hard : Sylvain pénètre Steph comme vous voulez pendant 1 min 30, puis fin du jeu."}
+  ]
+};
 
-    const el = {
-      welcome: document.getElementById("welcomeScreen"),
-      game: document.getElementById("gameScreen"),
-      end: document.getElementById("endScreen"),
-      start: document.getElementById("startButton"),
-      restart: document.getElementById("restartButton"),
-      endRestart: document.getElementById("endRestartButton"),
-      pause: document.getElementById("pauseButton"),
-      resume: document.getElementById("resumeButton"),
-      pauseOverlay: document.getElementById("pauseOverlay"),
-      levelName: document.getElementById("levelName"),
-      progressText: document.getElementById("progressText"),
-      progressBar: document.getElementById("progressBar"),
-      card: document.getElementById("card"),
-      target: document.getElementById("target"),
-      challenge: document.getElementById("challenge"),
-      answers: document.getElementById("answers"),
-      feedback: document.getElementById("feedback"),
-      duration: document.getElementById("duration"),
-      next: document.getElementById("nextButton"),
-      timerPanel: document.getElementById("timerPanel"),
-      timerDisplay: document.getElementById("timerDisplay"),
-      timerBar: document.getElementById("timerBar"),
-      timerButton: document.getElementById("timerButton"),
-      levelFlash: document.getElementById("levelFlash"),
-      flashLevel: document.getElementById("flashLevel"),
-      flashName: document.getElementById("flashName")
-    };
+let levelIndex = 0;
+let turn = 0;
+let total = 0;
+let currentDuration = 0;
+let remaining = 0;
+let timerId = null;
+let lastBeepSecond = null;
+let quizAnswered = false;
 
-    let levelIndex = 0;
-    let playedInLevel = 0;
-    let gameDecks = {};
-    let drawing = false;
-    let isPaused = false;
-    let timerId = null;
-    let timerRemaining = 0;
-    let timerTotal = 0;
-    let timerRunning = false;
-    let audioContext = null;
+const $ = id => document.getElementById(id);
 
-    function shuffle(items) {
-      const result = [...items];
-      for (let i = result.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [result[i], result[j]] = [result[j], result[i]];
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
+}
+
+function beep(freq=660, duration=0.08){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.value = freq;
+    gain.gain.value = 0.08;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    setTimeout(()=>{osc.stop();ctx.close();}, duration*1000);
+  }catch(e){}
+}
+
+function vibrate(ms=35){ if(navigator.vibrate) navigator.vibrate(ms); }
+
+function fmt(sec){
+  const m = String(Math.floor(sec/60)).padStart(2,"0");
+  const s = String(sec%60).padStart(2,"0");
+  return `${m}:${s}`;
+}
+
+function label(sec){
+  if(!sec) return "Libre";
+  if(sec < 60) return `${sec} sec`;
+  const m = Math.floor(sec/60);
+  const s = sec % 60;
+  return s ? `${m} min ${s}` : `${m} min`;
+}
+
+function stopTimer(){
+  if(timerId) clearInterval(timerId);
+  timerId = null;
+}
+
+function prepareTimer(sec){
+  stopTimer();
+  $("quizBox").classList.remove("active");
+  $("quizChoices").innerHTML = "";
+  $("quizResult").classList.remove("active");
+  $("quizResult").innerHTML = "";
+  quizAnswered = false;
+  currentDuration = sec || 0;
+  remaining = currentDuration;
+  lastBeepSecond = null;
+  if(sec){
+    $("timer").classList.add("active");
+    $("time").textContent = fmt(sec);
+    $("timerBtn").textContent = "Lancer chrono";
+  }else{
+    $("timer").classList.remove("active");
+  }
+}
+
+function startTimer(){
+  if(!currentDuration) return;
+  if(timerId){
+    stopTimer();
+    $("timerBtn").textContent = "Reprendre";
+    return;
+  }
+  $("timerBtn").textContent = "Pause chrono";
+  timerId = setInterval(()=>{
+    remaining--;
+    $("time").textContent = fmt(Math.max(0,remaining));
+    if(remaining > 0 && remaining <= 5 && remaining !== lastBeepSecond){
+      lastBeepSecond = remaining;
+      beep(880,.07);
+      vibrate(30);
+    }
+    if(remaining <= 0){
+      stopTimer();
+      $("timerBtn").textContent = "Relancer";
+      beep(360,.16);
+      setTimeout(()=>beep(520,.12),130);
+      vibrate([50,60,90]);
+      document.querySelector(".panel").classList.add("flash");
+      setTimeout(()=>document.querySelector(".panel").classList.remove("flash"),500);
+    }
+  },1000);
+}
+
+function resetTimer(){
+  if(!currentDuration) return;
+  stopTimer();
+  remaining = currentDuration;
+  lastBeepSecond = null;
+  $("time").textContent = fmt(currentDuration);
+  $("timerBtn").textContent = "Lancer chrono";
+}
+
+function currentLevel(){ return levels[levelIndex]; }
+
+function updateTop(){
+  const l = currentLevel();
+  $("levelPill").textContent = `${l.name} — ${l.vibe}`;
+  $("turnPill").textContent = `${turn} / ${l.count}`;
+  $("mood").textContent = l.mood;
+  const totalGoal = levels.reduce((s,l)=>s+l.count,0);
+  $("progress").style.width = `${Math.min(100,total/totalGoal*100)}%`;
+}
+
+function showIntro(){
+  const l = currentLevel();
+  $("introTitle").textContent = l.name;
+  $("introText").textContent = l.vibe;
+  show("intro");
+}
+
+function startGame(){
+  levelIndex = 0;
+  turn = 0;
+  total = 0;
+  stopTimer();
+  $("card").classList.remove("flipped");
+  $("nextBtn").textContent = "Carte suivante ❤️‍🔥";
+  $("mood").textContent = "Le jeu avance automatiquement, sans dé.";
+  updateTop();
+  showIntro();
+}
+
+function confetti(){
+  const c = $("confetti");
+  c.innerHTML = "";
+  const symbols = ["❤️","🔥","💋","✨"];
+  for(let i=0;i<24;i++){
+    const s = document.createElement("span");
+    s.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+    s.style.left = Math.random()*100 + "vw";
+    s.style.animationDelay = Math.random()*0.35 + "s";
+    c.appendChild(s);
+  }
+  setTimeout(()=>c.innerHTML="",1900);
+}
+
+function nextLevelOrEnd(){
+  if(levelIndex < levels.length-1){
+    levelIndex++;
+    turn = 0;
+    $("nextBtn").textContent = "Carte suivante ❤️‍🔥";
+    confetti();
+    showIntro();
+  }else{
+    confetti();
+    show("end");
+  }
+}
+
+
+function renderQuiz(card){
+  $("quizBox").classList.add("active");
+  $("quizChoices").innerHTML = "";
+  $("quizResult").classList.remove("active");
+  $("quizResult").innerHTML = "";
+  quizAnswered = false;
+
+  card.choices.forEach((choice, index) => {
+    const btn = document.createElement("button");
+    btn.textContent = choice;
+    btn.addEventListener("click", () => answerQuiz(card, index));
+    $("quizChoices").appendChild(btn);
+  });
+}
+
+function answerQuiz(card, index){
+  if(quizAnswered) return;
+  quizAnswered = true;
+  const ok = index === card.answer;
+  const result = $("quizResult");
+  result.classList.add("active");
+  if(ok){
+    result.innerHTML = `<span class="good">✅ ${card.success}<br>Pas de gage, carte suivante.</span>`;
+  } else {
+    result.innerHTML = `<span class="bad">❌ ${card.penalty}<br>Le gage est choisi par l’autre maintenant.</span>`;
+  }
+
+  Array.from($("quizChoices").children).forEach((btn, i) => {
+    btn.disabled = true;
+    if(i === card.answer) btn.style.borderColor = "#7dffb2";
+    if(i === index && !ok) btn.style.borderColor = "#ff4fa3";
+  });
+
+  beep(ok ? 760 : 280, .12);
+  vibrate(ok ? 35 : [40,50,40]);
+}
+
+function nextCard(){
+  const l = currentLevel();
+  if(turn >= l.count){
+    nextLevelOrEnd();
+    return;
+  }
+
+  stopTimer();
+  $("card").classList.remove("flipped");
+  $("nextBtn").disabled = true;
+
+  setTimeout(()=>{
+    const card = decks[l.id][turn];
+    const duration = card.duration;
+
+    turn++;
+    total++;
+
+    $("target").textContent = card.target;
+    $("text").textContent = card.text;
+    $("duration").textContent = card.type === "quiz" ? "❓ Question — faux = gage" : "⏱️ " + label(duration);
+    prepareTimer(duration);
+    if(card.type === "quiz"){
+      renderQuiz(card);
+    }
+
+    setTimeout(()=>{
+      $("card").classList.add("flipped");
+      updateTop();
+      beep(620,.06);
+      vibrate(25);
+      $("nextBtn").disabled = false;
+      if(turn >= l.count){
+        $("nextBtn").textContent = levelIndex === levels.length-1 ? "Voir la fin 🔥" : "Passer au niveau suivant";
+      }else{
+        $("nextBtn").textContent = "Carte suivante ❤️‍🔥";
       }
-      return result;
-    }
+    },180);
+  },250);
+}
 
-    function buildGameDecks() {
-      gameDecks = {};
-      Object.keys(decks).forEach(level => {
-        // L'ordre du niveau 3 éloigne volontairement les deux cartes de fessées.
-        if (level === "3") {
-          gameDecks[level] = [...decks[level]];
-        } else if (level === "5") {
-          // Le final hard reste toujours la dernière carte du jeu.
-          gameDecks[level] = [...shuffle(decks[level].slice(0, -1)), decks[level][decks[level].length - 1]];
-        } else {
-          gameDecks[level] = shuffle(decks[level]);
-        }
-      });
-    }
+$("startBtn").addEventListener("click", startGame);
+$("continueBtn").addEventListener("click", ()=>{updateTop();show("game")});
+$("nextBtn").addEventListener("click", nextCard);
+$("pauseBtn").addEventListener("click", ()=>{stopTimer();show("pause")});
+$("resumeBtn").addEventListener("click", ()=>show("game"));
+$("restartBtn").addEventListener("click", startGame);
+$("pauseRestartBtn").addEventListener("click", startGame);
+$("endRestartBtn").addEventListener("click", startGame);
+$("timerBtn").addEventListener("click", startTimer);
+$("resetTimerBtn").addEventListener("click", resetTimer);
 
-    function formatTime(seconds) {
-      const minutes = Math.floor(seconds / 60).toString().padStart(2, "0");
-      const remainder = (seconds % 60).toString().padStart(2, "0");
-      return `${minutes}:${remainder}`;
-    }
-
-    function durationLabel(seconds) {
-      if (!seconds) return "Sans chrono";
-      const minutes = Math.floor(seconds / 60);
-      const remainder = seconds % 60;
-      if (!minutes) return `${remainder} secondes`;
-      if (!remainder) return `${minutes} minute${minutes > 1 ? "s" : ""}`;
-      return `${minutes} min ${remainder}`;
-    }
-
-    function setScreen(screen) {
-      [el.welcome, el.game, el.end].forEach(item => item.classList.add("hidden"));
-      screen.classList.remove("hidden");
-    }
-
-    function updateStatus() {
-      const level = levels[levelIndex];
-      el.levelName.textContent = `Niveau ${levelIndex + 1} · ${level.name}`;
-      el.progressText.textContent = `${playedInLevel} / ${level.count}`;
-      el.progressBar.style.width = `${(playedInLevel / level.count) * 100}%`;
-    }
-
-    function resetTimer() {
-      window.clearInterval(timerId);
-      timerId = null;
-      timerRunning = false;
-      timerRemaining = 0;
-      timerTotal = 0;
-      el.timerPanel.classList.add("hidden");
-      el.timerButton.textContent = "Démarrer";
-      el.timerBar.style.width = "100%";
-    }
-
-    function setTimer(seconds) {
-      resetTimer();
-      if (!seconds) return;
-      timerRemaining = seconds;
-      timerTotal = seconds;
-      renderTimer();
-      el.timerPanel.classList.remove("hidden");
-    }
-
-    function renderTimer() {
-      el.timerDisplay.textContent = formatTime(timerRemaining);
-      el.timerBar.style.width = `${Math.max(0, timerRemaining / timerTotal * 100)}%`;
-    }
-
-    function getAudioContext() {
-      if (!audioContext) {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (AudioContextClass) audioContext = new AudioContextClass();
-      }
-      return audioContext;
-    }
-
-    function beep(frequency, duration, volume = .06) {
-      const context = getAudioContext();
-      if (!context) return;
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-      oscillator.type = "sine";
-      oscillator.frequency.value = frequency;
-      gain.gain.setValueAtTime(volume, context.currentTime);
-      gain.gain.exponentialRampToValueAtTime(.001, context.currentTime + duration);
-      oscillator.connect(gain);
-      gain.connect(context.destination);
-      oscillator.start();
-      oscillator.stop(context.currentTime + duration);
-    }
-
-    function tickTimer() {
-      if (isPaused) return;
-      timerRemaining -= 1;
-      renderTimer();
-      if (timerRemaining >= 1 && timerRemaining <= 5) {
-        beep(610 + (5 - timerRemaining) * 55, .12);
-      }
-      if (timerRemaining <= 0) {
-        window.clearInterval(timerId);
-        timerId = null;
-        timerRunning = false;
-        el.timerButton.textContent = "Relancer";
-        beep(980, .2);
-        window.setTimeout(() => beep(1220, .28), 190);
-      }
-    }
-
-    function toggleTimer() {
-      if (timerRunning) {
-        window.clearInterval(timerId);
-        timerId = null;
-        timerRunning = false;
-        el.timerButton.textContent = "Reprendre";
-        return;
-      }
-      if (timerRemaining <= 0) {
-        timerRemaining = timerTotal;
-        renderTimer();
-      }
-      getAudioContext();
-      timerRunning = true;
-      el.timerButton.textContent = "Pause";
-      timerId = window.setInterval(tickTimer, 1000);
-    }
-
-    function showLevelFlash() {
-      el.flashLevel.textContent = `Niveau ${levelIndex + 1}`;
-      el.flashName.textContent = levels[levelIndex].name;
-      el.levelFlash.classList.add("visible");
-      window.setTimeout(() => el.levelFlash.classList.remove("visible"), 950);
-    }
-
-    function resetQuestion() {
-      el.card.classList.remove("question-card");
-      el.answers.replaceChildren();
-      el.answers.classList.add("hidden");
-      el.feedback.textContent = "";
-      el.feedback.classList.add("hidden");
-    }
-
-    function renderQuestion(card) {
-      el.card.classList.add("question-card");
-      el.answers.classList.remove("hidden");
-      card.answers.forEach((answer, index) => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "answer-button";
-        button.textContent = answer;
-        button.addEventListener("click", () => answerQuestion(card, index));
-        el.answers.appendChild(button);
-      });
-    }
-
-    function answerQuestion(card, selectedIndex) {
-      const buttons = [...el.answers.querySelectorAll(".answer-button")];
-      buttons.forEach(button => { button.disabled = true; });
-      buttons[card.correct].classList.add("correct");
-      if (selectedIndex === card.correct) {
-        el.feedback.textContent = "Bonne réponse";
-      } else {
-        buttons[selectedIndex].classList.add("wrong");
-        el.feedback.textContent = `Mauvaise réponse · ${card.other} choisit un gage`;
-      }
-      el.feedback.classList.remove("hidden");
-      el.next.disabled = false;
-    }
-
-    function advanceLevelIfNeeded() {
-      if (playedInLevel < levels[levelIndex].count) return true;
-      if (levelIndex === levels.length - 1) {
-        finishGame();
-        return false;
-      }
-      levelIndex += 1;
-      playedInLevel = 0;
-      updateStatus();
-      showLevelFlash();
-      return true;
-    }
-
-    function drawCard() {
-      if (drawing || isPaused || !advanceLevelIfNeeded()) return;
-      drawing = true;
-      el.next.disabled = true;
-      resetTimer();
-      resetQuestion();
-      el.card.classList.remove("flipped");
-
-      const card = gameDecks[levelIndex + 1].shift();
-      window.setTimeout(() => {
-        el.target.textContent = card.target;
-        el.challenge.textContent = card.text;
-        if (card.answers) {
-          renderQuestion(card);
-          el.duration.textContent = "Question culture sexe · choisissez une réponse";
-        } else {
-          el.duration.textContent = `Durée · ${durationLabel(card.duration)}`;
-          setTimer(card.duration);
-        }
-        playedInLevel += 1;
-        updateStatus();
-        el.card.classList.add("flipped");
-        el.next.textContent =
-          levelIndex === levels.length - 1 && playedInLevel === levels[levelIndex].count
-            ? "Terminer"
-            : "Carte suivante";
-        el.next.disabled = Boolean(card.answers);
-        drawing = false;
-      }, 280);
-    }
-
-    function startGame() {
-      resetTimer();
-      levelIndex = 0;
-      playedInLevel = 0;
-      drawing = false;
-      isPaused = false;
-      buildGameDecks();
-      el.pauseOverlay.classList.add("hidden");
-      resetQuestion();
-      el.card.classList.remove("flipped");
-      el.target.textContent = "Les deux";
-      el.challenge.textContent = "Touchez « Carte suivante » pour commencer.";
-      el.duration.textContent = "La première carte vous attend.";
-      el.next.textContent = "Carte suivante";
-      el.next.disabled = false;
-      updateStatus();
-      setScreen(el.game);
-    }
-
-    function finishGame() {
-      resetTimer();
-      setScreen(el.end);
-    }
-
-    function pauseGame() {
-      if (drawing) return;
-      isPaused = true;
-      el.pauseOverlay.classList.remove("hidden");
-    }
-
-    function resumeGame() {
-      isPaused = false;
-      el.pauseOverlay.classList.add("hidden");
-    }
-
-    el.start.addEventListener("click", startGame);
-    el.restart.addEventListener("click", startGame);
-    el.endRestart.addEventListener("click", startGame);
-    el.next.addEventListener("click", drawCard);
-    el.timerButton.addEventListener("click", toggleTimer);
-    el.pause.addEventListener("click", pauseGame);
-    el.resume.addEventListener("click", resumeGame);
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden && !el.game.classList.contains("hidden")) pauseGame();
-    });
-  </script>
+updateTop();
+</script>
 </body>
 </html>
