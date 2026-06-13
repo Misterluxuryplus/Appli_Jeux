@@ -495,10 +495,10 @@
 
     const levels = [
       { name: "Mise en ambiance", count: 6 },
-      { name: "Coquin", count: 7 },
-      { name: "Chaud", count: 7 },
-      { name: "Très chaud", count: 6 },
-      { name: "Hard", count: 5 }
+      { name: "Coquin", count: 9 },
+      { name: "Chaud", count: 11 },
+      { name: "Très chaud", count: 8 },
+      { name: "Hard", count: 1 }
     ];
 
     /*
@@ -521,31 +521,35 @@
         { target: "Steph", tag: "guidage", duration: 60, text: "Guide les mains de Sylvain sur les endroits où tu veux être caressée." },
         { target: "Question · Steph", tag: "question", duration: 0, text: "Culture sexe : le clitoris se limite-t-il seulement au petit bouton visible à l’extérieur ?", answers: ["Oui, uniquement la partie visible", "Non, il possède aussi une partie interne plus grande", "Oui, il est situé uniquement dans le vagin", "Non, c’est seulement une zone psychologique"], correct: 1, other: "Sylvain" },
         { target: "Question · Sylvain", tag: "question", duration: 0, text: "Culture sexe : la zone appelée point G se trouve généralement où ?", answers: ["Sur la paroi avant du vagin, côté ventre", "Sur la paroi arrière du vagin, côté dos", "Au niveau du col de l’utérus uniquement", "À l’extérieur, sur les grandes lèvres"], correct: 0, other: "Steph" },
-        { target: "Steph", tag: "entrejambe", duration: 30, text: "Caresse l’entrejambe de Sylvain avec ta main pendant 30 secondes." }
+        { target: "Steph", tag: "entrejambe", duration: 30, text: "Caresse l’entrejambe de Sylvain pendant 30 secondes." },
+        { target: "Sylvain", tag: "cuisses", duration: 30, text: "Embrasse l’intérieur des cuisses de Steph pendant 30 secondes." },
+        { target: "Steph", tag: "immobile", duration: 60, text: "Choisis une position où Sylvain doit rester immobile pendant 1 minute." }
       ],
       3: [
         { target: "Sylvain", tag: "fessees", duration: 0, text: "Donne 10 fessées à Steph, de plus en plus fortes." },
         { target: "Question · Sylvain", tag: "question", duration: 0, text: "Que signifie l’acronyme IST ?", answers: ["Infection sexuellement transmissible", "Intimité sans tabou", "Indice de santé testiculaire"], correct: 0, other: "Steph" },
+        { target: "Sylvain", tag: "vulve", duration: 45, text: "Glisse tes doigts sur la vulve de Steph pendant 45 secondes." },
         { target: "Steph", tag: "intime", duration: 75, text: "Caresse les parties intimes de Sylvain en changeant lentement de rythme." },
+        { target: "Steph", tag: "guidage-precis", duration: 45, text: "Guide la main de Sylvain exactement où tu la veux pendant 45 secondes." },
         { target: "Sylvain", tag: "controle", duration: 90, text: "Steph ferme les yeux et garde les mains derrière le dos. Touche-la et embrasse-la sur tout le corps pendant 1 min 30." },
         { target: "Question · Steph", tag: "question", duration: 0, text: "Les exercices de Kegel renforcent principalement quelle zone ?", answers: ["Le plancher pelvien", "Les abdominaux", "Les cuisses"], correct: 0, other: "Sylvain" },
+        { target: "Steph", tag: "baisers-corps", duration: 45, text: "Embrasse lentement le torse et le ventre de Sylvain pendant 45 secondes." },
         { target: "Steph", tag: "fessees", duration: 0, text: "Donne 10 fessées à Sylvain, de plus en plus fortes." },
+        { target: "Sylvain", tag: "fesses-lent", duration: 45, text: "Caresse lentement les fesses de Steph pendant 45 secondes." },
         { target: "Steph", tag: "controle", duration: 90, text: "Sylvain ferme les yeux et garde les mains derrière le dos. Touche-le et embrasse-le sur tout le corps pendant 1 min 30." }
       ],
       4: [
         { target: "Steph", tag: "oral", duration: 60, text: "Suce Sylvain pendant 1 minute en faisant varier lentement le rythme." },
         { target: "Sylvain", tag: "oral", duration: 60, text: "Lèche le sexe de Steph pendant 1 minute en suivant ses réactions." },
+        { target: "Carte blanche · Sylvain", tag: "carte-blanche", duration: 60, text: "Carte blanche : Sylvain fait ce qu’il veut à Steph pendant 1 minute." },
         { target: "Sylvain", tag: "clitoris", duration: 45, text: "Caresse le clitoris de Steph pendant 45 secondes en suivant ses réactions." },
-        { target: "Sylvain", tag: "doigt", duration: 45, text: "Insère un doigt dans le vagin de Steph et bouge-le lentement pendant 45 secondes." },
+        { target: "Sylvain", tag: "doigt", duration: 45, text: "Insère un doigt dans le vagin de Steph pendant 45 secondes." },
         { target: "Steph", tag: "intime", duration: 90, text: "Caresse les parties intimes de Sylvain pendant 1 min 30, sans t’arrêter." },
-        { target: "Sylvain", tag: "teasing", duration: 90, text: "Embrasse et caresse Steph autour de ses parties intimes sans les toucher directement." }
+        { target: "Sylvain", tag: "teasing", duration: 90, text: "Embrasse et caresse Steph autour de ses parties intimes sans les toucher directement." },
+        { target: "Carte blanche · Steph", tag: "carte-blanche", duration: 60, text: "Carte blanche : Steph fait ce qu’elle veut à Sylvain pendant 1 minute." }
       ],
       5: [
-        { target: "Sylvain", tag: "penetration-lente", duration: 90, text: "Pénètre Steph lentement, face à face, pendant 1 min 30." },
-        { target: "Steph", tag: "penetration-rythme", duration: 90, text: "Choisis la position et guide le rythme de la pénétration pendant 1 min 30." },
-        { target: "Les deux", tag: "penetration-alternee", duration: 90, text: "Pendant la pénétration, alternez 20 secondes lentes et 20 secondes intenses pendant 1 min 30." },
-        { target: "Steph", tag: "penetration-controle", duration: 90, text: "Place-toi au-dessus de Sylvain et contrôle le rythme et la profondeur pendant 1 min 30." },
-        { target: "Final hard", tag: "final", duration: 90, text: "Sylvain pénètre Steph comme vous voulez pendant 1 min 30, puis fin du jeu." }
+        { target: "Final hard", tag: "final", duration: 0, text: "Final hard : Sylvain pénètre Steph comme vous voulez. Le jeu s’arrête ici." }
       ]
     };
 
@@ -602,11 +606,11 @@
       gameDecks = {};
       Object.keys(decks).forEach(level => {
         // L'ordre du niveau 3 éloigne volontairement les deux cartes de fessées.
-        if (level === "3") {
+        if (level === "3" || level === "4") {
+          // Les niveaux 3 et 4 gardent leur ordre pour éloigner les cartes liées.
           gameDecks[level] = [...decks[level]];
         } else if (level === "5") {
-          // Le final hard reste toujours la dernière carte du jeu.
-          gameDecks[level] = [...shuffle(decks[level].slice(0, -1)), decks[level][decks[level].length - 1]];
+          gameDecks[level] = [...decks[level]];
         } else {
           gameDecks[level] = shuffle(decks[level]);
         }
