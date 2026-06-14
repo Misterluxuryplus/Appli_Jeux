@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#120812">
-  <title>Sylvain &amp; Steph · V13</title>
+  <title>Sylvain &amp; Steph · V15</title>
   <style>
     :root {
       color-scheme: dark;
@@ -367,6 +367,32 @@
       text-align: center;
     }
 
+    .quiz-result-box {
+      width: min(100%, 420px);
+      padding: 30px 24px;
+      border: 1px solid var(--line);
+      border-radius: 27px;
+      background: linear-gradient(145deg, #45183e, #251025);
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .quiz-result-box h2 { margin-bottom: 16px; }
+
+    .quiz-score {
+      margin: 0 0 14px;
+      color: var(--pink);
+      font-size: 21px;
+      font-weight: 900;
+      line-height: 1.4;
+    }
+
+    .quiz-result-box .quiz-instruction {
+      margin: 0 0 24px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
     .level-flash {
       z-index: 15;
       pointer-events: none;
@@ -434,8 +460,8 @@
 
       <section class="status" aria-label="Progression">
         <div class="status-line">
-          <span id="levelName" class="level-name">Niveau 1 · Mise en ambiance</span>
-          <span id="progressText" class="progress-text">0 / 6</span>
+          <span id="levelName" class="level-name">Niveau 1 · Quiz à risque</span>
+          <span id="progressText" class="progress-text">0 / 10</span>
         </div>
         <div class="track"><div id="progressBar" class="progress-bar"></div></div>
       </section>
@@ -483,6 +509,15 @@
     </div>
   </div>
 
+  <div id="quizResultOverlay" class="overlay hidden">
+    <div class="quiz-result-box">
+      <h2>Fin du quiz à risque</h2>
+      <p id="quizScore" class="quiz-score">Steph a 0 gage(s) à faire et Sylvain a 0 gage(s) à faire.</p>
+      <p class="quiz-instruction">À vous de choisir les gages maintenant. Ensuite, le jeu reprend au niveau 2 sans questions.</p>
+      <button id="continueLevel2Button" class="primary" type="button">Passer au niveau 2</button>
+    </div>
+  </div>
+
   <div id="levelFlash" class="level-flash">
     <div class="flash-text">
       <strong id="flashLevel">Niveau 2</strong>
@@ -494,7 +529,7 @@
     "use strict";
 
     const levels = [
-      { name: "Mise en ambiance", count: 6 },
+      { name: "Quiz à risque", count: 10 },
       { name: "Coquin", count: 9 },
       { name: "Chaud", count: 11 },
       { name: "Très chaud", count: 8 },
@@ -507,32 +542,36 @@
     */
     const decks = {
       1: [
-        { target: "Les deux", tag: "regard", duration: 45, text: "Restez très proches et soutenez le regard de l’autre." },
-        { target: "Sylvain", tag: "massage", duration: 60, text: "Masse doucement les épaules et la nuque de Steph." },
-        { target: "Steph", tag: "baiser", duration: 45, text: "Embrasse Sylvain lentement dans le cou." },
-        { target: "Les deux", tag: "danse", duration: 60, text: "Dansez lentement, corps contre corps." },
-        { target: "Sylvain", tag: "frisson", duration: 45, text: "Caresse Steph du bout des doigts, de la main jusqu’au cou." },
-        { target: "Steph", tag: "murmure", duration: 0, text: "Murmure à Sylvain l’action que tu as le plus envie de faire ce soir." }
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Culture sexe : le clitoris se limite-t-il seulement au petit bouton visible à l’extérieur ?", answers: ["Oui, uniquement la partie visible", "Non, il possède aussi une partie interne plus grande", "Oui, il est situé uniquement dans le vagin", "Non, c’est seulement une zone psychologique"], correct: 1 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Culture sexe : la zone appelée point G se trouve généralement où ?", answers: ["Sur la paroi avant du vagin, côté ventre", "Sur la paroi arrière du vagin, côté dos", "Au niveau du col de l’utérus uniquement", "À l’extérieur, sur les grandes lèvres"], correct: 0 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Les exercices de Kegel renforcent principalement quelle zone ?", answers: ["Le plancher pelvien", "Les abdominaux", "Les cuisses", "Le bas du dos"], correct: 0 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Que signifie l’acronyme IST ?", answers: ["Infection sexuellement transmissible", "Intimité sans tabou", "Indice de santé testiculaire", "Interaction sensorielle temporaire"], correct: 0 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Quel lubrifiant est généralement compatible avec un préservatif en latex ?", answers: ["À base d’eau", "À base d’huile", "De l’huile de massage", "De la vaseline"], correct: 0 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Une érection dépend principalement de quel mécanisme ?", answers: ["Un afflux sanguin", "La digestion", "La température des mains", "La contraction des abdominaux"], correct: 0 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "La vulve désigne principalement quoi ?", answers: ["L’ensemble des organes génitaux externes", "L’utérus", "Le vagin uniquement", "Le col de l’utérus"], correct: 0 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Qu’appelle-t-on la période réfractaire ?", answers: ["La phase de récupération après un orgasme", "Le début de l’excitation", "Une méthode contraceptive", "Une zone sensible"], correct: 0 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Le consentement peut-il être retiré après avoir été donné ?", answers: ["Oui, à tout moment", "Non, jamais", "Seulement avant de commencer", "Seulement une fois"], correct: 0 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Quelle combinaison réduit le mieux les risques liés aux IST ?", answers: ["Préservatif et dépistage", "Retrait uniquement", "Pilule uniquement", "Douche après le rapport"], correct: 0 }
       ],
       2: [
         { target: "Les deux", tag: "baiser", duration: 60, text: "Embrassez-vous sans utiliser vos mains." },
         { target: "Sylvain", tag: "cou-fesses", duration: 30, text: "Embrasse Steph dans le cou puis caresse ses fesses pendant 30 secondes." },
         { target: "Sylvain", tag: "teasing", duration: 60, text: "Approche tes lèvres de celles de Steph, puis fais durer l’attente avant de l’embrasser." },
         { target: "Steph", tag: "guidage", duration: 60, text: "Guide les mains de Sylvain sur les endroits où tu veux être caressée." },
-        { target: "Question · Steph", tag: "question", duration: 0, text: "Culture sexe : le clitoris se limite-t-il seulement au petit bouton visible à l’extérieur ?", answers: ["Oui, uniquement la partie visible", "Non, il possède aussi une partie interne plus grande", "Oui, il est situé uniquement dans le vagin", "Non, c’est seulement une zone psychologique"], correct: 1, other: "Sylvain" },
-        { target: "Question · Sylvain", tag: "question", duration: 0, text: "Culture sexe : la zone appelée point G se trouve généralement où ?", answers: ["Sur la paroi avant du vagin, côté ventre", "Sur la paroi arrière du vagin, côté dos", "Au niveau du col de l’utérus uniquement", "À l’extérieur, sur les grandes lèvres"], correct: 0, other: "Steph" },
+        { target: "Sylvain", tag: "massage", duration: 60, text: "Masse doucement les épaules et la nuque de Steph pendant 1 minute." },
+        { target: "Steph", tag: "baiser-cou", duration: 45, text: "Embrasse Sylvain lentement dans le cou pendant 45 secondes." },
         { target: "Steph", tag: "entrejambe", duration: 30, text: "Caresse l’entrejambe de Sylvain pendant 30 secondes." },
         { target: "Sylvain", tag: "cuisses", duration: 30, text: "Embrasse l’intérieur des cuisses de Steph pendant 30 secondes." },
         { target: "Steph", tag: "immobile", duration: 60, text: "Choisis une position où Sylvain doit rester immobile pendant 1 minute." }
       ],
       3: [
         { target: "Sylvain", tag: "fessees", duration: 0, text: "Donne 10 fessées à Steph, de plus en plus fortes." },
-        { target: "Question · Sylvain", tag: "question", duration: 0, text: "Que signifie l’acronyme IST ?", answers: ["Infection sexuellement transmissible", "Intimité sans tabou", "Indice de santé testiculaire"], correct: 0, other: "Steph" },
+        { target: "Les deux", tag: "danse", duration: 60, text: "Dansez lentement, corps contre corps, pendant 1 minute." },
         { target: "Sylvain", tag: "vulve", duration: 45, text: "Glisse tes doigts sur la vulve de Steph pendant 45 secondes." },
         { target: "Steph", tag: "intime", duration: 75, text: "Caresse les parties intimes de Sylvain en changeant lentement de rythme." },
         { target: "Steph", tag: "guidage-precis", duration: 45, text: "Guide la main de Sylvain exactement où tu la veux pendant 45 secondes." },
         { target: "Sylvain", tag: "controle", duration: 90, text: "Steph ferme les yeux et garde les mains derrière le dos. Touche-la et embrasse-la sur tout le corps pendant 1 min 30." },
-        { target: "Question · Steph", tag: "question", duration: 0, text: "Les exercices de Kegel renforcent principalement quelle zone ?", answers: ["Le plancher pelvien", "Les abdominaux", "Les cuisses"], correct: 0, other: "Sylvain" },
+        { target: "Sylvain", tag: "frisson", duration: 45, text: "Caresse Steph du bout des doigts, de la main jusqu’au cou, pendant 45 secondes." },
         { target: "Steph", tag: "baisers-corps", duration: 45, text: "Embrasse lentement le torse et le ventre de Sylvain pendant 45 secondes." },
         { target: "Steph", tag: "fessees", duration: 0, text: "Donne 10 fessées à Sylvain, de plus en plus fortes." },
         { target: "Sylvain", tag: "fesses-lent", duration: 45, text: "Caresse lentement les fesses de Steph pendant 45 secondes." },
@@ -563,6 +602,9 @@
       pause: document.getElementById("pauseButton"),
       resume: document.getElementById("resumeButton"),
       pauseOverlay: document.getElementById("pauseOverlay"),
+      quizResultOverlay: document.getElementById("quizResultOverlay"),
+      quizScore: document.getElementById("quizScore"),
+      continueLevel2: document.getElementById("continueLevel2Button"),
       levelName: document.getElementById("levelName"),
       progressText: document.getElementById("progressText"),
       progressBar: document.getElementById("progressBar"),
@@ -592,6 +634,7 @@
     let timerTotal = 0;
     let timerRunning = false;
     let audioContext = null;
+    let penalties = { Steph: 0, Sylvain: 0 };
 
     function shuffle(items) {
       const result = [...items];
@@ -760,17 +803,48 @@
       buttons.forEach(button => { button.disabled = true; });
       buttons[card.correct].classList.add("correct");
       if (selectedIndex === card.correct) {
-        el.feedback.textContent = "Bonne réponse\nPas de gage, carte suivante.";
+        el.feedback.textContent = "Bonne réponse\nPas de gage.";
       } else {
         buttons[selectedIndex].classList.add("wrong");
-        el.feedback.textContent = `Mauvaise réponse : ${card.other} choisit un gage.`;
+        penalties[card.player] += 1;
+        el.feedback.textContent = `Mauvaise réponse\n+1 gage pour ${card.player}.`;
       }
       el.feedback.classList.remove("hidden");
+      if (levelIndex === 0 && playedInLevel === levels[0].count) {
+        el.next.disabled = true;
+        window.setTimeout(showQuizResult, 550);
+      } else {
+        el.next.disabled = false;
+      }
+    }
+
+    function showQuizResult() {
+      el.quizScore.textContent = `Steph a ${penalties.Steph} gage(s) à faire et Sylvain a ${penalties.Sylvain} gage(s) à faire.`;
+      el.quizResultOverlay.classList.remove("hidden");
+    }
+
+    function continueToLevel2() {
+      el.quizResultOverlay.classList.add("hidden");
+      levelIndex = 1;
+      playedInLevel = 0;
+      resetTimer();
+      resetQuestion();
+      el.card.classList.remove("flipped");
+      el.target.textContent = "Les deux";
+      el.challenge.textContent = "Le quiz est terminé. Touchez « Carte suivante » pour commencer le niveau 2.";
+      el.duration.textContent = "À partir de maintenant : uniquement des gages.";
+      el.next.textContent = "Carte suivante";
       el.next.disabled = false;
+      updateStatus();
+      showLevelFlash();
     }
 
     function advanceLevelIfNeeded() {
       if (playedInLevel < levels[levelIndex].count) return true;
+      if (levelIndex === 0) {
+        showQuizResult();
+        return false;
+      }
       if (levelIndex === levels.length - 1) {
         finishGame();
         return false;
@@ -819,8 +893,10 @@
       playedInLevel = 0;
       drawing = false;
       isPaused = false;
+      penalties = { Steph: 0, Sylvain: 0 };
       buildGameDecks();
       el.pauseOverlay.classList.add("hidden");
+      el.quizResultOverlay.classList.add("hidden");
       resetQuestion();
       el.card.classList.remove("flipped");
       el.target.textContent = "Les deux";
@@ -855,6 +931,7 @@
     el.timerButton.addEventListener("click", toggleTimer);
     el.pause.addEventListener("click", pauseGame);
     el.resume.addEventListener("click", resumeGame);
+    el.continueLevel2.addEventListener("click", continueToLevel2);
     document.addEventListener("visibilitychange", () => {
       if (document.hidden && !el.game.classList.contains("hidden")) pauseGame();
     });
