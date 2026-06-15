@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#120812">
-  <title>Sylvain &amp; Steph · V16</title>
+  <title>Sylvain &amp; Steph · V19</title>
   <style>
     :root {
       color-scheme: dark;
@@ -444,7 +444,7 @@
       <div class="welcome-box">
         <div class="logo" aria-hidden="true">♥</div>
         <h1>Sylvain<br>&amp; Steph</h1>
-        <p class="intro">Une soirée à deux, cinq niveaux, et une intensité qui monte automatiquement.</p>
+        <p class="intro">V19 — questions érotiques moins répétitives.</p>
         <button id="startButton" class="primary" type="button">Commencer</button>
       </div>
     </section>
@@ -530,7 +530,7 @@
 
     const levels = [
       { name: "Quiz à risque", count: 10 },
-      { name: "Coquin", count: 9 },
+      { name: "Roue coquine", count: 10 },
       { name: "Chaud", count: 11 },
       { name: "Très chaud", count: 8 },
       { name: "Hard", count: 1 }
@@ -542,27 +542,28 @@
     */
     const decks = {
       1: [
-        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Dans une grande enquête sur les fantasmes, environ combien de femmes avaient déjà fantasmé d’être dominées ?", answers: ["15 %", "35 %", "65 %", "90 %"], correct: 2 },
-        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans une grande enquête sur les fantasmes, environ combien d’hommes avaient fantasmé à une expérience avec plusieurs partenaires ?", answers: ["25 %", "50 %", "75 %", "95 %"], correct: 3 },
-        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Environ combien de femmes avaient déjà fantasmé de dominer quelqu’un ?", answers: ["12 %", "27 %", "47 %", "78 %"], correct: 2 },
-        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans le Great Australian Sex Census, environ quelle part des répondants disait apprécier les paroles érotiques pendant le sexe ?", answers: ["22 %", "42 %", "62 %", "82 %"], correct: 2 },
-        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Dans une enquête québécoise, environ quelle part des adultes déclarait désirer au moins une pratique sexuelle inhabituelle ?", answers: ["6 %", "26 %", "46 %", "76 %"], correct: 2 },
-        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans une enquête belge, environ quelle part de la population pratiquait régulièrement au moins une activité BDSM ?", answers: ["2,5 %", "12,5 %", "32,5 %", "52,5 %"], correct: 1 },
-        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Un fantasme de domination signifie-t-il forcément qu’on veut le réaliser en vrai ?", answers: ["Oui, toujours", "Oui, si le fantasme revient souvent", "Non, fantasmer et vouloir agir sont différents", "Seulement pour les fantasmes de soumission"], correct: 2 },
-        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Avant un jeu de rôle érotique, quelle préparation favorise le plus une expérience satisfaisante ?", answers: ["Improviser sans en parler", "Définir envies, limites et signal d’arrêt", "Copier exactement une scène vue ailleurs", "Éviter toute discussion pour garder la surprise"], correct: 1 },
-        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Pour casser la routine sexuelle dans un couple, quelle approche est généralement la plus constructive ?", answers: ["Attendre que l’autre devine", "Comparer son couple aux autres", "Discuter des envies et tester progressivement", "Changer toutes les habitudes d’un coup"], correct: 2 },
-        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Qu’est-ce qui aide le plus à transformer un fantasme partagé en expérience satisfaisante ?", answers: ["La pression pour aller jusqu’au bout", "La communication, le consentement et l’adaptation", "Le respect strict du scénario prévu", "Ne jamais ralentir une fois commencé"], correct: 1 }
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Sondage érotique : environ combien de femmes auraient déjà fantasmé d’être dominées ?", answers: ["25 %", "45 %", "65 %", "90 %"], correct: 2 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Sondage érotique : environ combien de femmes auraient déjà fantasmé de dominer quelqu’un ?", answers: ["12 %", "27 %", "47 %", "75 %"], correct: 2 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans les fantasmes de couple, lequel revient souvent ?", answers: ["Domination / soumission", "Faire le ménage ensemble", "Regarder les informations", "Dormir chacun de son côté"], correct: 0 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Sondage coquin : combien de personnes aimeraient tester un jeu érotique en couple ?", answers: ["18 %", "35 %", "58 %", "82 %"], correct: 2 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Quel fantasme est souvent cité dans les jeux adultes de couple ?", answers: ["Être attaché ou attachée", "Faire ses comptes", "Faire la cuisine en silence", "Ranger le garage"], correct: 0 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Sondage érotique : combien de personnes auraient déjà eu un fantasme dans un lieu interdit ou inhabituel ?", answers: ["15 %", "30 %", "55 %", "90 %"], correct: 2 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans un jeu de couple adulte, qu’est-ce qui rend souvent un gage plus excitant ?", answers: ["Le suspense", "Le faire trop vite", "Ne pas regarder l’autre", "Tout prévoir à l’avance"], correct: 0 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Sondage coquin : combien de personnes aimeraient que leur partenaire prenne davantage les commandes de temps en temps ?", answers: ["10 %", "28 %", "52 %", "88 %"], correct: 2 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Quel élément rend souvent un jeu érotique plus captivant ?", answers: ["Une montée progressive", "Tout faire dès la première carte", "Répéter toujours le même gage", "Enlever toute surprise"], correct: 0 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Sondage érotique : combien de couples aimeraient ajouter plus de fantaisie dans leur vie intime ?", answers: ["20 %", "38 %", "62 %", "95 %"], correct: 2 }
       ],
       2: [
-        { target: "Les deux", tag: "baiser", duration: 60, text: "Embrassez-vous sans utiliser vos mains." },
-        { target: "Sylvain", tag: "cou-fesses", duration: 30, text: "Embrasse Steph dans le cou puis caresse ses fesses pendant 30 secondes." },
-        { target: "Sylvain", tag: "teasing", duration: 60, text: "Approche tes lèvres de celles de Steph, puis fais durer l’attente avant de l’embrasser." },
-        { target: "Steph", tag: "guidage", duration: 60, text: "Guide les mains de Sylvain sur les endroits où tu veux être caressée." },
-        { target: "Sylvain", tag: "massage", duration: 60, text: "Masse doucement les épaules et la nuque de Steph pendant 1 minute." },
-        { target: "Steph", tag: "baiser-cou", duration: 45, text: "Embrasse Sylvain lentement dans le cou pendant 45 secondes." },
-        { target: "Steph", tag: "entrejambe", duration: 30, text: "Caresse l’entrejambe de Sylvain pendant 30 secondes." },
-        { target: "Sylvain", tag: "cuisses", duration: 30, text: "Embrasse l’intérieur des cuisses de Steph pendant 30 secondes." },
-        { target: "Steph", tag: "immobile", duration: 60, text: "Choisis une position où Sylvain doit rester immobile pendant 1 minute." }
+        { target: "Sylvain", tag: "baisers-differents", duration: 0, text: "Embrasse Steph 10 fois : chaque baiser doit être à un endroit différent." },
+        { target: "Steph", tag: "danse-sexy", duration: 30, text: "Fais une danse sexy pour Sylvain pendant 30 secondes." },
+        { target: "Sylvain", tag: "cou-poitrine", duration: 30, text: "Embrasse le cou de Steph en descendant lentement vers sa poitrine pendant 30 secondes." },
+        { target: "Steph", tag: "sept-baisers", duration: 0, text: "Choisis une partie du corps de Sylvain et embrasse-la 7 fois." },
+        { target: "Sylvain", tag: "vetement", duration: 0, text: "Retire doucement un vêtement choisi par Steph, le plus lentement possible." },
+        { target: "Steph", tag: "entrejambe-vetement", duration: 30, text: "Caresse l’entrejambe de Sylvain par-dessus le vêtement pendant 30 secondes." },
+        { target: "Sylvain", tag: "derriere", duration: 30, text: "Mets-toi derrière Steph, embrasse-la dans le cou et pose tes mains où elle veut pendant 30 secondes." },
+        { target: "Steph", tag: "murmure", duration: 0, text: "Murmure à l’oreille de Sylvain ce que tu aimerais qu’il te fasse plus tard dans le jeu." },
+        { target: "Sylvain", tag: "cuisses", duration: 30, text: "Embrasse l’intérieur des cuisses de Steph pendant 30 secondes, sans aller plus loin." },
+        { target: "Steph", tag: "guidage", duration: 30, text: "Guide la main de Sylvain sur une zone que tu veux qu’il caresse pendant 30 secondes." }
       ],
       3: [
         { target: "Sylvain", tag: "fessees", duration: 0, text: "Donne 10 fessées à Steph, de plus en plus fortes." },
