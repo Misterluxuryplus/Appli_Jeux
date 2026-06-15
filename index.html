@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#120812">
-  <title>Sylvain &amp; Steph · V20</title>
+  <title>Sylvain &amp; Steph · V21</title>
   <style>
     :root {
       color-scheme: dark;
@@ -24,8 +24,9 @@
     html, body { min-height: 100%; margin: 0; }
 
     body {
-      min-height: 100svh;
+      min-height: 100dvh;
       overflow-x: hidden;
+      overflow-y: auto;
       background:
         radial-gradient(circle at 8% 7%, rgba(244,75,137,.20), transparent 34%),
         radial-gradient(circle at 94% 27%, rgba(169,77,255,.17), transparent 35%),
@@ -76,12 +77,18 @@
 
     .screen {
       width: min(100%, 520px);
-      min-height: 100svh;
+      min-height: 100dvh;
       margin: 0 auto;
-      padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
+      padding: max(18px, env(safe-area-inset-top)) 18px max(42px, calc(env(safe-area-inset-bottom) + 28px));
     }
 
-    .welcome, .end-screen { display: grid; place-items: center; text-align: center; }
+    .welcome, .end-screen {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      text-align: center;
+      padding-top: max(36px, calc(env(safe-area-inset-top) + 24px));
+    }
 
     .welcome-box, .end-box {
       width: 100%;
@@ -131,7 +138,7 @@
     .primary:active { transform: scale(.98); }
     .primary:disabled { cursor: default; opacity: .62; }
 
-    .game { display: flex; flex-direction: column; gap: 15px; }
+    .game { display: flex; flex-direction: column; gap: 15px; min-height: 100dvh; }
 
     .topbar, .status-line {
       display: flex;
@@ -314,6 +321,7 @@
       font-size: clamp(18px, 5.2vw, 23px);
     }
 
+    .card.question-card { height: auto; min-height: 560px; }
     .card.question-card .duration { padding-top: 10px; }
 
     .timer-panel {
@@ -347,7 +355,7 @@
       font-weight: 850;
     }
 
-    .next { margin-top: auto; }
+    .next { margin-top: 0; }
 
     .overlay, .level-flash {
       position: fixed;
@@ -356,9 +364,14 @@
       display: grid;
       place-items: center;
       padding: 22px;
+      padding-bottom: max(42px, calc(env(safe-area-inset-bottom) + 28px));
+      overflow-y: auto;
       background: rgba(9,4,10,.87);
       backdrop-filter: blur(16px);
     }
+
+    .overlay { place-items: start center; }
+    .level-flash { place-items: center; }
 
     .pause-box {
       width: min(100%,390px);
@@ -448,7 +461,7 @@
       <div class="welcome-box">
         <div class="logo" aria-hidden="true">♥</div>
         <h1>Sylvain<br>&amp; Steph</h1>
-        <p class="intro">V20 — quiz érotique plus dur et gages gagnés.</p>
+        <p class="intro">V21 — quiz plus difficile et affichage mobile corrigé.</p>
         <button id="startButton" class="primary" type="button">Commencer</button>
       </div>
     </section>
@@ -535,7 +548,7 @@ Sylvain a 0 gage(s) à utiliser contre Steph.</p>
 
     const levels = [
       { name: "Quiz à risque", count: 10 },
-      { name: "Roue coquine", count: 10 },
+      { name: "Tirage coquin", count: 10 },
       { name: "Chaud", count: 11 },
       { name: "Très chaud", count: 8 },
       { name: "Hard", count: 1 }
@@ -547,16 +560,16 @@ Sylvain a 0 gage(s) à utiliser contre Steph.</p>
     */
     const decks = {
       1: [
-        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Sondage érotique : dans les fantasmes de domination, qu’est-ce qui revient le plus souvent ?", answers: ["Être attaché(e)", "Être observé(e)", "Être guidé(e) par l’autre", "Perdre le contrôle volontairement"], correct: 3 },
-        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Sondage érotique : dans un jeu de couple, qu’est-ce qui rend souvent un gage plus excitant ?", answers: ["Le suspense", "La durée", "Le regard de l’autre", "Le fait de ne pas savoir à l’avance"], correct: 3 },
-        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Fantasme : lequel est souvent cité dans les jeux adultes de couple ?", answers: ["Jeu de rôle", "Domination douce", "Carte blanche", "Lieu interdit"], correct: 1 },
-        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Sondage coquin : qu’est-ce qui excite souvent dans l’idée d’être dominé(e) ?", answers: ["Être surpris(e)", "Laisser l’autre décider", "Ne pas connaître la suite", "Être guidé(e)"], correct: 1 },
-        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans un jeu érotique progressif, quel élément évite que le jeu devienne répétitif ?", answers: ["Le hasard contrôlé", "Les niveaux", "Les rôles alternés", "Les cartes différentes"], correct: 2 },
-        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Dans les fantasmes de couple, que signifie souvent « carte blanche » ?", answers: ["L’autre choisit librement le gage", "Le gage est annulé", "Le joueur passe son tour", "Le niveau recommence"], correct: 0 },
-        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Sondage érotique : quel type de scénario revient souvent dans les jeux adultes ?", answers: ["Être surpris(e)", "Être guidé(e)", "Être observé(e)", "Être défié(e)"], correct: 3 },
-        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Dans un jeu de couple, pourquoi les questions peuvent rendre le jeu plus excitant ?", answers: ["Elles créent un risque", "Elles ralentissent le jeu", "Elles remplacent les gages", "Elles évitent le contact"], correct: 0 },
-        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans un fantasme de contrôle, qu’est-ce qui est souvent le plus excitant ?", answers: ["Le rythme imposé", "La surprise", "Le fait d’obéir", "Le choix laissé à l’autre"], correct: 3 },
-        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Dans un jeu adulte, qu’est-ce qui donne envie de continuer jusqu’au niveau suivant ?", answers: ["La montée progressive", "Les cartes plus osées", "Les gages gagnés", "Le suspense du prochain niveau"], correct: 3 }
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans un fantasme de domination consenti, quel élément distingue le plus souvent le fantasme d’une simple contrainte ?", answers: ["La durée limitée du scénario", "Le contrôle volontairement confié à l’autre", "L’intensité choisie par la personne qui guide", "Le réalisme de la mise en scène"], correct: 1 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Dans un scénario érotique fondé sur le suspense, quel mécanisme renforce généralement le plus l’excitation ?", answers: ["L’anticipation de ce qui va arriver", "L’intensité dès le début", "La durée du scénario", "L’alternance régulière des rôles"], correct: 0 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans un jeu de rôle adulte, quel élément aide le mieux à rester immergé dans le scénario ?", answers: ["Une improvisation totale", "Un scénario très détaillé", "Un rôle et des limites définis avant de commencer", "Une durée précise imposée"], correct: 2 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Pourquoi un lieu inhabituel apparaît-il souvent dans les fantasmes sans être forcément recherché en réalité ?", answers: ["La possibilité d’y changer de rôle", "La nouveauté qu’il amplifie dans l’imagination", "La sensation de contrôle qu’il procure", "Le réalisme qu’il apporte au scénario"], correct: 1 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans un fantasme de contrôle, qu’est-ce qui crée le plus souvent la tension érotique ?", answers: ["Un rythme parfaitement régulier", "Une intensité forte dès le début", "Une longue durée", "L’alternance entre attente et permission"], correct: 3 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Dans les jeux de domination et soumission, que désigne le plus précisément un changement de rôle ?", answers: ["Modifier le scénario en cours", "Changer la personne qui choisit le rythme", "Alterner qui guide et qui se laisse guider", "Passer d’un gage à une carte blanche"], correct: 2 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Quel type de surprise reste le plus compatible avec un jeu érotique préparé ?", answers: ["Une nouvelle règle ajoutée en cours de jeu", "Une action imprévue à l’intérieur de limites déjà définies", "Un changement soudain de rôle", "Une intensité décidée au dernier moment"], correct: 1 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Pourquoi révéler une envie cachée peut-il intensifier un jeu de couple ?", answers: ["Cela rend le scénario plus précis", "Cela permet de deviner la suite", "Cela augmente forcément l’intensité", "Cela combine vulnérabilité, confiance et anticipation"], correct: 3 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans un jeu progressif, pourquoi les rôles alternés limitent-ils la répétition ?", answers: ["Ils raccourcissent les gages", "Ils augmentent l’intensité à chaque tour", "Ils changent la perspective et le contrôle", "Ils rendent le rythme plus régulier"], correct: 2 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Quel principe rend généralement un scénario de carte blanche plus captivant sans supprimer les limites ?", answers: ["Une durée laissée totalement indéterminée", "La liberté de choisir à l’intérieur d’un cadre convenu", "Un rôle conservé pendant tout le jeu", "Une action choisie uniquement au dernier moment"], correct: 1 }
       ],
       2: [
         { target: "Sylvain", tag: "baisers-differents", duration: 0, text: "Embrasse Steph 10 fois : chaque baiser doit être à un endroit différent." },
