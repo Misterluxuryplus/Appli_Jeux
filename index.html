@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#120812">
-  <title>Sylvain &amp; Steph · V19</title>
+  <title>Sylvain &amp; Steph · V20</title>
   <style>
     :root {
       color-scheme: dark;
@@ -304,6 +304,9 @@
       white-space: pre-line;
     }
 
+    .feedback.good { color: #69e8a4; }
+    .feedback.bad { color: #ff718f; }
+
     .card.question-card .challenge {
       flex: none;
       align-items: flex-start;
@@ -385,6 +388,7 @@
       font-size: 21px;
       font-weight: 900;
       line-height: 1.4;
+      white-space: pre-line;
     }
 
     .quiz-result-box .quiz-instruction {
@@ -444,7 +448,7 @@
       <div class="welcome-box">
         <div class="logo" aria-hidden="true">♥</div>
         <h1>Sylvain<br>&amp; Steph</h1>
-        <p class="intro">V19 — questions érotiques moins répétitives.</p>
+        <p class="intro">V20 — quiz érotique plus dur et gages gagnés.</p>
         <button id="startButton" class="primary" type="button">Commencer</button>
       </div>
     </section>
@@ -511,9 +515,10 @@
 
   <div id="quizResultOverlay" class="overlay hidden">
     <div class="quiz-result-box">
-      <h2>Fin du quiz à risque</h2>
-      <p id="quizScore" class="quiz-score">Steph a 0 gage(s) à faire et Sylvain a 0 gage(s) à faire.</p>
-      <p class="quiz-instruction">À vous de choisir les gages maintenant. Ensuite, le jeu reprend au niveau 2 sans questions.</p>
+      <h2>Résultat du niveau 1</h2>
+      <p id="quizScore" class="quiz-score">Steph a 0 gage(s) à utiliser contre Sylvain.
+Sylvain a 0 gage(s) à utiliser contre Steph.</p>
+      <p class="quiz-instruction">À vous de choisir les gages maintenant. Quand les gages sont faits, passez au niveau 2.</p>
       <button id="continueLevel2Button" class="primary" type="button">Passer au niveau 2</button>
     </div>
   </div>
@@ -542,16 +547,16 @@
     */
     const decks = {
       1: [
-        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Sondage érotique : environ combien de femmes auraient déjà fantasmé d’être dominées ?", answers: ["25 %", "45 %", "65 %", "90 %"], correct: 2 },
-        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Sondage érotique : environ combien de femmes auraient déjà fantasmé de dominer quelqu’un ?", answers: ["12 %", "27 %", "47 %", "75 %"], correct: 2 },
-        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans les fantasmes de couple, lequel revient souvent ?", answers: ["Domination / soumission", "Faire le ménage ensemble", "Regarder les informations", "Dormir chacun de son côté"], correct: 0 },
-        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Sondage coquin : combien de personnes aimeraient tester un jeu érotique en couple ?", answers: ["18 %", "35 %", "58 %", "82 %"], correct: 2 },
-        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Quel fantasme est souvent cité dans les jeux adultes de couple ?", answers: ["Être attaché ou attachée", "Faire ses comptes", "Faire la cuisine en silence", "Ranger le garage"], correct: 0 },
-        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Sondage érotique : combien de personnes auraient déjà eu un fantasme dans un lieu interdit ou inhabituel ?", answers: ["15 %", "30 %", "55 %", "90 %"], correct: 2 },
-        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans un jeu de couple adulte, qu’est-ce qui rend souvent un gage plus excitant ?", answers: ["Le suspense", "Le faire trop vite", "Ne pas regarder l’autre", "Tout prévoir à l’avance"], correct: 0 },
-        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Sondage coquin : combien de personnes aimeraient que leur partenaire prenne davantage les commandes de temps en temps ?", answers: ["10 %", "28 %", "52 %", "88 %"], correct: 2 },
-        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Quel élément rend souvent un jeu érotique plus captivant ?", answers: ["Une montée progressive", "Tout faire dès la première carte", "Répéter toujours le même gage", "Enlever toute surprise"], correct: 0 },
-        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Sondage érotique : combien de couples aimeraient ajouter plus de fantaisie dans leur vie intime ?", answers: ["20 %", "38 %", "62 %", "95 %"], correct: 2 }
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Sondage érotique : dans les fantasmes de domination, qu’est-ce qui revient le plus souvent ?", answers: ["Être attaché(e)", "Être observé(e)", "Être guidé(e) par l’autre", "Perdre le contrôle volontairement"], correct: 3 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Sondage érotique : dans un jeu de couple, qu’est-ce qui rend souvent un gage plus excitant ?", answers: ["Le suspense", "La durée", "Le regard de l’autre", "Le fait de ne pas savoir à l’avance"], correct: 3 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Fantasme : lequel est souvent cité dans les jeux adultes de couple ?", answers: ["Jeu de rôle", "Domination douce", "Carte blanche", "Lieu interdit"], correct: 1 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Sondage coquin : qu’est-ce qui excite souvent dans l’idée d’être dominé(e) ?", answers: ["Être surpris(e)", "Laisser l’autre décider", "Ne pas connaître la suite", "Être guidé(e)"], correct: 1 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans un jeu érotique progressif, quel élément évite que le jeu devienne répétitif ?", answers: ["Le hasard contrôlé", "Les niveaux", "Les rôles alternés", "Les cartes différentes"], correct: 2 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Dans les fantasmes de couple, que signifie souvent « carte blanche » ?", answers: ["L’autre choisit librement le gage", "Le gage est annulé", "Le joueur passe son tour", "Le niveau recommence"], correct: 0 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Sondage érotique : quel type de scénario revient souvent dans les jeux adultes ?", answers: ["Être surpris(e)", "Être guidé(e)", "Être observé(e)", "Être défié(e)"], correct: 3 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Dans un jeu de couple, pourquoi les questions peuvent rendre le jeu plus excitant ?", answers: ["Elles créent un risque", "Elles ralentissent le jeu", "Elles remplacent les gages", "Elles évitent le contact"], correct: 0 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans un fantasme de contrôle, qu’est-ce qui est souvent le plus excitant ?", answers: ["Le rythme imposé", "La surprise", "Le fait d’obéir", "Le choix laissé à l’autre"], correct: 3 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Dans un jeu adulte, qu’est-ce qui donne envie de continuer jusqu’au niveau suivant ?", answers: ["La montée progressive", "Les cartes plus osées", "Les gages gagnés", "Le suspense du prochain niveau"], correct: 3 }
       ],
       2: [
         { target: "Sylvain", tag: "baisers-differents", duration: 0, text: "Embrasse Steph 10 fois : chaque baiser doit être à un endroit différent." },
@@ -783,6 +788,7 @@
       el.answers.replaceChildren();
       el.answers.classList.add("hidden");
       el.feedback.textContent = "";
+      el.feedback.classList.remove("good", "bad");
       el.feedback.classList.add("hidden");
     }
 
@@ -803,12 +809,16 @@
       const buttons = [...el.answers.querySelectorAll(".answer-button")];
       buttons.forEach(button => { button.disabled = true; });
       buttons[card.correct].classList.add("correct");
+      const correctAnswer = card.answers[card.correct];
       if (selectedIndex === card.correct) {
-        el.feedback.textContent = "Bonne réponse\nPas de gage.";
+        el.feedback.classList.add("good");
+        el.feedback.textContent = `Bonne réponse\nLa bonne réponse était : ${correctAnswer}\nAucun gage gagné.`;
       } else {
         buttons[selectedIndex].classList.add("wrong");
-        penalties[card.player] += 1;
-        el.feedback.textContent = `Mauvaise réponse\n+1 gage pour ${card.player}.`;
+        el.feedback.classList.add("bad");
+        const winner = card.player === "Sylvain" ? "Steph" : "Sylvain";
+        penalties[winner] += 1;
+        el.feedback.textContent = `Mauvaise réponse : ${winner} gagne 1 gage à utiliser contre ${card.player}.\nBonne réponse : ${correctAnswer}`;
       }
       el.feedback.classList.remove("hidden");
       if (levelIndex === 0 && playedInLevel === levels[0].count) {
@@ -820,7 +830,7 @@
     }
 
     function showQuizResult() {
-      el.quizScore.textContent = `Steph a ${penalties.Steph} gage(s) à faire et Sylvain a ${penalties.Sylvain} gage(s) à faire.`;
+      el.quizScore.textContent = `Steph a ${penalties.Steph} gage(s) à utiliser contre Sylvain.\nSylvain a ${penalties.Sylvain} gage(s) à utiliser contre Steph.`;
       el.quizResultOverlay.classList.remove("hidden");
     }
 
