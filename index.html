@@ -461,7 +461,7 @@
       <div class="welcome-box">
         <div class="logo" aria-hidden="true">♥</div>
         <h1>Sylvain<br>&amp; Steph</h1>
-        <p class="intro">V22 — niveau 3 plus varié et nouveaux gages.</p>
+        <p class="intro">V22 — progression retravaillée et niveau 3 plus varié.</p>
         <button id="startButton" class="primary" type="button">Commencer</button>
       </div>
     </section>
@@ -584,27 +584,27 @@ Sylvain a 0 gage(s) à utiliser contre Steph.</p>
         { target: "Steph", tag: "guidage", duration: 30, text: "Guide la main de Sylvain sur une zone que tu veux qu’il caresse pendant 30 secondes." }
       ],
       3: [
-        { target: "Sylvain", tag: "fessees", duration: 0, text: "Donne 10 fessées à Steph, de plus en plus fortes." },
+        { target: "Sylvain", tag: "admiration-tenue", duration: 60, text: "Prends le temps d’admirer Steph dans sa tenue. Elle décide ce que tu peux toucher, retirer ou laisser en place." },
         { target: "Les deux", tag: "danse", duration: 60, text: "Dansez lentement, corps contre corps, pendant 1 minute." },
+        { target: "Sylvain", tag: "fessees", duration: 0, text: "Donne 10 fessées à Steph, de plus en plus fortes." },
+        { target: "Steph", tag: "fessees", duration: 0, text: "Donne 10 fessées à Sylvain, de plus en plus fortes." },
         { target: "Sylvain", tag: "vulve", duration: 45, text: "Glisse tes doigts sur la vulve de Steph pendant 45 secondes." },
         { target: "Steph", tag: "intime", duration: 75, text: "Caresse les parties intimes de Sylvain en changeant lentement de rythme." },
+        { target: "Carte blanche · Sylvain", tag: "carte-blanche-sylvain", duration: 60, text: "Carte blanche : Sylvain fait ce qu’il veut à Steph pendant 1 minute, dans les limites acceptées par elle." },
+        { target: "Carte blanche · Steph", tag: "carte-blanche-steph", duration: 60, text: "Carte blanche : Steph fait ce qu’elle veut à Sylvain pendant 1 minute, dans les limites acceptées par lui." },
         { target: "Steph", tag: "attache-jeu", duration: 90, text: "Attache Sylvain s’il en a envie et sers-toi des objets que tu vois autour de toi pour jouer avec lui." },
         { target: "Sylvain", tag: "attache-jeu", duration: 90, text: "Attache Steph si elle en a envie et sers-toi des objets que tu vois autour de toi pour jouer avec elle." },
-        { target: "Sylvain", tag: "frisson", duration: 45, text: "Caresse Steph du bout des doigts, de la main jusqu’au cou, pendant 45 secondes." },
-        { target: "Steph", tag: "baisers-corps", duration: 45, text: "Embrasse lentement le torse et le ventre de Sylvain pendant 45 secondes." },
-        { target: "Steph", tag: "fessees", duration: 0, text: "Donne 10 fessées à Sylvain, de plus en plus fortes." },
-        { target: "Sylvain", tag: "fesses-lent", duration: 45, text: "Caresse lentement les fesses de Steph pendant 45 secondes." },
-        { target: "Sylvain", tag: "admiration-tenue", duration: 60, text: "Prends le temps d’admirer Steph dans sa tenue. Elle décide ce que tu peux toucher, retirer ou laisser en place." }
+        { target: "Sylvain", tag: "fesses-lent", duration: 45, text: "Caresse lentement les fesses de Steph pendant 45 secondes." }
       ],
       4: [
         { target: "Steph", tag: "oral", duration: 60, text: "Suce Sylvain pendant 1 minute en faisant varier lentement le rythme." },
         { target: "Sylvain", tag: "oral", duration: 60, text: "Lèche le sexe de Steph pendant 1 minute en suivant ses réactions." },
-        { target: "Carte blanche · Sylvain", tag: "carte-blanche", duration: 60, text: "Carte blanche : Sylvain fait ce qu’il veut à Steph pendant 1 minute." },
+        { target: "Sylvain", tag: "controle-steph", duration: 90, text: "Steph ferme les yeux et garde les mains derrière le dos. Touche-la et embrasse-la sur tout le corps pendant 1 min 30." },
         { target: "Sylvain", tag: "clitoris", duration: 45, text: "Caresse le clitoris de Steph pendant 45 secondes en suivant ses réactions." },
         { target: "Sylvain", tag: "doigt", duration: 45, text: "Insère un doigt dans le vagin de Steph pendant 45 secondes." },
         { target: "Steph", tag: "intime", duration: 90, text: "Caresse les parties intimes de Sylvain pendant 1 min 30, sans t’arrêter." },
         { target: "Sylvain", tag: "teasing", duration: 90, text: "Embrasse et caresse Steph autour de ses parties intimes sans les toucher directement." },
-        { target: "Carte blanche · Steph", tag: "carte-blanche", duration: 60, text: "Carte blanche : Steph fait ce qu’elle veut à Sylvain pendant 1 minute." }
+        { target: "Steph", tag: "controle-sylvain", duration: 90, text: "Sylvain ferme les yeux et garde les mains derrière le dos. Touche-le et embrasse-le sur tout le corps pendant 1 min 30." }
       ],
       5: [
         { target: "Final hard", tag: "final", duration: 0, text: "Final hard : Sylvain pénètre Steph comme vous voulez. Le jeu s’arrête ici." }
@@ -667,9 +667,8 @@ Sylvain a 0 gage(s) à utiliser contre Steph.</p>
     function buildGameDecks() {
       gameDecks = {};
       Object.keys(decks).forEach(level => {
-        // L'ordre du niveau 3 éloigne volontairement les deux cartes de fessées.
         if (level === "3" || level === "4") {
-          // Les niveaux 3 et 4 gardent leur ordre pour éloigner les cartes liées.
+          // Les niveaux 3 et 4 gardent l'ordre de progression prévu.
           gameDecks[level] = [...decks[level]];
         } else if (level === "5") {
           gameDecks[level] = [...decks[level]];
