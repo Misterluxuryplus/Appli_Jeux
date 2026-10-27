@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#120812">
-  <title>Sylvain &amp; Steph · V24</title>
+  <title>Sylvain &amp; Steph · V25</title>
   <style>
     :root {
       color-scheme: dark;
@@ -446,6 +446,7 @@
 <link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icons/icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><style>
 .quiet,.timer-button,.answer-button{min-height:44px}.card,.card.question-card{height:auto;min-height:425px}.card-face{position:relative;min-height:425px;overflow:visible}.card-back{position:absolute;width:100%;height:100%}.card.question-card .card-face{min-height:560px}.challenge{overflow-wrap:anywhere}.topbar,.status-line{flex-wrap:wrap}.app-tools{max-width:480px;margin:12px auto;padding:16px;display:grid;gap:12px;color:var(--muted);font-size:13px;line-height:1.5}body.paused .float,body.paused .logo{animation-play-state:paused}@media(max-width:360px){.screen{padding-inline:12px}.card-content{padding:20px 16px}}
 .mode-options{display:grid;gap:14px}.mode-option strong,.mode-option span{display:block}.mode-option span{margin-top:6px;font-size:14px;font-weight:500}.mode-options .mode-option:nth-child(2){background:linear-gradient(135deg,#8235c4,#ba3777)}.mode-note{color:var(--muted);font-size:14px;line-height:1.6}.mode-status{margin:0;color:var(--pink);font-size:14px;line-height:1.5}.mode-option{white-space:normal}.card-back{pointer-events:none}.card-scene{min-width:0;height:auto}
+.welcome-box #startButton,.welcome-box #restoreButton{margin-bottom:12px}.welcome-box #preferencesButton{width:100%}.preferences-box{padding:28px 20px}fieldset{border:0;padding:0;margin:20px 0}legend{font-weight:800;margin-bottom:12px}.category-option{display:flex;align-items:center;gap:12px;min-height:50px;padding:10px 12px;margin-bottom:8px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:14px;line-height:1.4}.category-option input{width:22px;height:22px;flex:none;accent-color:var(--rose)}.preference-actions{display:flex;flex-wrap:wrap;gap:10px}#cancelPreferencesButton{width:100%;margin-top:12px}.overlay{z-index:20}#pauseOverlay{z-index:25}.preferences-box h2{font-size:32px}.session-status{color:var(--pink);font-size:14px}.card-scene{height:auto}
 </style></head>
 <body>
   <div class="ambience" aria-hidden="true">
@@ -464,11 +465,28 @@
       <div class="welcome-box">
         <div class="logo" aria-hidden="true">♥</div>
         <h1>Sylvain<br>&amp; Steph</h1>
-        <p class="intro">V24 — choisissez votre soirée, complète ou Surprise.</p>
-        <button id="restoreButton" class="primary hidden" type="button" style="margin-bottom:12px">Reprendre la partie</button><div class="mode-options" aria-label="Choisir le mode de jeu">
-          <button id="startButton" class="primary mode-option" type="button"><strong>Partie complète</strong><span>40 cartes · les 5 niveaux</span></button>
-          <button id="surpriseButton" class="primary mode-option" type="button"><strong>Partie Surprise</strong><span>20 cartes tirées au hasard · les 5 niveaux</span></button>
-        </div><p class="mode-note">Vos cartes habituelles, une nouvelle sélection à chaque partie Surprise.</p>
+        <p class="intro">V25 — une soirée à deux, à votre rythme.</p>
+        <button id="restoreButton" class="primary hidden" type="button">Reprendre la partie</button>
+        <button id="startButton" class="primary" type="button">Commencer</button>
+        <button id="preferencesButton" class="quiet" type="button">Nos préférences</button>
+        <p id="selectionSummary" class="mode-note"></p>
+        <p class="mode-note">Cinq niveaux, du quiz au final choisi ensemble. Vous pouvez passer chaque carte sans pénalité.</p>
+      </div>
+    </section>
+
+
+    <section id="preferencesScreen" class="screen hidden" aria-labelledby="preferencesTitle">
+      <div class="welcome-box preferences-box">
+        <h2 id="preferencesTitle" tabindex="-1">Nos préférences</h2>
+        <p class="mode-note">Gardez uniquement les catégories que vous acceptez tous les deux. Ces choix s’appliquent à la prochaine partie.</p>
+        <form id="preferencesForm">
+          <fieldset><legend>Catégories autorisées</legend><div id="categoryOptions"></div></fieldset>
+          <p class="mode-note">Les catégories exclues restent exclues pour les cartes libres et les zones laissées à votre choix. Les filtres des défis ne modifient pas les thèmes des questions du quiz.</p>
+          <div class="preference-actions"><button id="allowAllButton" class="quiet" type="button">Tout autoriser</button><button id="excludeAllButton" class="quiet" type="button">Tout exclure</button></div>
+          <p id="preferencesCount" class="mode-note" role="status"></p>
+          <button id="savePreferencesButton" class="primary" type="submit">Enregistrer mes choix</button>
+          <button id="cancelPreferencesButton" class="quiet" type="button">Retour</button>
+        </form>
       </div>
     </section>
 
@@ -481,10 +499,10 @@
         </div>
       </header>
 
-      <p id="modeStatus" class="mode-status"></p>
+      <p id="sessionStatus" class="mode-status"></p>
       <section class="status" aria-label="Progression">
         <div class="status-line">
-          <span id="levelName" class="level-name">Niveau 1 · Quiz à risque</span>
+          <span id="levelName" class="level-name">Niveau 1 · Quiz et complicité</span>
           <span id="progressText" class="progress-text">0 / 10</span>
         </div>
         <div class="track"><div id="progressBar" class="progress-bar"></div></div>
@@ -543,6 +561,15 @@ Sylvain a 0 gage(s) à utiliser contre Steph.</p>
     </div>
   </div>
 
+  <div id="finalChoiceOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="finalChoiceTitle">
+    <div class="pause-box">
+      <h2 id="finalChoiceTitle">Un final à votre choix</h2>
+      <p>La carte finale actuelle est une option. Découvrez-la seulement si vous le souhaitez tous les deux ; vous pourrez encore la passer ensuite.</p>
+      <button id="acceptFinalButton" class="primary" type="button">Découvrir la carte finale ensemble</button>
+      <button id="declineFinalButton" class="quiet" type="button" style="margin-top:12px">Terminer librement</button>
+    </div>
+  </div>
+
   <div id="levelFlash" class="level-flash">
     <div class="flash-text">
       <strong id="flashLevel">Niveau 2</strong>
@@ -553,18 +580,6 @@ Sylvain a 0 gage(s) à utiliser contre Steph.</p>
   <script>
     "use strict";
 
-    const levels = [
-      { name: "Quiz à risque", count: 10 },
-      { name: "Tirage coquin", count: 10 },
-      { name: "Chaud", count: 11 },
-      { name: "Très chaud", count: 8 },
-      { name: "Hard", count: 1 }
-    ];
-
-    /*
-      Chaque niveau contient exactement le nombre de cartes joué.
-      Toutes les cartes apparaissent une fois en mode complet ; le mode Surprise en sélectionne 20.
-    */
     const decks = {
       1: [
         { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans un fantasme de domination consenti, quel élément distingue le plus souvent le fantasme d’une simple contrainte ?", answers: ["La durée limitée du scénario", "Le contrôle volontairement confié à l’autre", "L’intensité choisie par la personne qui guide", "Le réalisme de la mise en scène"], correct: 1 },
@@ -618,61 +633,95 @@ Sylvain a 0 gage(s) à utiliser contre Steph.</p>
       ]
     };
 
-    // Moteur intégré : les boutons fonctionnent même si seul index.html est transféré.
-"use strict";
 
-const el = {
-      welcome: document.getElementById("welcomeScreen"),
-      game: document.getElementById("gameScreen"),
-      end: document.getElementById("endScreen"),
-      start: document.getElementById("startButton"),
-      restart: document.getElementById("restartButton"),
-      endRestart: document.getElementById("endRestartButton"),
-      pause: document.getElementById("pauseButton"),
-      resume: document.getElementById("resumeButton"),
-      pauseOverlay: document.getElementById("pauseOverlay"),
-      quizResultOverlay: document.getElementById("quizResultOverlay"),
-      quizScore: document.getElementById("quizScore"),
-      continueLevel2: document.getElementById("continueLevel2Button"),
-      levelName: document.getElementById("levelName"),
-      progressText: document.getElementById("progressText"),
-      progressBar: document.getElementById("progressBar"),
-      card: document.getElementById("card"),
-      target: document.getElementById("target"),
-      challenge: document.getElementById("challenge"),
-      answers: document.getElementById("answers"),
-      feedback: document.getElementById("feedback"),
-      duration: document.getElementById("duration"),
-      next: document.getElementById("nextButton"),
-      timerPanel: document.getElementById("timerPanel"),
-      timerDisplay: document.getElementById("timerDisplay"),
-      timerBar: document.getElementById("timerBar"),
-      timerButton: document.getElementById("timerButton"),
-      levelFlash: document.getElementById("levelFlash"),
-      flashLevel: document.getElementById("flashLevel"),
-      flashName: document.getElementById("flashName")
-    };
-
-
-// Les identifiants sont les positions des cartes V23, dont le contenu reste inchangé.
-const MODES = {
-  complete: { label: 'Partie complète', counts: [10, 10, 11, 8, 1] },
-  surprise: { label: 'Partie Surprise', counts: [4, 5, 6, 4, 1] }
+    // Catalogue V25 : textes historiques conservés, métadonnées séparées.
+const LEVELS = [
+  { name: 'Quiz et complicité', quota: 10 },
+  { name: 'Séduction et rapprochement', quota: 10 },
+  { name: 'Audace et jeux de pouvoir consentis', quota: 8 },
+  { name: 'Intimité intense', quota: 9 },
+  { name: 'Final libre et mutuellement choisi', quota: 3 }
+];
+const CATEGORIES = {
+  quiz: 'Quiz et questions',
+  complicite: 'Complicité et confidences',
+  danse: 'Danse',
+  baisers: 'Baisers et rapprochement',
+  vetements: 'Tenue et vêtements',
+  caresses: 'Caresses',
+  intimite: 'Intimité et pratiques adultes',
+  controle: 'Jeux de contrôle',
+  attaches: 'Attaches',
+  fessees: 'Fessées',
+  libre: 'Cartes blanches',
+  final: 'Finale actuelle'
 };
-const SAVE_KEY = 'sylvain-steph-v24';
-const LEGACY_KEY = 'sylvain-steph-v23';
-let gameMode = 'complete', levelIndex = 0, playedInLevel = 0;
-let plan = {}, gameDecks = {}, currentCard = null, selectedAnswer = null;
-let penalties = { Steph: 0, Sylvain: 0 }, finished = false, quizResult = false;
-let isPaused = false, timerId = null, timerRemaining = 0, timerTotal = 0;
-let timerRunning = false, deadline = 0, resumeClock = false, audioContext = null;
-let flashTimeout = null;
-const skip = document.getElementById('skipButton');
-const pauseSkip = document.getElementById('pauseSkipButton');
-const restoreButton = document.getElementById('restoreButton');
-const countAt = index => MODES[gameMode].counts[index];
-const totalCards = () => MODES[gameMode].counts.reduce((sum, n) => sum + n, 0);
-
+// Identifiants permanents c001..c040 : ne jamais les renuméroter ni les réutiliser.
+// Niveau et palier sont des métadonnées, indépendantes du texte et de l'identifiant.
+const CARD_METADATA = [
+  ...Array.from({ length: 10 }, () => ({ level: 1, tier: 1, categories: ['quiz'] })),
+  { level: 2, tier: 2, categories: ['baisers'] },
+  { level: 2, tier: 2, categories: ['danse'] },
+  { level: 2, tier: 3, categories: ['baisers', 'intimite'] },
+  { level: 2, tier: 2, categories: ['baisers'] },
+  { level: 3, tier: 1, categories: ['vetements'] },
+  { level: 3, tier: 2, categories: ['caresses', 'intimite'] },
+  { level: 2, tier: 3, categories: ['baisers', 'caresses'] },
+  { level: 2, tier: 1, categories: ['complicite'] },
+  { level: 3, tier: 2, categories: ['baisers', 'intimite'] },
+  { level: 2, tier: 3, categories: ['caresses'] },
+  { level: 2, tier: 1, categories: ['vetements', 'complicite'] },
+  { level: 2, tier: 1, categories: ['danse'] },
+  { level: 4, tier: 3, categories: ['fessees'] },
+  { level: 5, tier: 1, categories: ['libre'] },
+  { level: 4, tier: 1, categories: ['caresses', 'intimite'] },
+  { level: 3, tier: 4, categories: ['attaches', 'controle'] },
+  { level: 4, tier: 1, categories: ['caresses', 'intimite'] },
+  { level: 4, tier: 3, categories: ['fessees'] },
+  { level: 5, tier: 1, categories: ['libre'] },
+  { level: 2, tier: 3, categories: ['caresses', 'intimite'] },
+  { level: 3, tier: 4, categories: ['attaches', 'controle'] },
+  { level: 4, tier: 2, categories: ['intimite'] },
+  { level: 4, tier: 2, categories: ['intimite'] },
+  { level: 3, tier: 3, categories: ['controle', 'baisers', 'caresses'] },
+  { level: 4, tier: 1, categories: ['caresses', 'intimite'] },
+  { level: 4, tier: 2, categories: ['intimite'] },
+  { level: 4, tier: 1, categories: ['caresses', 'intimite'] },
+  { level: 3, tier: 2, categories: ['baisers', 'caresses', 'intimite'] },
+  { level: 3, tier: 3, categories: ['controle', 'baisers', 'caresses'] },
+  { level: 5, tier: 100, categories: ['final', 'intimite'], endChoice: true }
+];
+// Ajouter plus tard des cartes relues manuellement ici, avec de nouveaux identifiants.
+// Le moteur n'engendre aucun défi. Aucun ajout n'est présent dans cette livraison.
+const EXTRA_CARDS = [];
+let originalIndex = 0;
+const CATALOG = Object.entries(decks).flatMap(([oldLevel, cards]) => cards.map((card, oldIndex) => {
+  const i = originalIndex++;
+  return { ...card, ...CARD_METADATA[i], id: 'c' + String(i + 1).padStart(3, '0'), oldLevel: Number(oldLevel), oldIndex };
+})).concat(EXTRA_CARDS);
+function validateCatalog(cards) {
+  if (new Set(cards.map(card => card.id)).size !== cards.length) throw Error('Identifiant de carte dupliqué');
+  for (const c of cards) {
+    if (!/^[a-zA-Z0-9_-]+$/.test(c.id) || !Number.isInteger(c.level) || c.level < 1 || c.level > 5 || !Number.isInteger(c.tier) || c.tier < 1 || c.tier > 1000) throw Error('Classement de carte invalide');
+    if (c.actor != null && !['Sylvain', 'Steph'].includes(c.actor)) throw Error('Joueur de carte invalide');
+    if (c.player !== undefined && !['Sylvain', 'Steph'].includes(c.player)) throw Error('Joueur de quiz invalide');
+    if (typeof c.text !== 'string' || !c.text.trim() || typeof c.target !== 'string' || !Number.isInteger(c.duration) || c.duration < 0) throw Error('Contenu de carte invalide');
+    if (!Array.isArray(c.categories) || !c.categories.length || c.categories.some(k => !Object.hasOwn(CATEGORIES, k))) throw Error('Catégorie inconnue');
+    if (c.level === 1 && (!Array.isArray(c.answers) || c.answers.length < 2 || c.answers.some(a => typeof a !== 'string' || !a.trim()) || !Number.isInteger(c.correct) || !c.answers[c.correct] || !['Sylvain', 'Steph'].includes(c.player))) throw Error('Quiz invalide');
+    if (c.level !== 1 && c.answers) throw Error('Question classée hors quiz');
+    if (c.endChoice && (c.level !== 5 || !c.categories.includes('final'))) throw Error('Finale classée hors niveau 5');
+  }
+}
+validateCatalog(CATALOG);
+const CARD_BY_ID = new Map(CATALOG.map(card => [card.id, card]));
+const defaultPreferences = () => Object.fromEntries(Object.keys(CATEGORIES).map(k => [k, true]));
+function playerOf(card) {
+  if (card.player) return card.player;
+  if (card.actor) return card.actor;
+  if (card.target.includes('Sylvain')) return 'Sylvain';
+  if (card.target.includes('Steph')) return 'Steph';
+  return null;
+}
 function shuffle(items) {
   const result = [...items];
   for (let i = result.length - 1; i > 0; i--) {
@@ -681,64 +730,98 @@ function shuffle(items) {
   }
   return result;
 }
-function playerOf(card) {
-  if (card.player) return card.player;
-  if (card.target.includes('Sylvain')) return 'Sylvain';
-  if (card.target.includes('Steph')) return 'Steph';
-  return null; // Les deux et carte finale.
-}
-function balance(ids, level) {
-  return ids.reduce((sum, id) => sum + (playerOf(decks[level][id]) === 'Sylvain' ? 1 : playerOf(decks[level][id]) === 'Steph' ? -1 : 0), 0);
-}
-function balancedSelection(level, count) {
-  // Petits paquets (11 cartes au maximum) : énumérer garantit l'équilibre sans
-  // écarter systématiquement la carte « Les deux » ni dépendre d'un tirage chanceux.
-  const candidates = [];
-  function visit(start, ids) {
-    if (ids.length === count) {
-      if (Math.abs(balance(ids, level)) <= 1) candidates.push([...ids]);
-      return;
-    }
-    for (let i = start; i <= decks[level].length - (count - ids.length); i++) visit(i + 1, [...ids, i]);
-  }
-  visit(0, []);
-  return candidates[Math.floor(Math.random() * candidates.length)];
-}
-function alternate(ids, level, previousPlayer = null) {
-  const pools = Object.fromEntries(['Sylvain', 'Steph'].map(player => [player, shuffle(ids.filter(id => playerOf(decks[level][id]) === player))]));
-  const result = [];
-  let preferred = previousPlayer === 'Sylvain' ? 'Steph' : previousPlayer === 'Steph' ? 'Sylvain' : (Math.random() < .5 ? 'Sylvain' : 'Steph');
-  // Un nombre impair commence par le joueur ayant une carte de plus.
-  if (pools.Sylvain.length !== pools.Steph.length) preferred = pools.Sylvain.length > pools.Steph.length ? 'Sylvain' : 'Steph';
-  while (pools.Sylvain.length || pools.Steph.length) {
-    const player = pools[preferred].length ? preferred : (preferred === 'Sylvain' ? 'Steph' : 'Sylvain');
-    result.push(pools[player].pop());
-    preferred = player === 'Sylvain' ? 'Steph' : 'Sylvain';
+function eligible(card, preferences) { return card.categories.every(k => preferences[k] === true); }
+function chooseBalanced(pool, count) {
+  const remaining = shuffle(pool), result = [], scores = { Sylvain: 0, Steph: 0 };
+  while (remaining.length && result.length < count) {
+    // Ne privilégier un joueur que si une sélection est nécessaire ; toutes les
+    // cartes restent disponibles, y compris les cartes à deux.
+    const preferred = scores.Sylvain === scores.Steph ? null : scores.Sylvain < scores.Steph ? 'Sylvain' : 'Steph';
+    const at = preferred ? remaining.findIndex(c => playerOf(c) === preferred) : 0;
+    const [card] = remaining.splice(at < 0 ? 0 : at, 1);
+    result.push(card); if (playerOf(card)) scores[playerOf(card)]++;
   }
   return result;
 }
-function makePlan(mode) {
-  const next = {};
-  for (let level = 1; level <= 5; level++) {
-    let ids = decks[level].map((_, i) => i);
-    if (mode === 'surprise') ids = balancedSelection(level, MODES[mode].counts[level - 1]);
-    // La finale est unique. Les niveaux 3 et 4 conservent la progression V23.
-    if (level <= 2) ids = alternate(ids, level, level === 2 ? playerOf(decks[1][next[1].at(-1)]) : null);
-    next[level] = ids;
+function orderedByIntensity(cards, turnState) {
+  const result = [];
+  const tiers = [...new Set(cards.map(c => c.endChoice ? 1000000 : c.tier))].sort((a, b) => a - b);
+  for (const tier of tiers) {
+    const pending = shuffle(cards.filter(c => (c.endChoice ? 1000000 : c.tier) === tier));
+    while (pending.length) {
+      const opposite = turnState.last === 'Sylvain' ? 'Steph' : turnState.last === 'Steph' ? 'Sylvain' : null;
+      let at = opposite ? pending.findIndex(c => playerOf(c) === opposite) : -1;
+      if (at < 0) {
+        const fewer = turnState.Sylvain === turnState.Steph ? null : turnState.Sylvain < turnState.Steph ? 'Sylvain' : 'Steph';
+        at = fewer ? pending.findIndex(c => playerOf(c) === fewer) : 0;
+      }
+      const [card] = pending.splice(at < 0 ? 0 : at, 1); result.push(card.id);
+      const player = playerOf(card);
+      if (player) { turnState[player]++; turnState.last = player; }
+    }
   }
-  return next;
+  return result;
 }
-function buildGameDecks() {
-  let previous = null;
-  const key = 'sylvain-steph-last-plan-' + gameMode;
-  try { previous = localStorage.getItem(key); } catch { /* Le jeu reste jouable. */ }
-  for (let attempt = 0; attempt < 16; attempt++) {
-    plan = makePlan(gameMode);
-    if (JSON.stringify(plan) !== previous) break;
-  }
-  if (JSON.stringify(plan) === previous) plan[1].reverse();
-  try { localStorage.setItem(key, JSON.stringify(plan)); } catch { /* La sauvegarde affiche son propre état. */ }
-  gameDecks = Object.fromEntries(Object.entries(plan).map(([k, ids]) => [k, ids.map(id => decks[k][id])]));
+function createPlan(cards, preferences) {
+  validateCatalog(cards);
+  const turns = { Sylvain: 0, Steph: 0, last: null };
+  return LEVELS.map((level, index) => {
+    const pool = cards.filter(c => c.level === index + 1 && eligible(c, preferences));
+    const terminal = shuffle(pool.filter(c => c.endChoice)).slice(0, 1);
+    const selected = chooseBalanced(pool.filter(c => !c.endChoice), Math.max(0, level.quota - terminal.length)).concat(terminal);
+    return orderedByIntensity(selected, turns);
+  });
+}
+
+const $ = id => document.getElementById(id);
+const el = {
+  welcome: $('welcomeScreen'), preferences: $('preferencesScreen'), game: $('gameScreen'), end: $('endScreen'),
+  start: $('startButton'), restore: $('restoreButton'), next: $('nextButton'), skip: $('skipButton'),
+  card: $('card'), target: $('target'), challenge: $('challenge'), answers: $('answers'), feedback: $('feedback'), duration: $('duration'),
+  level: $('levelName'), progress: $('progressText'), bar: $('progressBar'), session: $('sessionStatus'),
+  timerPanel: $('timerPanel'), timerDisplay: $('timerDisplay'), timerBar: $('timerBar'), timerButton: $('timerButton'),
+  pauseOverlay: $('pauseOverlay'), quizOverlay: $('quizResultOverlay'), finalOverlay: $('finalChoiceOverlay'), flash: $('levelFlash')
+};
+const SAVE_KEY = 'sylvain-steph-v25';
+const PREFS_KEY = 'sylvain-steph-preferences-v25';
+const LEGACY_NAMES = ['Quiz à risque', 'Tirage coquin', 'Chaud', 'Très chaud', 'Hard'];
+let game = null, preferences = readPreferences(), isPaused = false, resumeClock = false;
+let timerId = null, timerRunning = false, deadline = 0, flashTimeout = null, audioContext = null;
+const currentCard = () => game?.currentId ? CARD_BY_ID.get(game.currentId) : null;
+const countAt = index => game.plan[index].length;
+const totalCards = () => game.plan.reduce((sum, ids) => sum + ids.length, 0);
+const positionInGame = () => game.plan.slice(0, game.levelIndex).reduce((sum, ids) => sum + ids.length, 0) + game.position;
+function setScreen(screen) {
+  [el.welcome, el.preferences, el.game, el.end].forEach(item => item.classList.toggle('hidden', item !== screen));
+  syncOverlays();
+}
+function syncOverlays() {
+  const active = game && !el.game.classList.contains('hidden');
+  const paused = active && isPaused;
+  el.pauseOverlay.classList.toggle('hidden', !paused);
+  el.quizOverlay.classList.toggle('hidden', !active || isPaused || game.phase !== 'quiz-result');
+  el.finalOverlay.classList.toggle('hidden', !active || isPaused || game.phase !== 'final-choice');
+  document.querySelector('main').inert = Boolean(active && (paused || game.phase === 'quiz-result' || game.phase === 'final-choice'));
+  document.body.classList.toggle('paused', Boolean(paused));
+  const canSkip = active && currentCard() && game.phase === 'playing';
+  el.skip.classList.toggle('hidden', !canSkip);
+  $('pauseSkipButton').classList.toggle('hidden', !canSkip);
+}
+function updateStatus() {
+  const name = game.legacy ? LEGACY_NAMES[game.levelIndex] : LEVELS[game.levelIndex].name;
+  el.level.textContent = `Niveau ${game.levelIndex + 1} · ${name}`;
+  el.progress.textContent = `${game.position} / ${countAt(game.levelIndex)}`;
+  el.bar.style.width = `${countAt(game.levelIndex) ? game.position / countAt(game.levelIndex) * 100 : 100}%`;
+  el.session.textContent = `${game.legacy ? 'Reprise de votre partie précédente' : 'Votre soirée à deux'} · ${positionInGame()} / ${totalCards()} cartes`;
+  el.next.textContent = game.position === countAt(game.levelIndex) ? game.levelIndex === 4 ? 'Terminer' : 'Niveau suivant' : 'Carte suivante';
+  if (!countAt(game.levelIndex)) el.next.textContent = game.levelIndex === 4 ? 'Terminer librement' : 'Passer au niveau suivant';
+}
+function showLevelFlash() {
+  clearTimeout(flashTimeout);
+  $('flashLevel').textContent = `Niveau ${game.levelIndex + 1}`;
+  $('flashName').textContent = game.legacy ? LEGACY_NAMES[game.levelIndex] : LEVELS[game.levelIndex].name;
+  el.flash.classList.add('visible');
+  flashTimeout = setTimeout(() => el.flash.classList.remove('visible'), 950);
 }
 function formatTime(seconds) {
   const n = Math.ceil(seconds);
@@ -746,333 +829,359 @@ function formatTime(seconds) {
 }
 function durationLabel(seconds) {
   if (!seconds) return 'Sans chrono';
-  const minutes = Math.floor(seconds / 60), remainder = seconds % 60;
-  if (!minutes) return `${remainder} secondes`;
-  if (!remainder) return `${minutes} minute${minutes > 1 ? 's' : ''}`;
-  return `${minutes} min ${remainder}`;
+  const m = Math.floor(seconds / 60), s = seconds % 60;
+  return !m ? `${s} secondes` : !s ? `${m} minute${m > 1 ? 's' : ''}` : `${m} min ${s}`;
 }
-function setScreen(screen) {
-  [el.welcome, el.game, el.end].forEach(item => item.classList.toggle('hidden', item !== screen));
+function stopClock() {
+  if (timerRunning && game) game.timer.remaining = Math.max(0, (deadline - performance.now()) / 1000);
+  clearInterval(timerId); timerId = null; timerRunning = false;
 }
-function updateStatus() {
-  el.levelName.textContent = `Niveau ${levelIndex + 1} · ${levels[levelIndex].name}`;
-  el.progressText.textContent = `${playedInLevel} / ${countAt(levelIndex)}`;
-  el.progressBar.style.width = `${playedInLevel / countAt(levelIndex) * 100}%`;
-  const drawn = MODES[gameMode].counts.slice(0, levelIndex).reduce((s, n) => s + n, 0) + playedInLevel;
-  document.getElementById('modeStatus').textContent = `${MODES[gameMode].label} · ${drawn} / ${totalCards()} cartes`;
-  el.next.textContent = levelIndex === 4 && playedInLevel === 1 ? 'Terminer' : 'Carte suivante';
-}
-function syncOverlays() {
-  el.pauseOverlay.classList.toggle('hidden', !isPaused);
-  el.quizResultOverlay.classList.toggle('hidden', !quizResult || isPaused);
-  el.game.inert = isPaused || quizResult;
-  document.body.classList.toggle('paused', isPaused);
-  skip.classList.toggle('hidden', !currentCard || finished || quizResult);
-  pauseSkip.classList.toggle('hidden', !currentCard || finished || quizResult);
-}
-function showLevelFlash() {
-  clearTimeout(flashTimeout);
-  el.flashLevel.textContent = `Niveau ${levelIndex + 1}`;
-  el.flashName.textContent = levels[levelIndex].name;
-  el.levelFlash.classList.add('visible');
-  flashTimeout = setTimeout(() => el.levelFlash.classList.remove('visible'), 950);
-}
-function resetTimer() {
-  clearInterval(timerId); timerId = null; timerRunning = false; resumeClock = false;
-  timerRemaining = 0; timerTotal = 0;
-  el.timerPanel.classList.add('hidden'); el.timerButton.textContent = 'Démarrer';
-  el.timerBar.style.width = '100%';
-}
-function setTimer(seconds) {
-  resetTimer();
-  if (!seconds) return;
-  timerRemaining = timerTotal = seconds;
-  el.timerPanel.classList.remove('hidden'); renderTimer();
+function resetTimer(seconds = 0) {
+  stopClock(); resumeClock = false;
+  if (game) game.timer = { total: seconds, remaining: seconds };
+  el.timerButton.textContent = 'Démarrer'; renderTimer();
 }
 function renderTimer() {
-  el.timerDisplay.textContent = formatTime(timerRemaining);
-  el.timerBar.style.width = `${timerTotal ? Math.max(0, timerRemaining / timerTotal * 100) : 0}%`;
+  const timer = game?.timer || { total: 0, remaining: 0 };
+  el.timerPanel.classList.toggle('hidden', !timer.total);
+  el.timerDisplay.textContent = formatTime(timer.remaining);
+  el.timerBar.style.width = `${timer.total ? Math.max(0, timer.remaining / timer.total * 100) : 0}%`;
 }
 function getAudioContext() {
   try {
     const Audio = window.AudioContext || window.webkitAudioContext;
     if (!audioContext && Audio) audioContext = new Audio();
     if (audioContext?.state === 'suspended') audioContext.resume().catch(() => {});
-  } catch { /* Le chrono fonctionne même sans sortie audio. */ }
+  } catch { /* Audio facultatif. */ }
   return audioContext;
 }
-function beep(frequency, duration, volume = .06) {
+function beep(frequency, duration) {
   try {
     const context = getAudioContext(); if (!context) return;
     const oscillator = context.createOscillator(), gain = context.createGain();
-    oscillator.type = 'sine'; oscillator.frequency.value = frequency;
-    gain.gain.setValueAtTime(volume, context.currentTime);
+    oscillator.frequency.value = frequency; gain.gain.setValueAtTime(.06, context.currentTime);
     gain.gain.exponentialRampToValueAtTime(.001, context.currentTime + duration);
-    oscillator.connect(gain); gain.connect(context.destination);
-    oscillator.start(); oscillator.stop(context.currentTime + duration);
-  } catch { /* Audio facultatif. */ }
-}
-function stopClock() {
-  if (timerRunning) timerRemaining = Math.max(0, (deadline - performance.now()) / 1000);
-  clearInterval(timerId); timerId = null; timerRunning = false;
+    oscillator.connect(gain); gain.connect(context.destination); oscillator.start(); oscillator.stop(context.currentTime + duration);
+  } catch { /* Le chrono reste indépendant du son. */ }
 }
 function tickTimer() {
-  const before = Math.ceil(timerRemaining);
-  timerRemaining = Math.max(0, (deadline - performance.now()) / 1000); renderTimer();
-  const after = Math.ceil(timerRemaining);
-  if (after !== before && after >= 1 && after <= 5) beep(610 + (5 - after) * 55, .12);
-  if (!timerRemaining) { stopClock(); el.timerButton.textContent = 'Relancer'; beep(980, .2); }
+  if (!timerRunning || isPaused || !game) return;
+  const before = Math.ceil(game.timer.remaining);
+  game.timer.remaining = Math.max(0, (deadline - performance.now()) / 1000);
+  const after = Math.ceil(game.timer.remaining); renderTimer();
+  if (after !== before && after > 0 && after <= 5) beep(610 + (5 - after) * 55, .12);
+  if (!after) { stopClock(); el.timerButton.textContent = 'Relancer'; beep(980, .2); }
   saveGame();
 }
 function toggleTimer() {
-  if (isPaused || quizResult || !timerTotal) return;
+  if (!game || isPaused || game.phase !== 'playing' || !game.timer.total) return;
   if (timerRunning) { stopClock(); el.timerButton.textContent = 'Reprendre'; }
   else {
-    if (timerRemaining <= 0) timerRemaining = timerTotal;
-    getAudioContext(); deadline = performance.now() + timerRemaining * 1000;
-    timerRunning = true; el.timerButton.textContent = 'Pause';
-    clearInterval(timerId); timerId = setInterval(tickTimer, 200);
+    if (!game.timer.remaining) game.timer.remaining = game.timer.total;
+    getAudioContext(); deadline = performance.now() + game.timer.remaining * 1000;
+    timerRunning = true; el.timerButton.textContent = 'Pause'; timerId = setInterval(tickTimer, 200);
   }
   renderTimer(); saveGame();
 }
 function pauseGame() {
-  if (isPaused || finished || el.game.classList.contains('hidden')) return;
-  resumeClock = timerRunning; stopClock(); isPaused = true;
-  syncOverlays(); saveGame(); el.resume.focus();
+  if (!game || isPaused || game.phase === 'finished' || el.game.classList.contains('hidden')) return;
+  resumeClock = timerRunning; stopClock(); isPaused = true; syncOverlays(); saveGame(); $('resumeButton').focus();
 }
 function resumeGame() {
+  if (!game) return;
   isPaused = false; syncOverlays();
-  if (resumeClock && timerRemaining > 0) toggleTimer();
+  if (resumeClock && game.timer.remaining > 0) toggleTimer();
   resumeClock = false; saveGame();
-  (quizResult ? el.continueLevel2 : skip.classList.contains('hidden') ? el.next : skip).focus();
+  (game.phase === 'quiz-result' ? $('continueLevel2Button') : game.phase === 'final-choice' ? $('declineFinalButton') : el.next.disabled ? el.skip : el.next).focus();
 }
 function resetQuestion() {
-  el.card.classList.remove('question-card'); el.answers.replaceChildren();
-  el.answers.classList.add('hidden'); el.feedback.textContent = '';
-  el.feedback.classList.remove('good', 'bad'); el.feedback.classList.add('hidden');
-}
-function renderCard() {
-  resetQuestion();
-  const card = currentCard;
-  el.target.textContent = card.target; el.challenge.textContent = card.text;
-  if (card.answers) {
-    el.card.classList.add('question-card'); el.answers.classList.remove('hidden');
-    card.answers.forEach((answer, index) => {
-      const button = document.createElement('button'); button.type = 'button';
-      button.className = 'answer-button'; button.textContent = answer;
-      button.addEventListener('click', () => answerQuestion(card, index)); el.answers.appendChild(button);
-    });
-    el.duration.textContent = 'Question culture sexe · choisissez une réponse';
-    if (selectedAnswer !== null) renderAnswer();
-  } else el.duration.textContent = `Durée · ${durationLabel(card.duration)}`;
-  el.next.disabled = Boolean(card.answers && selectedAnswer === null);
-  el.card.classList.add('flipped'); syncOverlays();
+  el.card.classList.remove('question-card'); el.answers.replaceChildren(); el.answers.classList.add('hidden');
+  el.feedback.textContent = ''; el.feedback.classList.remove('good', 'bad'); el.feedback.classList.add('hidden');
+  el.next.disabled = false;
 }
 function renderAnswer() {
-  const card = currentCard, buttons = [...el.answers.children];
-  buttons.forEach(button => { button.disabled = true; });
-  buttons[card.correct].classList.add('correct');
-  const answer = card.answers[card.correct], correct = selectedAnswer === card.correct;
+  const card = currentCard(), buttons = [...el.answers.children];
+  buttons.forEach(button => { button.disabled = true; }); buttons[card.correct].classList.add('correct');
+  const correct = game.selectedAnswer === card.correct, answer = card.answers[card.correct];
   el.feedback.classList.toggle('good', correct); el.feedback.classList.toggle('bad', !correct);
   if (correct) el.feedback.textContent = `Bonne réponse\nLa bonne réponse était : ${answer}\nAucun gage gagné.`;
   else {
-    buttons[selectedAnswer].classList.add('wrong');
+    buttons[game.selectedAnswer].classList.add('wrong');
     const winner = card.player === 'Sylvain' ? 'Steph' : 'Sylvain';
     el.feedback.textContent = `Mauvaise réponse : ${winner} gagne 1 gage à utiliser contre ${card.player}.\nBonne réponse : ${answer}`;
   }
   el.feedback.classList.remove('hidden'); el.next.disabled = false;
 }
-function answerQuestion(card, selectedIndex) {
-  if (isPaused || quizResult || selectedAnswer !== null || card !== currentCard || !Number.isInteger(selectedIndex) || !card.answers?.[selectedIndex]) return;
-  selectedAnswer = selectedIndex;
-  if (selectedIndex !== card.correct) penalties[card.player === 'Sylvain' ? 'Steph' : 'Sylvain'] += 1;
+function renderCard() {
+  resetQuestion(); const card = currentCard();
+  if (!card) {
+    el.target.textContent = 'Les deux';
+    const empty = countAt(game.levelIndex) === 0;
+    el.challenge.textContent = empty ? 'Aucune carte retenue pour ce niveau avec vos préférences. Vous pouvez continuer.' : game.levelIndex === 4 ? 'Choisissez ensemble la manière de conclure votre soirée.' : 'Touchez « Carte suivante » pour commencer ce niveau.';
+    el.duration.textContent = empty ? 'Vos exclusions sont respectées.' : 'Vous pouvez passer chaque carte sans pénalité.';
+    el.card.classList.toggle('flipped', empty); syncOverlays(); return;
+  }
+  el.target.textContent = card.target; el.challenge.textContent = card.text;
+  if (card.answers) {
+    el.card.classList.add('question-card'); el.answers.classList.remove('hidden');
+    card.answers.forEach((answer, index) => {
+      const button = document.createElement('button'); button.type = 'button'; button.className = 'answer-button'; button.textContent = answer;
+      button.addEventListener('click', () => answerQuestion(index)); el.answers.appendChild(button);
+    });
+    el.duration.textContent = 'Question culture sexe · choisissez une réponse';
+    el.next.disabled = game.selectedAnswer === null;
+    if (game.selectedAnswer !== null) renderAnswer();
+  } else el.duration.textContent = `Durée · ${durationLabel(card.duration)}`;
+  el.card.classList.add('flipped'); syncOverlays();
+}
+function answerQuestion(index) {
+  const card = currentCard();
+  if (!game || isPaused || game.phase !== 'playing' || !card?.answers || game.selectedAnswer !== null || !Number.isInteger(index) || !card.answers[index]) return;
+  game.selectedAnswer = index;
+  if (index !== card.correct) game.penalties[card.player === 'Sylvain' ? 'Steph' : 'Sylvain']++;
   renderAnswer();
-  if (levelIndex === 0 && playedInLevel === countAt(0)) showQuizResult();
+  if (game.position === countAt(0)) showQuizResult();
   saveGame();
 }
 function showQuizResult() {
-  quizResult = true;
-  el.quizScore.textContent = `Steph a ${penalties.Steph} gage(s) à utiliser contre Sylvain.\nSylvain a ${penalties.Sylvain} gage(s) à utiliser contre Steph.`;
-  syncOverlays(); el.continueLevel2.focus();
+  game.phase = 'quiz-result';
+  $('quizScore').textContent = `Steph a ${game.penalties.Steph} gage(s) à utiliser contre Sylvain.\nSylvain a ${game.penalties.Sylvain} gage(s) à utiliser contre Steph.`;
+  syncOverlays(); $('continueLevel2Button').focus();
+}
+function enterNextLevel() {
+  resetTimer(); game.levelIndex++; game.position = 0; game.currentId = null; game.selectedAnswer = null; game.phase = 'playing';
+  showLevelFlash(); updateStatus(); renderCard(); syncOverlays();
 }
 function continueToLevel2() {
-  if (isPaused || !quizResult || levelIndex !== 0 || playedInLevel !== countAt(0)) return;
-  quizResult = false; levelIndex = 1; playedInLevel = 0; currentCard = null; selectedAnswer = null;
-  resetTimer(); resetQuestion(); el.card.classList.remove('flipped');
-  el.target.textContent = 'Les deux';
-  el.challenge.textContent = 'Le quiz est terminé. Touchez « Carte suivante » pour commencer le niveau 2.';
-  el.duration.textContent = 'À partir de maintenant : uniquement des gages.';
-  el.next.disabled = false; updateStatus(); syncOverlays(); showLevelFlash(); saveGame(); el.next.focus();
+  if (!game || isPaused || game.phase !== 'quiz-result') return;
+  enterNextLevel(); saveGame(); el.next.focus();
+}
+function showFinalChoice() {
+  resetTimer(); game.phase = 'final-choice'; syncOverlays(); saveGame(); $('declineFinalButton').focus();
 }
 function drawCard(skipping = false) {
-  if (isPaused || quizResult || finished || el.game.classList.contains('hidden')) return;
-  if (!skipping && currentCard?.answers && selectedAnswer === null) return;
-  if (playedInLevel === countAt(levelIndex)) {
-    if (levelIndex === 0) { showQuizResult(); saveGame(); return; }
-    if (levelIndex === 4) { finishGame(); return; }
-    levelIndex++; playedInLevel = 0; showLevelFlash();
+  if (!game || isPaused || game.phase !== 'playing' || el.game.classList.contains('hidden')) return;
+  if (!skipping && currentCard()?.answers && game.selectedAnswer === null) return;
+  if (game.position === countAt(game.levelIndex)) {
+    if (game.levelIndex === 0 && countAt(0)) { showQuizResult(); saveGame(); return; }
+    if (game.levelIndex === 4) { finishGame(); return; }
+    enterNextLevel();
+    if (!countAt(game.levelIndex)) { saveGame(); return; }
   }
-  resetTimer(); selectedAnswer = null;
+  const id = game.plan[game.levelIndex][game.position];
+  const card = CARD_BY_ID.get(id);
+  if (card.endChoice && !game.finalApproved) { showFinalChoice(); return; }
+  resetTimer(card.duration); game.currentId = id; game.position++; game.selectedAnswer = null;
   el.card.classList.remove('flipped'); void el.card.offsetWidth;
-  currentCard = gameDecks[levelIndex + 1].shift(); playedInLevel++;
-  setTimer(currentCard.duration); renderCard(); updateStatus(); saveGame();
+  renderCard(); updateStatus(); saveGame();
 }
 function skipChallenge() {
-  if (!currentCard || quizResult || finished) return;
-  // Depuis la pause, arrêter définitivement le chrono de la carte passée.
+  if (!game || !currentCard() || game.phase !== 'playing') return;
+  if (!game.skipped.includes(game.currentId)) game.skipped.push(game.currentId);
   if (isPaused) { isPaused = false; resumeClock = false; syncOverlays(); }
   drawCard(true);
 }
-function startGame(mode = 'complete', restoring = false) {
-  if (!Object.hasOwn(MODES, mode)) return;
-  gameMode = mode; currentCard = null; selectedAnswer = null; finished = false; quizResult = false;
-  isPaused = false; levelIndex = 0; playedInLevel = 0; penalties = { Steph: 0, Sylvain: 0 };
-  clearTimeout(flashTimeout); el.levelFlash.classList.remove('visible'); resetTimer(); resetQuestion();
-  plan = {}; gameDecks = {};
-  if (!restoring) buildGameDecks();
-  el.card.classList.remove('flipped'); el.target.textContent = 'Les deux';
-  el.challenge.textContent = 'Touchez « Carte suivante » pour commencer.';
-  el.duration.textContent = 'La première carte vous attend.'; el.next.disabled = false;
-  syncOverlays(); updateStatus(); setScreen(el.game);
-  if (!restoring) saveGame(); el.next.focus();
+function acceptFinal() {
+  if (!game || isPaused || game.phase !== 'final-choice') return;
+  game.finalApproved = true; game.phase = 'playing'; syncOverlays(); drawCard(true);
 }
-function showModeSelection() {
-  if (!finished) pauseGame();
-  stopClock(); clearTimeout(flashTimeout); el.levelFlash.classList.remove('visible');
-  el.pauseOverlay.classList.add('hidden'); el.quizResultOverlay.classList.add('hidden');
-  document.body.classList.remove('paused'); setScreen(el.welcome);
-  refreshRestoreButton(); el.start.focus();
+function declineFinal() {
+  if (!game || isPaused || game.phase !== 'final-choice') return;
+  const id = game.plan[game.levelIndex][game.position];
+  game.skipped.push(id); game.finalDeclined = true; game.position++; game.currentId = null; game.selectedAnswer = null;
+  finishGame();
 }
 function finishGame() {
-  resetTimer(); finished = true; syncOverlays();
-  document.getElementById('endSummary').textContent = `${MODES[gameMode].label} terminée : ${totalCards()} cartes, les cinq niveaux traversés.`;
-  setScreen(el.end); saveGame(); el.endRestart.focus();
+  resetTimer(); game.phase = 'finished'; isPaused = false;
+  const revealed = positionInGame() - (game.finalDeclined ? 1 : 0);
+  $('endSummary').textContent = `Les cinq niveaux sont terminés. ${revealed} carte${revealed > 1 ? 's' : ''} découverte${revealed > 1 ? 's' : ''}, ${game.skipped.length} passée${game.skipped.length > 1 ? 's' : ''}. Votre final vous appartient.`;
+  updateStatus(); setScreen(el.end); saveGame(); $('endRestartButton').focus();
 }
-
-
-function saveGame() {
-  if (!Object.keys(plan).length) return;
+function startGame() {
+  stopClock(); isPaused = false; resumeClock = false; clearTimeout(flashTimeout); el.flash.classList.remove('visible');
+  const selected = createPlan(CATALOG, preferences);
+  game = { version: 25, schema: 1, legacy: false, preferences: { ...preferences }, plan: selected, levelIndex: 0, position: 0, currentId: null,
+    selectedAnswer: null, penalties: { Steph: 0, Sylvain: 0 }, timer: { total: 0, remaining: 0 }, phase: 'playing', skipped: [], finalApproved: false, finalDeclined: false };
+  setScreen(el.game); resetTimer(); renderCard(); updateStatus(); saveGame(); el.next.focus();
+}
+function showHome() {
+  pauseGame(); stopClock(); resumeClock = false; clearTimeout(flashTimeout); el.flash.classList.remove('visible');
+  setScreen(el.welcome); refreshHome(); el.start.focus();
+}
+function readPreferences() {
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify({
-      version: 24, mode: gameMode, plan, levelIndex, playedInLevel,
-      order: Object.fromEntries(Object.entries(gameDecks).map(([k, cards]) => [k, cards.map(card => decks[k].indexOf(card))])),
-      current: currentCard ? decks[levelIndex + 1].indexOf(currentCard) : null,
-      selectedAnswer, penalties, timerRemaining, timerTotal, finished, quizResult
-    }));
-    document.getElementById('saveStatus').textContent = 'Partie sauvegardée sur cet appareil.';
-  } catch {
-    document.getElementById('saveStatus').textContent = 'Sauvegarde indisponible : gardez la page ouverte pour continuer.';
-  }
+    const p = JSON.parse(localStorage.getItem(PREFS_KEY));
+    if (p && Object.keys(CATEGORIES).every(k => typeof p[k] === 'boolean')) return Object.fromEntries(Object.keys(CATEGORIES).map(k => [k, p[k]]));
+  } catch { /* Valeurs par défaut lorsque le stockage est indisponible. */ }
+  return defaultPreferences();
 }
-function validIds(ids, level, length) {
-  return Array.isArray(ids) && ids.length === length && new Set(ids).size === ids.length && ids.every(id => Number.isInteger(id) && id >= 0 && id < decks[level].length);
+function expectedCounts(p) {
+  return LEVELS.map((level, index) => {
+    const pool = CATALOG.filter(c => c.level === index + 1 && eligible(c, p));
+    return Math.min(level.quota, pool.filter(c => !c.endChoice).length + Math.min(1, pool.filter(c => c.endChoice).length));
+  });
 }
-function validateSave(s) {
-  if (!s || ![23, 24].includes(s.version)) return null;
-  const legacy = s.version === 23;
-  if (legacy) s = { ...s, mode: 'complete', plan: {}, quizResult: s.levelIndex === 0 && s.playedInLevel === 10 && s.selectedAnswer !== null };
-  if (!Object.hasOwn(MODES, s.mode)) return null;
-  const counts = MODES[s.mode].counts;
-  if (!Number.isInteger(s.levelIndex) || s.levelIndex < 0 || s.levelIndex > 4) return null;
-  if (!Number.isInteger(s.playedInLevel) || s.playedInLevel < 0 || s.playedInLevel > counts[s.levelIndex]) return null;
-  const deck = decks[s.levelIndex + 1];
-  if (s.playedInLevel === 0 ? s.current !== null : !Number.isInteger(s.current) || !deck[s.current]) return null;
-  if (s.selectedAnswer !== null && (!Number.isInteger(s.selectedAnswer) || s.selectedAnswer < 0 || !deck[s.current]?.answers?.[s.selectedAnswer])) return null;
-  for (let k = 1; k <= 5; k++) {
-    const consumed = k < s.levelIndex + 1 ? counts[k - 1] : k === s.levelIndex + 1 ? s.playedInLevel : 0;
-    const ids = s.order?.[k];
-    if (!validIds(ids, k, counts[k - 1] - consumed)) return null;
-    if (legacy) {
-      // La V23 stockait seulement les cartes restantes. Reconstituer l'historique
-      // n'affecte ni la carte affichée ni l'ordre du tirage restant.
-      let used = decks[k].map((_, id) => id).filter(id => !ids.includes(id));
-      if (k === s.levelIndex + 1 && s.current !== null) {
-        if (!used.includes(s.current)) return null;
-        used = used.filter(id => id !== s.current).concat(s.current);
-      }
-      s.plan[k] = used.concat(ids);
+function readPreferenceForm() { return Object.fromEntries(Object.keys(CATEGORIES).map(k => [k, $('pref-' + k).checked])); }
+function refreshPreferenceCount() {
+  const counts = expectedCounts(readPreferenceForm());
+  $('preferencesCount').textContent = `Jusqu’à ${counts.reduce((a, b) => a + b, 0)} cartes avec ces choix. Un niveau sans carte reste traversable.`;
+}
+function showPreferences() {
+  for (const k of Object.keys(CATEGORIES)) $('pref-' + k).checked = preferences[k];
+  refreshPreferenceCount(); setScreen(el.preferences); $('preferencesTitle').focus();
+}
+function savePreferences(event) {
+  event.preventDefault(); preferences = readPreferenceForm();
+  try { localStorage.setItem(PREFS_KEY, JSON.stringify(preferences)); }
+  catch { $('saveStatus').textContent = 'Préférences conservées pour cette page ; stockage local indisponible.'; }
+  setScreen(el.welcome); refreshHome(); el.start.focus();
+}
+for (const [key, label] of Object.entries(CATEGORIES)) {
+  const option = document.createElement('label'); option.className = 'category-option';
+  const input = document.createElement('input'); input.type = 'checkbox'; input.id = 'pref-' + key; input.name = key;
+  input.checked = preferences[key]; input.addEventListener('change', refreshPreferenceCount);
+  const span = document.createElement('span'); span.textContent = label; option.append(input, span); $('categoryOptions').appendChild(option);
+}
+function saveGame() {
+  if (!game) return;
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(game));
+    $('saveStatus').textContent = 'Partie sauvegardée sur cet appareil.';
+  } catch { $('saveStatus').textContent = 'Sauvegarde indisponible : gardez cette page ouverte pour continuer.'; }
+}
+function validPreferences(p) { return p && Object.keys(CATEGORIES).every(k => typeof p[k] === 'boolean'); }
+function validateGame(s) {
+  if (!s || s.version !== 25 || s.schema !== 1 || typeof s.legacy !== 'boolean' || !validPreferences(s.preferences)) return null;
+  if (!Array.isArray(s.plan) || s.plan.length !== 5 || !Number.isInteger(s.levelIndex) || s.levelIndex < 0 || s.levelIndex > 4) return null;
+  const all = s.plan.flat();
+  if (all.length > 100 || new Set(all).size !== all.length || all.some(id => !CARD_BY_ID.has(id))) return null;
+  for (let index = 0; index < 5; index++) {
+    if (!Array.isArray(s.plan[index])) return null;
+    const cards = s.plan[index].map(id => CARD_BY_ID.get(id));
+    if (cards.some(c => (s.legacy ? c.oldLevel : c.level) !== index + 1)) return null;
+    if (!s.legacy) {
+      if (cards.length > LEVELS[index].quota || cards.some(c => !eligible(c, s.preferences))) return null;
+      const ranks = cards.map(c => c.endChoice ? 1000000 : c.tier);
+      if (ranks.some((rank, i) => i > 0 && rank < ranks[i - 1])) return null;
+      if (cards.filter(c => c.endChoice).length > 1) return null;
     }
-    if (!validIds(s.plan?.[k], k, counts[k - 1])) return null;
-    if (JSON.stringify(s.plan[k].slice(consumed)) !== JSON.stringify(ids)) return null;
   }
-  if (s.current !== null && s.plan[s.levelIndex + 1][s.playedInLevel - 1] !== s.current) return null;
-  if (s.mode === 'surprise') {
-    if (s.plan[1].filter(id => decks[1][id].player === 'Sylvain').length !== 2) return null;
-    if ([2, 3, 4].some(k => Math.abs(balance(s.plan[k], k)) > 1)) return null;
+  const ids = s.plan[s.levelIndex];
+  if (!Number.isInteger(s.position) || s.position < 0 || s.position > ids.length) return null;
+  if (!['playing', 'quiz-result', 'final-choice', 'finished'].includes(s.phase)) return null;
+  if (typeof s.finalApproved !== 'boolean' || typeof s.finalDeclined !== 'boolean') return null;
+  if (s.currentId !== null && (!s.position || s.currentId !== ids[s.position - 1])) return null;
+  if (s.currentId === null && s.position > 0 && s.phase !== 'finished') return null;
+  const card = s.currentId ? CARD_BY_ID.get(s.currentId) : null;
+  if (s.selectedAnswer !== null && (!Number.isInteger(s.selectedAnswer) || s.selectedAnswer < 0 || !card?.answers?.[s.selectedAnswer])) return null;
+  if (s.phase === 'finished' && (s.levelIndex !== 4 || s.position !== ids.length)) return null;
+  if (s.phase === 'quiz-result' && (s.levelIndex !== 0 || !ids.length || s.position !== ids.length || !card?.answers)) return null;
+  if (s.phase === 'final-choice' && (!CARD_BY_ID.get(ids[s.position])?.endChoice || s.finalApproved)) return null;
+  if (card?.endChoice && !s.finalApproved) return null;
+  if (s.finalDeclined && (s.phase !== 'finished' || s.currentId !== null || s.finalApproved)) return null;
+  const consumed = s.plan.slice(0, s.levelIndex).flat().concat(ids.slice(0, s.position));
+  if (!Array.isArray(s.skipped) || new Set(s.skipped).size !== s.skipped.length || s.skipped.some(id => !consumed.includes(id))) return null;
+  if (!s.penalties || !['Sylvain', 'Steph'].every(player => {
+    const other = player === 'Sylvain' ? 'Steph' : 'Sylvain';
+    const max = s.plan[0].filter(id => CARD_BY_ID.get(id).player === other).length;
+    return Number.isInteger(s.penalties[player]) && s.penalties[player] >= 0 && s.penalties[player] <= max;
+  })) return null;
+  const expectedTimer = ['finished', 'final-choice'].includes(s.phase) ? 0 : card?.duration || 0;
+  if (!s.timer || s.timer.total !== expectedTimer || !Number.isFinite(s.timer.remaining) || s.timer.remaining < 0 || s.timer.remaining > expectedTimer) return null;
+  return s;
+}
+function migrateLegacy(s) {
+  if (!s || ![23, 24].includes(s.version)) return null;
+  const oldCounts = s.version === 23 || s.mode === 'complete' ? [10, 10, 11, 8, 1] : s.mode === 'surprise' ? [4, 5, 6, 4, 1] : null;
+  if (!oldCounts || !Number.isInteger(s.levelIndex) || s.levelIndex < 0 || s.levelIndex > 4 || !Number.isInteger(s.playedInLevel) || s.playedInLevel < 0 || s.playedInLevel > oldCounts[s.levelIndex]) return null;
+  const plans = [];
+  function validOld(ids, level, count) {
+    return Array.isArray(ids) && ids.length === count && new Set(ids).size === ids.length && ids.every(i => Number.isInteger(i) && i >= 0 && i < decks[level].length);
   }
-  if (!s.penalties || !['Steph', 'Sylvain'].every(k => Number.isInteger(s.penalties[k]) && s.penalties[k] >= 0 && s.penalties[k] <= counts[0] / 2)) return null;
-  if (typeof s.finished !== 'boolean' || typeof s.quizResult !== 'boolean') return null;
-  if (s.finished && !(s.levelIndex === 4 && s.playedInLevel === 1)) return null;
-  if (s.quizResult && !(s.levelIndex === 0 && s.playedInLevel === counts[0])) return null;
-  if (!Number.isFinite(s.timerRemaining) || s.timerRemaining < 0 || s.timerTotal !== (deck[s.current]?.duration || 0) || s.timerRemaining > s.timerTotal) return null;
-  return { ...s, version: 24 };
+  for (let level = 1; level <= 5; level++) {
+    const used = level < s.levelIndex + 1 ? oldCounts[level - 1] : level === s.levelIndex + 1 ? s.playedInLevel : 0;
+    const remaining = s.order?.[level];
+    if (!validOld(remaining, level, oldCounts[level - 1] - used)) return null;
+    let planned = s.plan?.[level];
+    if (s.version === 23) {
+      let before = decks[level].map((_, i) => i).filter(i => !remaining.includes(i));
+      if (level === s.levelIndex + 1 && s.current !== null) {
+        if (!before.includes(s.current)) return null;
+        before = before.filter(i => i !== s.current).concat(s.current);
+      }
+      planned = before.concat(remaining);
+    }
+    if (!validOld(planned, level, oldCounts[level - 1]) || JSON.stringify(planned.slice(used)) !== JSON.stringify(remaining)) return null;
+    plans.push(planned.map(index => CATALOG.find(c => c.oldLevel === level && c.oldIndex === index).id));
+  }
+  if (s.current !== null && (!Number.isInteger(s.current) || !decks[s.levelIndex + 1][s.current])) return null;
+  if ((s.playedInLevel === 0) !== (s.current === null)) return null;
+  if (typeof s.finished !== 'boolean' || (s.version === 24 && typeof s.quizResult !== 'boolean')) return null;
+  const current = s.current === null ? null : CATALOG.find(c => c.oldLevel === s.levelIndex + 1 && c.oldIndex === s.current).id;
+  const finalCard = current && CARD_BY_ID.get(current).endChoice;
+  const quizDone = s.version === 23 ? s.levelIndex === 0 && s.playedInLevel === 10 && s.selectedAnswer !== null : s.quizResult;
+  return validateGame({ version: 25, schema: 1, legacy: true, preferences: defaultPreferences(), plan: plans,
+    levelIndex: s.levelIndex, position: s.playedInLevel, currentId: current, selectedAnswer: s.selectedAnswer, penalties: s.penalties,
+    timer: { total: s.timerTotal, remaining: s.timerRemaining }, phase: s.finished ? 'finished' : quizDone ? 'quiz-result' : 'playing',
+    skipped: [], finalApproved: Boolean(finalCard), finalDeclined: false });
 }
 function readSave() {
   try {
-    const raw = localStorage.getItem(SAVE_KEY) ?? localStorage.getItem(LEGACY_KEY);
-    return validateSave(JSON.parse(raw));
+    const current = localStorage.getItem(SAVE_KEY);
+    if (current !== null) return validateGame(JSON.parse(current));
+    const legacy = localStorage.getItem('sylvain-steph-v24') ?? localStorage.getItem('sylvain-steph-v23');
+    return migrateLegacy(JSON.parse(legacy));
   } catch { return null; }
 }
-function refreshRestoreButton() {
-  const s = readSave(); restoreButton.classList.toggle('hidden', !s);
-  if (s) restoreButton.textContent = `Reprendre · ${MODES[s.mode].label}`;
-}
 function restoreGame() {
-  const s = readSave(); if (!s) return;
-  startGame(s.mode, true);
-  plan = s.plan; levelIndex = s.levelIndex; playedInLevel = s.playedInLevel;
-  gameDecks = Object.fromEntries(Object.entries(s.order).map(([k, ids]) => [k, ids.map(id => decks[k][id])]));
-  currentCard = s.current === null ? null : decks[levelIndex + 1][s.current];
-  selectedAnswer = s.selectedAnswer; penalties = s.penalties; finished = s.finished; quizResult = s.quizResult;
-  if (currentCard) {
-    setTimer(currentCard.duration); timerRemaining = s.timerRemaining;
-    if (timerTotal) { renderTimer(); el.timerButton.textContent = timerRemaining > 0 ? 'Reprendre' : 'Relancer'; }
-    renderCard();
-  } else if (levelIndex === 1) {
-    el.challenge.textContent = 'Le quiz est terminé. Touchez « Carte suivante » pour commencer le niveau 2.';
-    el.duration.textContent = 'À partir de maintenant : uniquement des gages.';
-  }
-  updateStatus();
-  if (finished) finishGame();
-  else {
-    if (quizResult) showQuizResult();
-    pauseGame(); // Aucun chrono ne repart automatiquement après un rechargement.
-  }
+  const saved = readSave(); if (!saved) return;
+  stopClock(); game = saved; isPaused = false; resumeClock = false;
+  clearTimeout(flashTimeout); el.flash.classList.remove('visible');
+  setScreen(el.game); renderCard(); renderTimer(); updateStatus();
+  el.timerButton.textContent = game.timer.remaining > 0 ? 'Reprendre' : 'Relancer';
+  if (game.phase === 'finished') finishGame();
+  else { if (game.phase === 'quiz-result') showQuizResult(); pauseGame(); }
   saveGame();
 }
-
-el.start.addEventListener('click', () => startGame('complete'));
-document.getElementById('surpriseButton').addEventListener('click', () => startGame('surprise'));
-el.restart.addEventListener('click', showModeSelection);
-el.endRestart.addEventListener('click', showModeSelection);
-restoreButton.addEventListener('click', restoreGame);
-el.next.addEventListener('click', () => drawCard());
-skip.addEventListener('click', skipChallenge); pauseSkip.addEventListener('click', skipChallenge);
+function refreshHome() {
+  const counts = expectedCounts(preferences);
+  $('selectionSummary').textContent = `Jusqu’à ${counts.reduce((a, b) => a + b, 0)} cartes selon vos préférences. La carte finale reste un choix.`;
+  const saved = readSave(); el.restore.classList.toggle('hidden', !saved);
+  el.restore.textContent = saved?.legacy ? 'Reprendre la partie précédente' : 'Reprendre la partie';
+}
+el.start.addEventListener('click', startGame);
+el.restore.addEventListener('click', restoreGame);
+$('preferencesButton').addEventListener('click', showPreferences);
+$('preferencesForm').addEventListener('submit', savePreferences);
+$('cancelPreferencesButton').addEventListener('click', () => { setScreen(el.welcome); el.start.focus(); });
+for (const [id, checked] of [['allowAllButton', true], ['excludeAllButton', false]]) $(id).addEventListener('click', () => {
+  Object.keys(CATEGORIES).forEach(k => { $('pref-' + k).checked = checked; }); refreshPreferenceCount();
+});
+$('restartButton').addEventListener('click', showHome); $('endRestartButton').addEventListener('click', showHome);
+el.next.addEventListener('click', () => drawCard()); el.skip.addEventListener('click', skipChallenge);
+$('pauseSkipButton').addEventListener('click', skipChallenge);
 el.timerButton.addEventListener('click', toggleTimer);
-el.pause.addEventListener('click', pauseGame); el.resume.addEventListener('click', resumeGame);
-el.continueLevel2.addEventListener('click', continueToLevel2);
+$('pauseButton').addEventListener('click', pauseGame); $('resumeButton').addEventListener('click', resumeGame);
+$('continueLevel2Button').addEventListener('click', continueToLevel2);
+$('acceptFinalButton').addEventListener('click', acceptFinal); $('declineFinalButton').addEventListener('click', declineFinal);
 document.addEventListener('visibilitychange', () => { if (document.hidden) pauseGame(); });
 addEventListener('pagehide', () => { pauseGame(); saveGame(); });
-refreshRestoreButton();
-
+refreshHome();
 let installPrompt;
 addEventListener('beforeinstallprompt', event => {
-  event.preventDefault(); installPrompt = event;
-  document.getElementById('installButton').classList.remove('hidden');
+  event.preventDefault(); installPrompt = event; $('installButton').classList.remove('hidden');
 });
-document.getElementById('installButton').onclick = async () => {
+$('installButton').onclick = async () => {
   if (!installPrompt) return;
-  await installPrompt.prompt(); installPrompt = null;
-  document.getElementById('installButton').classList.add('hidden');
+  await installPrompt.prompt(); installPrompt = null; $('installButton').classList.add('hidden');
 };
-addEventListener('appinstalled', () => document.getElementById('installButton').classList.add('hidden'));
+addEventListener('appinstalled', () => $('installButton').classList.add('hidden'));
 if ('serviceWorker' in navigator) {
   const wasControlled = Boolean(navigator.serviceWorker.controller);
   navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(reg => {
-    const update = document.getElementById('updateButton');
+    const update = $('updateButton');
     const offer = () => { if (reg.waiting && navigator.serviceWorker.controller) update.classList.remove('hidden'); };
-    offer();
-    reg.addEventListener('updatefound', () => {
+    offer(); reg.addEventListener('updatefound', () => {
       const worker = reg.installing;
       worker?.addEventListener('statechange', () => { if (worker.state === 'installed') offer(); });
     });
@@ -1081,13 +1190,12 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (wasControlled && !reloading) { reloading = true; pauseGame(); saveGame(); location.reload(); }
     });
-    navigator.serviceWorker.ready.then(() => {
-      document.getElementById('offlineStatus').textContent = 'Application prête pour jouer hors connexion.';
-    });
+    navigator.serviceWorker.ready.then(() => { $('offlineStatus').textContent = 'Application prête pour jouer hors connexion.'; });
     addEventListener('online', () => reg.update().catch(() => {}));
     document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); });
-  }).catch(() => { document.getElementById('offlineStatus').textContent = 'Mode hors connexion indisponible pour le moment.'; });
+  }).catch(() => { $('offlineStatus').textContent = 'Mode hors connexion indisponible pour le moment.'; });
 }
+
   </script>
 </body>
 </html>
