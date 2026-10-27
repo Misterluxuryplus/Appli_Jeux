@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#120812">
-  <title>Sylvain &amp; Steph · V23</title>
+  <title>Sylvain &amp; Steph · V24</title>
   <style>
     :root {
       color-scheme: dark;
@@ -445,6 +445,7 @@
   </style>
 <link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icons/icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><style>
 .quiet,.timer-button,.answer-button{min-height:44px}.card,.card.question-card{height:auto;min-height:425px}.card-face{position:relative;min-height:425px;overflow:visible}.card-back{position:absolute;width:100%;height:100%}.card.question-card .card-face{min-height:560px}.challenge{overflow-wrap:anywhere}.topbar,.status-line{flex-wrap:wrap}.app-tools{max-width:480px;margin:12px auto;padding:16px;display:grid;gap:12px;color:var(--muted);font-size:13px;line-height:1.5}body.paused .float,body.paused .logo{animation-play-state:paused}@media(max-width:360px){.screen{padding-inline:12px}.card-content{padding:20px 16px}}
+.mode-options{display:grid;gap:14px}.mode-option strong,.mode-option span{display:block}.mode-option span{margin-top:6px;font-size:14px;font-weight:500}.mode-options .mode-option:nth-child(2){background:linear-gradient(135deg,#8235c4,#ba3777)}.mode-note{color:var(--muted);font-size:14px;line-height:1.6}.mode-status{margin:0;color:var(--pink);font-size:14px;line-height:1.5}.mode-option{white-space:normal}.card-back{pointer-events:none}.card-scene{min-width:0}
 </style></head>
 <body>
   <div class="ambience" aria-hidden="true">
@@ -463,8 +464,11 @@
       <div class="welcome-box">
         <div class="logo" aria-hidden="true">♥</div>
         <h1>Sylvain<br>&amp; Steph</h1>
-        <p class="intro">V23 — votre partie sauvegardée, même hors connexion.</p>
-        <button id="restoreButton" class="primary hidden" type="button" style="margin-bottom:12px">Reprendre la partie</button><button id="startButton" class="primary" type="button">Commencer</button>
+        <p class="intro">V24 — choisissez votre soirée, complète ou Surprise.</p>
+        <button id="restoreButton" class="primary hidden" type="button" style="margin-bottom:12px">Reprendre la partie</button><div class="mode-options" aria-label="Choisir le mode de jeu">
+          <button id="startButton" class="primary mode-option" type="button"><strong>Partie complète</strong><span>40 cartes · les 5 niveaux</span></button>
+          <button id="surpriseButton" class="primary mode-option" type="button"><strong>Partie Surprise</strong><span>20 cartes tirées au hasard · les 5 niveaux</span></button>
+        </div><p class="mode-note">Vos cartes habituelles, une nouvelle sélection à chaque partie Surprise.</p>
       </div>
     </section>
 
@@ -477,6 +481,7 @@
         </div>
       </header>
 
+      <p id="modeStatus" class="mode-status"></p>
       <section class="status" aria-label="Progression">
         <div class="status-line">
           <span id="levelName" class="level-name">Niveau 1 · Quiz à risque</span>
@@ -514,21 +519,21 @@
       <div class="end-box">
         <div class="logo" aria-hidden="true">♥</div>
         <h2>Partie terminée</h2>
-        <p>Sylvain &amp; Steph ont traversé les cinq niveaux.</p>
+        <p id="endSummary">Sylvain &amp; Steph ont traversé les cinq niveaux.</p>
         <button id="endRestartButton" class="primary" type="button">Recommencer</button>
       </div>
     </section>
   <div class="app-tools"><p id="saveStatus" role="status"></p><p id="offlineStatus" role="status"></p><button id="installButton" class="quiet hidden" type="button">Installer l’application</button><span>Sur iPhone : Safari → Partager → Sur l’écran d’accueil.</span><button id="updateButton" class="quiet hidden" type="button">Installer la mise à jour et reprendre</button></div></main>
 
-  <div id="pauseOverlay" class="overlay hidden">
+  <div id="pauseOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-label="Partie en pause">
     <div class="pause-box">
       <h2>Pause</h2>
       <p>Le chrono est arrêté.</p>
-      <button id="resumeButton" class="primary" type="button">Reprendre</button>
+      <button id="resumeButton" class="primary" type="button">Reprendre</button><button id="pauseSkipButton" class="quiet" type="button" style="margin-top:12px">Passer ce défi sans pénalité</button>
     </div>
   </div>
 
-  <div id="quizResultOverlay" class="overlay hidden">
+  <div id="quizResultOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-label="Résultat du quiz">
     <div class="quiz-result-box">
       <h2>Résultat du niveau 1</h2>
       <p id="quizScore" class="quiz-score">Steph a 0 gage(s) à utiliser contre Sylvain.
@@ -558,7 +563,7 @@ Sylvain a 0 gage(s) à utiliser contre Steph.</p>
 
     /*
       Chaque niveau contient exactement le nombre de cartes joué.
-      Toutes les cartes apparaissent donc une fois à chaque partie.
+      Toutes les cartes apparaissent une fois en mode complet ; le mode Surprise en sélectionne 20.
     */
     const decks = {
       1: [
@@ -613,406 +618,7 @@ Sylvain a 0 gage(s) à utiliser contre Steph.</p>
       ]
     };
 
-    const el = {
-      welcome: document.getElementById("welcomeScreen"),
-      game: document.getElementById("gameScreen"),
-      end: document.getElementById("endScreen"),
-      start: document.getElementById("startButton"),
-      restart: document.getElementById("restartButton"),
-      endRestart: document.getElementById("endRestartButton"),
-      pause: document.getElementById("pauseButton"),
-      resume: document.getElementById("resumeButton"),
-      pauseOverlay: document.getElementById("pauseOverlay"),
-      quizResultOverlay: document.getElementById("quizResultOverlay"),
-      quizScore: document.getElementById("quizScore"),
-      continueLevel2: document.getElementById("continueLevel2Button"),
-      levelName: document.getElementById("levelName"),
-      progressText: document.getElementById("progressText"),
-      progressBar: document.getElementById("progressBar"),
-      card: document.getElementById("card"),
-      target: document.getElementById("target"),
-      challenge: document.getElementById("challenge"),
-      answers: document.getElementById("answers"),
-      feedback: document.getElementById("feedback"),
-      duration: document.getElementById("duration"),
-      next: document.getElementById("nextButton"),
-      timerPanel: document.getElementById("timerPanel"),
-      timerDisplay: document.getElementById("timerDisplay"),
-      timerBar: document.getElementById("timerBar"),
-      timerButton: document.getElementById("timerButton"),
-      levelFlash: document.getElementById("levelFlash"),
-      flashLevel: document.getElementById("flashLevel"),
-      flashName: document.getElementById("flashName")
-    };
-
-    let levelIndex = 0;
-    let playedInLevel = 0;
-    let gameDecks = {};
-    let drawing = false;
-    let isPaused = false;
-    let timerId = null;
-    let timerRemaining = 0;
-    let timerTotal = 0;
-    let timerRunning = false;
-    let audioContext = null;
-    let penalties = { Steph: 0, Sylvain: 0 };
-
-    function shuffle(items) {
-      const result = [...items];
-      for (let i = result.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [result[i], result[j]] = [result[j], result[i]];
-      }
-      return result;
-    }
-
-    function buildGameDecks() {
-      gameDecks = {};
-      Object.keys(decks).forEach(level => {
-        if (level === "3" || level === "4") {
-          // Les niveaux 3 et 4 gardent l'ordre de progression prévu.
-          gameDecks[level] = [...decks[level]];
-        } else if (level === "5") {
-          gameDecks[level] = [...decks[level]];
-        } else {
-          gameDecks[level] = shuffle(decks[level]);
-        }
-      });
-    }
-
-    function formatTime(seconds) {
-      const minutes = Math.floor(seconds / 60).toString().padStart(2, "0");
-      const remainder = (seconds % 60).toString().padStart(2, "0");
-      return `${minutes}:${remainder}`;
-    }
-
-    function durationLabel(seconds) {
-      if (!seconds) return "Sans chrono";
-      const minutes = Math.floor(seconds / 60);
-      const remainder = seconds % 60;
-      if (!minutes) return `${remainder} secondes`;
-      if (!remainder) return `${minutes} minute${minutes > 1 ? "s" : ""}`;
-      return `${minutes} min ${remainder}`;
-    }
-
-    function setScreen(screen) {
-      [el.welcome, el.game, el.end].forEach(item => item.classList.add("hidden"));
-      screen.classList.remove("hidden");
-    }
-
-    function updateStatus() {
-      const level = levels[levelIndex];
-      el.levelName.textContent = `Niveau ${levelIndex + 1} · ${level.name}`;
-      el.progressText.textContent = `${playedInLevel} / ${level.count}`;
-      el.progressBar.style.width = `${(playedInLevel / level.count) * 100}%`;
-    }
-
-    function resetTimer() {
-      window.clearInterval(timerId);
-      timerId = null;
-      timerRunning = false;
-      timerRemaining = 0;
-      timerTotal = 0;
-      el.timerPanel.classList.add("hidden");
-      el.timerButton.textContent = "Démarrer";
-      el.timerBar.style.width = "100%";
-    }
-
-    function setTimer(seconds) {
-      resetTimer();
-      if (!seconds) return;
-      timerRemaining = seconds;
-      timerTotal = seconds;
-      renderTimer();
-      el.timerPanel.classList.remove("hidden");
-    }
-
-    function renderTimer() {
-      el.timerDisplay.textContent = formatTime(Math.ceil(timerRemaining));
-      el.timerBar.style.width = `${Math.max(0, timerRemaining / timerTotal * 100)}%`;
-    }
-
-    function getAudioContext() {
-      if (!audioContext) {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (AudioContextClass) audioContext = new AudioContextClass();
-      }
-      return audioContext;
-    }
-
-    function beep(frequency, duration, volume = .06) {
-      const context = getAudioContext();
-      if (!context) return;
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-      oscillator.type = "sine";
-      oscillator.frequency.value = frequency;
-      gain.gain.setValueAtTime(volume, context.currentTime);
-      gain.gain.exponentialRampToValueAtTime(.001, context.currentTime + duration);
-      oscillator.connect(gain);
-      gain.connect(context.destination);
-      oscillator.start();
-      oscillator.stop(context.currentTime + duration);
-    }
-
-    function showLevelFlash() {
-      el.flashLevel.textContent = `Niveau ${levelIndex + 1}`;
-      el.flashName.textContent = levels[levelIndex].name;
-      el.levelFlash.classList.add("visible");
-      clearTimeout(showLevelFlash.timeout); showLevelFlash.timeout = setTimeout(() => el.levelFlash.classList.remove("visible"), 950);
-    }
-
-    function resetQuestion() {
-      el.card.classList.remove("question-card");
-      el.answers.replaceChildren();
-      el.answers.classList.add("hidden");
-      el.feedback.textContent = "";
-      el.feedback.classList.remove("good", "bad");
-      el.feedback.classList.add("hidden");
-    }
-
-    function renderQuestion(card) {
-      el.card.classList.add("question-card");
-      el.answers.classList.remove("hidden");
-      card.answers.forEach((answer, index) => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "answer-button";
-        button.textContent = answer;
-        button.addEventListener("click", () => answerQuestion(card, index));
-        el.answers.appendChild(button);
-      });
-    }
-
-    function answerQuestion(card, selectedIndex, restoring = false) {
-      if (!restoring && (isPaused || selectedAnswer !== null || card !== currentCard)) return;
-      selectedAnswer = selectedIndex;
-      const buttons = [...el.answers.querySelectorAll(".answer-button")];
-      buttons.forEach(button => { button.disabled = true; });
-      buttons[card.correct].classList.add("correct");
-      const correctAnswer = card.answers[card.correct];
-      if (selectedIndex === card.correct) {
-        el.feedback.classList.add("good");
-        el.feedback.textContent = `Bonne réponse\nLa bonne réponse était : ${correctAnswer}\nAucun gage gagné.`;
-      } else {
-        buttons[selectedIndex].classList.add("wrong");
-        el.feedback.classList.add("bad");
-        const winner = card.player === "Sylvain" ? "Steph" : "Sylvain";
-        if (!restoring) penalties[winner] += 1;
-        el.feedback.textContent = `Mauvaise réponse : ${winner} gagne 1 gage à utiliser contre ${card.player}.\nBonne réponse : ${correctAnswer}`;
-      }
-      el.feedback.classList.remove("hidden");
-      skip.classList.add("hidden");
-      if (levelIndex === 0 && playedInLevel === levels[0].count) {
-        el.next.disabled = true;
-        showQuizResult();
-      } else {
-        el.next.disabled = false;
-      }
-    }
-
-    function showQuizResult() {
-      skip.classList.add("hidden");
-      el.quizScore.textContent = `Steph a ${penalties.Steph} gage(s) à utiliser contre Sylvain.\nSylvain a ${penalties.Sylvain} gage(s) à utiliser contre Steph.`;
-      el.quizResultOverlay.classList.remove("hidden");
-    }
-
-    function continueToLevel2() {
-      if(isPaused || levelIndex !== 0 || playedInLevel !== 10) return;
-      currentCard = null; selectedAnswer = null;
-      el.quizResultOverlay.classList.add("hidden");
-      levelIndex = 1;
-      playedInLevel = 0;
-      resetTimer();
-      resetQuestion();
-      el.card.classList.remove("flipped");
-      el.target.textContent = "Les deux";
-      el.challenge.textContent = "Le quiz est terminé. Touchez « Carte suivante » pour commencer le niveau 2.";
-      el.duration.textContent = "À partir de maintenant : uniquement des gages.";
-      el.next.textContent = "Carte suivante";
-      el.next.disabled = false;
-      updateStatus();
-      showLevelFlash();
-    }
-
-    function advanceLevelIfNeeded() {
-      if (playedInLevel < levels[levelIndex].count) return true;
-      if (levelIndex === 0) {
-        showQuizResult();
-        return false;
-      }
-      if (levelIndex === levels.length - 1) {
-        finishGame();
-        return false;
-      }
-      levelIndex += 1;
-      playedInLevel = 0;
-      updateStatus();
-      showLevelFlash();
-      return true;
-    }
-
-    function drawCard() {
-      if (drawing || isPaused || !advanceLevelIfNeeded()) return;
-      drawing = true;
-      el.next.disabled = true;
-      resetTimer();
-      resetQuestion();
-      el.card.classList.remove("flipped");
-
-      const card = gameDecks[levelIndex + 1].shift();
-      currentCard = card; selectedAnswer = null;
-      {
-        el.target.textContent = card.target;
-        el.challenge.textContent = card.text;
-        if (card.answers) {
-          renderQuestion(card);
-          el.duration.textContent = "Question culture sexe · choisissez une réponse";
-        } else {
-          el.duration.textContent = `Durée · ${durationLabel(card.duration)}`;
-          setTimer(card.duration);
-        }
-        playedInLevel += 1;
-        updateStatus();
-        el.card.classList.add("flipped");
-        el.next.textContent =
-          levelIndex === levels.length - 1 && playedInLevel === levels[levelIndex].count
-            ? "Terminer"
-            : "Carte suivante";
-        el.next.disabled = Boolean(card.answers);
-        drawing = false; skip.classList.remove("hidden"); saveGame();
-      }
-    }
-
-    function startGame() {
-      currentCard = null; selectedAnswer = null; finished = false; resumeClock = false;
-      skip.classList.add("hidden"); document.body.classList.remove("paused");
-      clearTimeout(showLevelFlash.timeout); el.levelFlash.classList.remove("visible");
-      resetTimer();
-      levelIndex = 0;
-      playedInLevel = 0;
-      drawing = false;
-      isPaused = false;
-      penalties = { Steph: 0, Sylvain: 0 };
-      buildGameDecks();
-      el.pauseOverlay.classList.add("hidden");
-      el.quizResultOverlay.classList.add("hidden");
-      resetQuestion();
-      el.card.classList.remove("flipped");
-      el.target.textContent = "Les deux";
-      el.challenge.textContent = "Touchez « Carte suivante » pour commencer.";
-      el.duration.textContent = "La première carte vous attend.";
-      el.next.textContent = "Carte suivante";
-      el.next.disabled = false;
-      updateStatus();
-      setScreen(el.game); saveGame();
-    }
-
-    function finishGame() {
-      resetTimer();
-      finished = true; skip.classList.add("hidden"); setScreen(el.end); saveGame();
-    }
-
-    let currentCard=null, selectedAnswer=null, finished=false, deadline=0, resumeClock=false;
-    const skip=document.getElementById('skipButton'), saveKey='sylvain-steph-v23';
-    function stopClock(){
-      if(timerRunning) timerRemaining=Math.max(0,(deadline-performance.now())/1000);
-      clearInterval(timerId);timerId=null;timerRunning=false;
-    }
-    function tickTimer(){
-      timerRemaining=Math.max(0,(deadline-performance.now())/1000);renderTimer();
-      if(!timerRemaining){stopClock();el.timerButton.textContent='Relancer';beep(980,.2);}
-      saveGame();
-    }
-    function toggleTimer(){
-      if(isPaused||!timerTotal)return;
-      if(timerRunning){stopClock();el.timerButton.textContent='Reprendre';}
-      else{if(timerRemaining<=0)timerRemaining=timerTotal;getAudioContext();deadline=performance.now()+timerRemaining*1000;timerRunning=true;el.timerButton.textContent='Pause';clearInterval(timerId);timerId=setInterval(tickTimer,200);}
-      renderTimer();saveGame();
-    }
-    function pauseGame(){
-      if(isPaused)return;resumeClock=timerRunning;stopClock();isPaused=true;
-      document.body.classList.add('paused');el.pauseOverlay.classList.remove('hidden');saveGame();
-    }
-    function resumeGame(){
-      isPaused=false;document.body.classList.remove('paused');el.pauseOverlay.classList.add('hidden');
-      if(resumeClock&&timerRemaining>0)toggleTimer();resumeClock=false;saveGame();
-    }
-    function saveGame(){
-      if(!Object.keys(gameDecks).length)return;
-      try{localStorage.setItem(saveKey,JSON.stringify({version:23,levelIndex,playedInLevel,
-        order:Object.fromEntries(Object.entries(gameDecks).map(([k,v])=>[k,v.map(c=>decks[k].indexOf(c))])),
-        current:currentCard?decks[levelIndex+1].indexOf(currentCard):null,selectedAnswer,penalties,timerRemaining,timerTotal,finished}));
-        document.getElementById('saveStatus').textContent='Partie sauvegardée sur cet appareil.';
-      }catch{document.getElementById('saveStatus').textContent='Sauvegarde indisponible : gardez la page ouverte pour continuer.';}
-    }
-    function readSave(){
-      try{
-        const s=JSON.parse(localStorage.getItem(saveKey));
-        if(!s||s.version!==23||!Number.isInteger(s.levelIndex)||s.levelIndex<0||s.levelIndex>4)return null;
-        const d=decks[s.levelIndex+1];
-        if(!Number.isInteger(s.playedInLevel)||s.playedInLevel<0||s.playedInLevel>d.length)return null;
-        if(s.current!==null&&(!Number.isInteger(s.current)||!d[s.current]))return null;
-        if(s.selectedAnswer!==null&&(!Number.isInteger(s.selectedAnswer)||!d[s.current]?.answers?.[s.selectedAnswer]))return null;
-        for(const [k,v] of Object.entries(decks)){
-          const ids=s.order?.[k], expected=+k<s.levelIndex+1?0:+k===s.levelIndex+1?v.length-s.playedInLevel:v.length;
-          if(!Array.isArray(ids)||ids.length!==expected||new Set(ids).size!==ids.length||ids.some(i=>!Number.isInteger(i)||!v[i]))return null;
-        }
-        if(!s.penalties||!['Steph','Sylvain'].every(k=>Number.isInteger(s.penalties[k])&&s.penalties[k]>=0&&s.penalties[k]<=10))return null;
-        if(!Number.isFinite(s.timerRemaining)||s.timerRemaining<0||s.timerTotal!==(d[s.current]?.duration||0)||s.timerRemaining>s.timerTotal)return null;
-        return s;
-      }catch{return null;}
-    }
-    function restoreGame(){
-      const s=readSave();if(!s)return;
-      startGame();levelIndex=s.levelIndex;playedInLevel=s.playedInLevel;
-      gameDecks=Object.fromEntries(Object.entries(s.order).map(([k,v])=>[k,v.map(i=>decks[k][i])]));
-      penalties=s.penalties;currentCard=s.current===null?null:decks[levelIndex+1][s.current];selectedAnswer=null;finished=s.finished;
-      if(currentCard){
-        el.target.textContent=currentCard.target;el.challenge.textContent=currentCard.text;el.card.classList.add('flipped');
-        if(currentCard.answers){renderQuestion(currentCard);el.duration.textContent='Question culture sexe · choisissez une réponse';el.next.disabled=true;if(s.selectedAnswer!==null)answerQuestion(currentCard,s.selectedAnswer,true);}
-        else{el.duration.textContent='Durée · '+durationLabel(currentCard.duration);setTimer(s.timerTotal);timerRemaining=s.timerRemaining;if(timerTotal)renderTimer();}
-        skip.classList.toggle('hidden',s.selectedAnswer!==null);
-      }
-      el.next.textContent=levelIndex===4&&playedInLevel===1?'Terminer':'Carte suivante';updateStatus();
-      if(finished) setScreen(el.end); else pauseGame(); saveGame();
-    }
-    skip.addEventListener('click',()=>{
-      if(isPaused||!currentCard||selectedAnswer!==null)return;
-      if(levelIndex===0&&playedInLevel===10){showQuizResult();saveGame();}else drawCard();
-    });
-    document.getElementById('restoreButton').classList.toggle('hidden',!readSave());
-    document.getElementById('restoreButton').addEventListener('click',restoreGame);
-    document.addEventListener('click',()=>saveGame());
-    addEventListener('pagehide',()=>{if(!el.game.classList.contains('hidden'))pauseGame();});
-    let installPrompt;
-    addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;document.getElementById('installButton').classList.remove('hidden');});
-    document.getElementById('installButton').onclick=async()=>{if(installPrompt){await installPrompt.prompt();installPrompt=null;document.getElementById('installButton').classList.add('hidden');}};
-    if('serviceWorker' in navigator){
-      const wasControlled=Boolean(navigator.serviceWorker.controller);
-      navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(reg=>{
-        const update=document.getElementById('updateButton');
-        const offer=()=>{if(reg.waiting&&navigator.serviceWorker.controller)update.classList.remove('hidden');};
-        offer();reg.addEventListener('updatefound',()=>{const worker=reg.installing;worker?.addEventListener('statechange',()=>{if(worker.state==='installed')offer();});});
-        update.onclick=()=>{if(!el.game.classList.contains('hidden'))pauseGame();saveGame();reg.waiting?.postMessage('ACTIVATE');};
-        let reloading=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(wasControlled&&!reloading){reloading=true;location.reload();}});
-        navigator.serviceWorker.ready.then(()=>{document.getElementById('offlineStatus').textContent='Application prête pour jouer hors connexion.';});
-        addEventListener('online',()=>reg.update().catch(()=>{}));
-        document.addEventListener('visibilitychange',()=>{if(!document.hidden)reg.update().catch(()=>{});});
-      }).catch(()=>{document.getElementById('offlineStatus').textContent='Mode hors connexion indisponible pour le moment.';});
-    }
-
-    el.start.addEventListener("click", startGame);
-    el.restart.addEventListener("click", startGame);
-    el.endRestart.addEventListener("click", startGame);
-    el.next.addEventListener("click", drawCard);
-    el.timerButton.addEventListener("click", toggleTimer);
-    el.pause.addEventListener("click", pauseGame);
-    el.resume.addEventListener("click", resumeGame);
-    el.continueLevel2.addEventListener("click", continueToLevel2);
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden && !el.game.classList.contains("hidden")) pauseGame();
-    });
   </script>
+  <script src="./game.js"></script>
 </body>
 </html>
