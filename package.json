@@ -1,0 +1,14 @@
+{
+  "name": "sylvain-steph",
+  "private": true,
+  "version": "26.0.0",
+  "scripts": {
+    "build": "node scripts/build.cjs",
+    "check": "node scripts/build.cjs --check",
+    "test": "node tests/graph.cjs && node tests/ui.cjs",
+    "dev": "node scripts/serve.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

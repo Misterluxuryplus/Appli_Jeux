@@ -1,0 +1,1201 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#120812">
+  <title>Sylvain &amp; Steph · V25</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e070f;
+      --panel: rgba(39, 15, 39, .82);
+      --rose: #f44b89;
+      --pink: #ff9abb;
+      --purple: #a94dff;
+      --red: #8d183a;
+      --text: #fff7fb;
+      --muted: #cbb2c2;
+      --line: rgba(255,255,255,.10);
+      --shadow: 0 20px 60px rgba(0,0,0,.43);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; }
+
+    body {
+      min-height: 100dvh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      background:
+        radial-gradient(circle at 8% 7%, rgba(244,75,137,.20), transparent 34%),
+        radial-gradient(circle at 94% 27%, rgba(169,77,255,.17), transparent 35%),
+        radial-gradient(circle at 50% 105%, rgba(141,24,58,.24), transparent 48%),
+        linear-gradient(160deg, #180a18, var(--bg));
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button {
+      border: 0;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus-visible { outline: 3px solid var(--pink); outline-offset: 3px; }
+    .hidden { display: none !important; }
+
+    .ambience {
+      position: fixed;
+      z-index: -1;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .float {
+      position: absolute;
+      bottom: -60px;
+      color: rgba(255,126,172,.18);
+      font-size: 24px;
+      filter: blur(.1px);
+      animation: rise var(--speed) linear infinite;
+      animation-delay: var(--delay);
+    }
+
+    .float:nth-child(3n) { color: rgba(180,84,255,.16); }
+    .float:nth-child(4n) { color: rgba(255,78,96,.14); }
+
+    @keyframes rise {
+      0% { transform: translate3d(0, 0, 0) rotate(-8deg) scale(.75); opacity: 0; }
+      12% { opacity: 1; }
+      70% { opacity: .8; }
+      100% { transform: translate3d(var(--drift), -115vh, 0) rotate(22deg) scale(1.25); opacity: 0; }
+    }
+
+    .screen {
+      width: min(100%, 520px);
+      min-height: 100dvh;
+      margin: 0 auto;
+      padding: max(18px, env(safe-area-inset-top)) 18px max(42px, calc(env(safe-area-inset-bottom) + 28px));
+    }
+
+    .welcome, .end-screen {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      text-align: center;
+      padding-top: max(36px, calc(env(safe-area-inset-top) + 24px));
+    }
+
+    .welcome-box, .end-box {
+      width: 100%;
+      padding: 40px 24px;
+      border: 1px solid var(--line);
+      border-radius: 34px;
+      background: linear-gradient(145deg, rgba(74,26,67,.76), rgba(27,12,31,.82));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .logo {
+      display: grid;
+      width: 78px;
+      height: 78px;
+      place-items: center;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--rose), var(--purple));
+      box-shadow: 0 11px 34px rgba(244,75,137,.38);
+      font-size: 35px;
+      animation: heartbeat 2.2s ease-in-out infinite;
+    }
+
+    h1, h2 { margin: 0; letter-spacing: -.055em; }
+    h1 { font-size: clamp(40px, 12vw, 60px); line-height: .98; }
+    h2 { font-size: 36px; }
+
+    .intro, .end-box p, .pause-box p {
+      margin: 18px auto 28px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .primary {
+      width: 100%;
+      min-height: 60px;
+      padding: 15px 22px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--rose), var(--purple));
+      box-shadow: 0 11px 29px rgba(207,48,127,.29);
+      font-size: 18px;
+      font-weight: 850;
+      transition: transform .18s ease, opacity .18s ease;
+    }
+
+    .primary:active { transform: scale(.98); }
+    .primary:disabled { cursor: default; opacity: .62; }
+
+    .game { display: flex; flex-direction: column; gap: 15px; min-height: 100dvh; }
+
+    .topbar, .status-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .brand { font-size: 16px; font-weight: 900; letter-spacing: -.03em; }
+    .top-actions { display: flex; gap: 7px; }
+
+    .quiet {
+      min-height: 38px;
+      padding: 8px 11px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,.055);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .status, .timer-panel {
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.045);
+      backdrop-filter: blur(14px);
+    }
+
+    .status { padding: 14px 15px; border-radius: 18px; }
+    .status-line { margin-bottom: 10px; font-size: 14px; font-weight: 850; }
+    .level-name { color: var(--pink); }
+    .progress-text { color: var(--muted); }
+
+    .track {
+      height: 7px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+    }
+
+    .progress-bar, .timer-bar {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--rose), var(--purple));
+      box-shadow: 0 0 15px rgba(244,75,137,.47);
+      transition: width .4s ease;
+    }
+
+    .progress-bar { width: 0; }
+    .card-scene { min-height: 395px; perspective: 1100px; }
+
+    .card {
+      position: relative;
+      width: 100%;
+      height: 395px;
+      transform-style: preserve-3d;
+      transition: transform .7s cubic-bezier(.2,.78,.2,1);
+    }
+
+    .card.flipped { transform: rotateY(180deg); }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.11);
+      border-radius: 27px;
+      box-shadow: var(--shadow);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    .card-back {
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at 50% 25%, rgba(255,120,174,.28), transparent 37%),
+        linear-gradient(145deg, #521940, #1c102d 72%);
+    }
+
+    .card-mark {
+      display: grid;
+      width: 108px;
+      height: 108px;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 50%;
+      background: rgba(255,255,255,.055);
+      font-size: 46px;
+    }
+
+    .card-front {
+      transform: rotateY(180deg);
+      background:
+        radial-gradient(circle at 90% 7%, rgba(255,92,149,.16), transparent 29%),
+        linear-gradient(150deg, rgba(63,22,56,.99), rgba(26,13,33,.99));
+    }
+
+    .accent {
+      height: 6px;
+      flex: none;
+      background: linear-gradient(90deg, var(--rose), var(--purple), var(--red));
+    }
+
+    .card-content { display: flex; flex: 1; flex-direction: column; padding: 24px 22px 20px; }
+
+    .target {
+      align-self: flex-start;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(255,102,159,.12);
+      color: var(--pink);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .challenge {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      margin: 16px 0;
+      font-size: clamp(21px, 6vw, 28px);
+      font-weight: 850;
+      line-height: 1.28;
+      letter-spacing: -.035em;
+    }
+
+    .duration {
+      margin: 0;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255,255,255,.09);
+      color: #eacadb;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .answers {
+      display: grid;
+      gap: 8px;
+      margin: 0 0 12px;
+    }
+
+    .answer-button {
+      width: 100%;
+      min-height: 42px;
+      padding: 9px 12px;
+      border: 1px solid rgba(255,255,255,.11);
+      border-radius: 13px;
+      background: rgba(255,255,255,.065);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 800;
+      text-align: left;
+    }
+
+    .answer-button:disabled { cursor: default; opacity: .65; }
+    .answer-button.correct { border-color: rgba(88,224,157,.7); background: rgba(62,190,127,.18); }
+    .answer-button.wrong { border-color: rgba(255,100,126,.72); background: rgba(210,50,88,.2); }
+
+    .feedback {
+      min-height: 20px;
+      margin: 0 0 10px;
+      color: var(--pink);
+      font-size: 14px;
+      font-weight: 900;
+      white-space: pre-line;
+    }
+
+    .feedback.good { color: #69e8a4; }
+    .feedback.bad { color: #ff718f; }
+
+    .card.question-card .challenge {
+      flex: none;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      font-size: clamp(18px, 5.2vw, 23px);
+    }
+
+    .card.question-card { height: auto; min-height: 560px; }
+    .card.question-card .duration { padding-top: 10px; }
+
+    .timer-panel {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 12px;
+      border-radius: 18px;
+    }
+
+    .timer-display {
+      min-width: 76px;
+      color: var(--pink);
+      font-size: 27px;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -.04em;
+    }
+
+    .timer-panel .track { flex: 1; height: 5px; }
+    .timer-bar { width: 100%; transition: width .25s linear; }
+
+    .timer-button {
+      min-width: 84px;
+      min-height: 38px;
+      padding: 8px 11px;
+      border-radius: 12px;
+      background: rgba(244,75,137,.15);
+      color: #ffc2d6;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .next { margin-top: 0; }
+
+    .overlay, .level-flash {
+      position: fixed;
+      z-index: 20;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      padding-bottom: max(42px, calc(env(safe-area-inset-bottom) + 28px));
+      overflow-y: auto;
+      background: rgba(9,4,10,.87);
+      backdrop-filter: blur(16px);
+    }
+
+    .overlay { place-items: start center; }
+    .level-flash { place-items: center; }
+
+    .pause-box {
+      width: min(100%,390px);
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      background: #251025;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .quiz-result-box {
+      width: min(100%, 420px);
+      padding: 30px 24px;
+      border: 1px solid var(--line);
+      border-radius: 27px;
+      background: linear-gradient(145deg, #45183e, #251025);
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .quiz-result-box h2 { margin-bottom: 16px; }
+
+    .quiz-score {
+      margin: 0 0 14px;
+      color: var(--pink);
+      font-size: 21px;
+      font-weight: 900;
+      line-height: 1.4;
+      white-space: pre-line;
+    }
+
+    .quiz-result-box .quiz-instruction {
+      margin: 0 0 24px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .level-flash {
+      z-index: 15;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .25s ease;
+    }
+
+    .level-flash.visible { opacity: 1; }
+    .flash-text { text-align: center; transform: scale(.9); transition: transform .35s ease; }
+    .level-flash.visible .flash-text { transform: scale(1); }
+    .flash-text strong { display: block; color: var(--pink); font-size: 15px; letter-spacing: .15em; text-transform: uppercase; }
+    .flash-text span { display: block; margin-top: 8px; font-size: 43px; font-weight: 900; letter-spacing: -.055em; }
+
+    @keyframes heartbeat {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+
+    @media (min-width: 430px) {
+      .screen { padding-inline: 22px; }
+      .card-scene, .card { min-height: 425px; height: 425px; }
+      .card-content { padding: 28px 26px 22px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+      .ambience { display: none; }
+    }
+  </style>
+<link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icons/icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><style>
+.quiet,.timer-button,.answer-button{min-height:44px}.card,.card.question-card{height:auto;min-height:425px}.card-face{position:relative;min-height:425px;overflow:visible}.card-back{position:absolute;width:100%;height:100%}.card.question-card .card-face{min-height:560px}.challenge{overflow-wrap:anywhere}.topbar,.status-line{flex-wrap:wrap}.app-tools{max-width:480px;margin:12px auto;padding:16px;display:grid;gap:12px;color:var(--muted);font-size:13px;line-height:1.5}body.paused .float,body.paused .logo{animation-play-state:paused}@media(max-width:360px){.screen{padding-inline:12px}.card-content{padding:20px 16px}}
+.mode-options{display:grid;gap:14px}.mode-option strong,.mode-option span{display:block}.mode-option span{margin-top:6px;font-size:14px;font-weight:500}.mode-options .mode-option:nth-child(2){background:linear-gradient(135deg,#8235c4,#ba3777)}.mode-note{color:var(--muted);font-size:14px;line-height:1.6}.mode-status{margin:0;color:var(--pink);font-size:14px;line-height:1.5}.mode-option{white-space:normal}.card-back{pointer-events:none}.card-scene{min-width:0;height:auto}
+.welcome-box #startButton,.welcome-box #restoreButton{margin-bottom:12px}.welcome-box #preferencesButton{width:100%}.preferences-box{padding:28px 20px}fieldset{border:0;padding:0;margin:20px 0}legend{font-weight:800;margin-bottom:12px}.category-option{display:flex;align-items:center;gap:12px;min-height:50px;padding:10px 12px;margin-bottom:8px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:14px;line-height:1.4}.category-option input{width:22px;height:22px;flex:none;accent-color:var(--rose)}.preference-actions{display:flex;flex-wrap:wrap;gap:10px}#cancelPreferencesButton{width:100%;margin-top:12px}.overlay{z-index:20}#pauseOverlay{z-index:25}.preferences-box h2{font-size:32px}.session-status{color:var(--pink);font-size:14px}.card-scene{height:auto}
+</style></head>
+<body>
+  <div class="ambience" aria-hidden="true">
+    <span class="float" style="left:8%;--speed:13s;--delay:-2s;--drift:28px">♥</span>
+    <span class="float" style="left:22%;--speed:16s;--delay:-9s;--drift:-35px">🔥</span>
+    <span class="float" style="left:38%;--speed:14s;--delay:-5s;--drift:45px">💋</span>
+    <span class="float" style="left:55%;--speed:18s;--delay:-12s;--drift:-25px">♥</span>
+    <span class="float" style="left:71%;--speed:15s;--delay:-7s;--drift:36px">🔥</span>
+    <span class="float" style="left:87%;--speed:17s;--delay:-3s;--drift:-42px">💋</span>
+    <span class="float" style="left:15%;--speed:19s;--delay:-15s;--drift:40px">💋</span>
+    <span class="float" style="left:63%;--speed:20s;--delay:-17s;--drift:-48px">♥</span>
+  </div>
+
+  <main>
+    <section id="welcomeScreen" class="screen welcome">
+      <div class="welcome-box">
+        <div class="logo" aria-hidden="true">♥</div>
+        <h1>Sylvain<br>&amp; Steph</h1>
+        <p class="intro">V25 — une soirée à deux, à votre rythme.</p>
+        <button id="restoreButton" class="primary hidden" type="button">Reprendre la partie</button>
+        <button id="startButton" class="primary" type="button">Commencer</button>
+        <button id="preferencesButton" class="quiet" type="button">Nos préférences</button>
+        <p id="selectionSummary" class="mode-note"></p>
+        <p class="mode-note">Cinq niveaux, du quiz au final choisi ensemble. Vous pouvez passer chaque carte sans pénalité.</p>
+      </div>
+    </section>
+
+
+    <section id="preferencesScreen" class="screen hidden" aria-labelledby="preferencesTitle">
+      <div class="welcome-box preferences-box">
+        <h2 id="preferencesTitle" tabindex="-1">Nos préférences</h2>
+        <p class="mode-note">Gardez uniquement les catégories que vous acceptez tous les deux. Ces choix s’appliquent à la prochaine partie.</p>
+        <form id="preferencesForm">
+          <fieldset><legend>Catégories autorisées</legend><div id="categoryOptions"></div></fieldset>
+          <p class="mode-note">Les catégories exclues restent exclues pour les cartes libres et les zones laissées à votre choix. Les filtres des défis ne modifient pas les thèmes des questions du quiz.</p>
+          <div class="preference-actions"><button id="allowAllButton" class="quiet" type="button">Tout autoriser</button><button id="excludeAllButton" class="quiet" type="button">Tout exclure</button></div>
+          <p id="preferencesCount" class="mode-note" role="status"></p>
+          <button id="savePreferencesButton" class="primary" type="submit">Enregistrer mes choix</button>
+          <button id="cancelPreferencesButton" class="quiet" type="button">Retour</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen game hidden" aria-live="polite">
+      <header class="topbar">
+        <div class="brand">Sylvain &amp; Steph</div>
+        <div class="top-actions">
+          <button id="pauseButton" class="quiet" type="button">Pause</button>
+          <button id="restartButton" class="quiet" type="button">Recommencer</button>
+        </div>
+      </header>
+
+      <p id="sessionStatus" class="mode-status"></p>
+      <section class="status" aria-label="Progression">
+        <div class="status-line">
+          <span id="levelName" class="level-name">Niveau 1 · Quiz et complicité</span>
+          <span id="progressText" class="progress-text">0 / 10</span>
+        </div>
+        <div class="track"><div id="progressBar" class="progress-bar"></div></div>
+      </section>
+
+      <div class="card-scene">
+        <article id="card" class="card">
+          <div class="card-face card-back"><div class="card-mark" aria-hidden="true">♥</div></div>
+          <div class="card-face card-front">
+            <div class="accent"></div>
+            <div class="card-content">
+              <span id="target" class="target">Les deux</span>
+              <p id="challenge" class="challenge">Touchez « Carte suivante » pour commencer.</p>
+              <div id="answers" class="answers hidden"></div>
+              <p id="feedback" class="feedback hidden"></p>
+              <p id="duration" class="duration">La première carte vous attend.</p>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <section id="timerPanel" class="timer-panel hidden" aria-label="Chronomètre">
+        <div id="timerDisplay" class="timer-display">01:00</div>
+        <div class="track"><div id="timerBar" class="timer-bar"></div></div>
+        <button id="timerButton" class="timer-button" type="button">Démarrer</button>
+      </section>
+
+      <button id="skipButton" class="quiet hidden" type="button">Passer ce défi sans pénalité</button><button id="nextButton" class="primary next" type="button">Carte suivante</button>
+    </section>
+
+    <section id="endScreen" class="screen end-screen hidden">
+      <div class="end-box">
+        <div class="logo" aria-hidden="true">♥</div>
+        <h2>Partie terminée</h2>
+        <p id="endSummary">Sylvain &amp; Steph ont traversé les cinq niveaux.</p>
+        <button id="endRestartButton" class="primary" type="button">Recommencer</button>
+      </div>
+    </section>
+  <div class="app-tools"><p id="saveStatus" role="status"></p><p id="offlineStatus" role="status"></p><button id="installButton" class="quiet hidden" type="button">Installer l’application</button><span>Sur iPhone : Safari → Partager → Sur l’écran d’accueil.</span><button id="updateButton" class="quiet hidden" type="button">Installer la mise à jour et reprendre</button></div></main>
+
+  <div id="pauseOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-label="Partie en pause">
+    <div class="pause-box">
+      <h2>Pause</h2>
+      <p>Le chrono est arrêté.</p>
+      <button id="resumeButton" class="primary" type="button">Reprendre</button><button id="pauseSkipButton" class="quiet" type="button" style="margin-top:12px">Passer ce défi sans pénalité</button>
+    </div>
+  </div>
+
+  <div id="quizResultOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-label="Résultat du quiz">
+    <div class="quiz-result-box">
+      <h2>Résultat du niveau 1</h2>
+      <p id="quizScore" class="quiz-score">Steph a 0 gage(s) à utiliser contre Sylvain.
+Sylvain a 0 gage(s) à utiliser contre Steph.</p>
+      <p class="quiz-instruction">À vous de choisir les gages maintenant. Quand les gages sont faits, passez au niveau 2.</p>
+      <button id="continueLevel2Button" class="primary" type="button">Passer au niveau 2</button>
+    </div>
+  </div>
+
+  <div id="finalChoiceOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="finalChoiceTitle">
+    <div class="pause-box">
+      <h2 id="finalChoiceTitle">Un final à votre choix</h2>
+      <p>La carte finale actuelle est une option. Découvrez-la seulement si vous le souhaitez tous les deux ; vous pourrez encore la passer ensuite.</p>
+      <button id="acceptFinalButton" class="primary" type="button">Découvrir la carte finale ensemble</button>
+      <button id="declineFinalButton" class="quiet" type="button" style="margin-top:12px">Terminer librement</button>
+    </div>
+  </div>
+
+  <div id="levelFlash" class="level-flash">
+    <div class="flash-text">
+      <strong id="flashLevel">Niveau 2</strong>
+      <span id="flashName">Coquin</span>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+
+    const decks = {
+      1: [
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans un fantasme de domination consenti, quel élément distingue le plus souvent le fantasme d’une simple contrainte ?", answers: ["La durée limitée du scénario", "Le contrôle volontairement confié à l’autre", "L’intensité choisie par la personne qui guide", "Le réalisme de la mise en scène"], correct: 1 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Dans un scénario érotique fondé sur le suspense, quel mécanisme renforce généralement le plus l’excitation ?", answers: ["L’anticipation de ce qui va arriver", "L’intensité dès le début", "La durée du scénario", "L’alternance régulière des rôles"], correct: 0 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans un jeu de rôle adulte, quel élément aide le mieux à rester immergé dans le scénario ?", answers: ["Une improvisation totale", "Un scénario très détaillé", "Un rôle et des limites définis avant de commencer", "Une durée précise imposée"], correct: 2 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Pourquoi un lieu inhabituel apparaît-il souvent dans les fantasmes sans être forcément recherché en réalité ?", answers: ["La possibilité d’y changer de rôle", "La nouveauté qu’il amplifie dans l’imagination", "La sensation de contrôle qu’il procure", "Le réalisme qu’il apporte au scénario"], correct: 1 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans un fantasme de contrôle, qu’est-ce qui crée le plus souvent la tension érotique ?", answers: ["Un rythme parfaitement régulier", "Une intensité forte dès le début", "Une longue durée", "L’alternance entre attente et permission"], correct: 3 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Dans les jeux de domination et soumission, que désigne le plus précisément un changement de rôle ?", answers: ["Modifier le scénario en cours", "Changer la personne qui choisit le rythme", "Alterner qui guide et qui se laisse guider", "Passer d’un gage à une carte blanche"], correct: 2 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Quel type de surprise reste le plus compatible avec un jeu érotique préparé ?", answers: ["Une nouvelle règle ajoutée en cours de jeu", "Une action imprévue à l’intérieur de limites déjà définies", "Un changement soudain de rôle", "Une intensité décidée au dernier moment"], correct: 1 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Pourquoi révéler une envie cachée peut-il intensifier un jeu de couple ?", answers: ["Cela rend le scénario plus précis", "Cela permet de deviner la suite", "Cela augmente forcément l’intensité", "Cela combine vulnérabilité, confiance et anticipation"], correct: 3 },
+        { target: "Question · Sylvain", player: "Sylvain", tag: "question", duration: 0, text: "Dans un jeu progressif, pourquoi les rôles alternés limitent-ils la répétition ?", answers: ["Ils raccourcissent les gages", "Ils augmentent l’intensité à chaque tour", "Ils changent la perspective et le contrôle", "Ils rendent le rythme plus régulier"], correct: 2 },
+        { target: "Question · Steph", player: "Steph", tag: "question", duration: 0, text: "Quel principe rend généralement un scénario de carte blanche plus captivant sans supprimer les limites ?", answers: ["Une durée laissée totalement indéterminée", "La liberté de choisir à l’intérieur d’un cadre convenu", "Un rôle conservé pendant tout le jeu", "Une action choisie uniquement au dernier moment"], correct: 1 }
+      ],
+      2: [
+        { target: "Sylvain", tag: "baisers-differents", duration: 0, text: "Embrasse Steph 10 fois : chaque baiser doit être à un endroit différent." },
+        { target: "Steph", tag: "danse-sexy", duration: 30, text: "Fais une danse sexy pour Sylvain pendant 30 secondes." },
+        { target: "Sylvain", tag: "cou-poitrine", duration: 30, text: "Embrasse le cou de Steph en descendant lentement vers sa poitrine pendant 30 secondes." },
+        { target: "Steph", tag: "sept-baisers", duration: 0, text: "Choisis une partie du corps de Sylvain et embrasse-la 7 fois." },
+        { target: "Sylvain", tag: "vetement", duration: 0, text: "Retire doucement un vêtement choisi par Steph, le plus lentement possible." },
+        { target: "Steph", tag: "entrejambe-vetement", duration: 30, text: "Caresse l’entrejambe de Sylvain par-dessus le vêtement pendant 30 secondes." },
+        { target: "Sylvain", tag: "derriere", duration: 30, text: "Mets-toi derrière Steph, embrasse-la dans le cou et pose tes mains où elle veut pendant 30 secondes." },
+        { target: "Steph", tag: "murmure", duration: 0, text: "Murmure à l’oreille de Sylvain ce que tu aimerais qu’il te fasse plus tard dans le jeu." },
+        { target: "Sylvain", tag: "cuisses", duration: 30, text: "Embrasse l’intérieur des cuisses de Steph pendant 30 secondes, sans aller plus loin." },
+        { target: "Steph", tag: "guidage", duration: 30, text: "Guide la main de Sylvain sur une zone que tu veux qu’il caresse pendant 30 secondes." }
+      ],
+      3: [
+        { target: "Sylvain", tag: "admiration-tenue", duration: 60, text: "Prends le temps d’admirer Steph dans sa tenue. Elle décide ce que tu peux toucher, retirer ou laisser en place." },
+        { target: "Les deux", tag: "danse", duration: 60, text: "Dansez lentement, corps contre corps, pendant 1 minute." },
+        { target: "Sylvain", tag: "fessees", duration: 0, text: "Donne 10 fessées à Steph, de plus en plus fortes." },
+        { target: "Carte blanche · Steph", tag: "carte-blanche-steph", duration: 60, text: "Carte blanche : Steph fait ce qu’elle veut à Sylvain pendant 1 minute." },
+        { target: "Steph", tag: "intime", duration: 75, text: "Caresse les parties intimes de Sylvain en changeant lentement de rythme." },
+        { target: "Steph", tag: "attache-jeu", duration: 90, text: "Attache Sylvain s’il en a envie et sers-toi des objets que tu vois autour de toi pour jouer avec lui." },
+        { target: "Sylvain", tag: "vulve", duration: 45, text: "Glisse tes doigts sur la vulve de Steph pendant 45 secondes." },
+        { target: "Steph", tag: "fessees", duration: 0, text: "Donne 10 fessées à Sylvain, de plus en plus fortes." },
+        { target: "Carte blanche · Sylvain", tag: "carte-blanche-sylvain", duration: 60, text: "Carte blanche : Sylvain fait ce qu’il veut à Steph pendant 1 minute." },
+        { target: "Sylvain", tag: "fesses-lent", duration: 45, text: "Caresse lentement les fesses de Steph pendant 45 secondes." },
+        { target: "Sylvain", tag: "attache-jeu", duration: 90, text: "Attache Steph si elle en a envie et sers-toi des objets que tu vois autour de toi pour jouer avec elle." },
+      ],
+      4: [
+        { target: "Steph", tag: "oral", duration: 60, text: "Suce Sylvain pendant 1 minute en faisant varier lentement le rythme." },
+        { target: "Sylvain", tag: "oral", duration: 60, text: "Lèche le sexe de Steph pendant 1 minute en suivant ses réactions." },
+        { target: "Sylvain", tag: "controle-steph", duration: 90, text: "Steph ferme les yeux et garde les mains derrière le dos. Touche-la et embrasse-la sur tout le corps pendant 1 min 30." },
+        { target: "Sylvain", tag: "clitoris", duration: 45, text: "Caresse le clitoris de Steph pendant 45 secondes en suivant ses réactions." },
+        { target: "Sylvain", tag: "doigt", duration: 45, text: "Insère un doigt dans le vagin de Steph pendant 45 secondes." },
+        { target: "Steph", tag: "intime", duration: 90, text: "Caresse les parties intimes de Sylvain pendant 1 min 30, sans t’arrêter." },
+        { target: "Sylvain", tag: "teasing", duration: 90, text: "Embrasse et caresse Steph autour de ses parties intimes sans les toucher directement." },
+        { target: "Steph", tag: "controle-sylvain", duration: 90, text: "Sylvain ferme les yeux et garde les mains derrière le dos. Touche-le et embrasse-le sur tout le corps pendant 1 min 30." }
+      ],
+      5: [
+        { target: "Final hard", tag: "final", duration: 0, text: "Final hard : Sylvain pénètre Steph comme vous voulez. Le jeu s’arrête ici." }
+      ]
+    };
+
+
+    // Catalogue V25 : textes historiques conservés, métadonnées séparées.
+const LEVELS = [
+  { name: 'Quiz et complicité', quota: 10 },
+  { name: 'Séduction et rapprochement', quota: 10 },
+  { name: 'Audace et jeux de pouvoir consentis', quota: 8 },
+  { name: 'Intimité intense', quota: 9 },
+  { name: 'Final libre et mutuellement choisi', quota: 3 }
+];
+const CATEGORIES = {
+  quiz: 'Quiz et questions',
+  complicite: 'Complicité et confidences',
+  danse: 'Danse',
+  baisers: 'Baisers et rapprochement',
+  vetements: 'Tenue et vêtements',
+  caresses: 'Caresses',
+  intimite: 'Intimité et pratiques adultes',
+  controle: 'Jeux de contrôle',
+  attaches: 'Attaches',
+  fessees: 'Fessées',
+  libre: 'Cartes blanches',
+  final: 'Finale actuelle'
+};
+// Identifiants permanents c001..c040 : ne jamais les renuméroter ni les réutiliser.
+// Niveau et palier sont des métadonnées, indépendantes du texte et de l'identifiant.
+const CARD_METADATA = [
+  ...Array.from({ length: 10 }, () => ({ level: 1, tier: 1, categories: ['quiz'] })),
+  { level: 2, tier: 2, categories: ['baisers'] },
+  { level: 2, tier: 2, categories: ['danse'] },
+  { level: 2, tier: 3, categories: ['baisers', 'intimite'] },
+  { level: 2, tier: 2, categories: ['baisers'] },
+  { level: 3, tier: 1, categories: ['vetements'] },
+  { level: 3, tier: 2, categories: ['caresses', 'intimite'] },
+  { level: 2, tier: 3, categories: ['baisers', 'caresses'] },
+  { level: 2, tier: 1, categories: ['complicite'] },
+  { level: 3, tier: 2, categories: ['baisers', 'intimite'] },
+  { level: 2, tier: 3, categories: ['caresses'] },
+  { level: 2, tier: 1, categories: ['vetements', 'complicite'] },
+  { level: 2, tier: 1, categories: ['danse'] },
+  { level: 4, tier: 3, categories: ['fessees'] },
+  { level: 5, tier: 1, categories: ['libre'] },
+  { level: 4, tier: 1, categories: ['caresses', 'intimite'] },
+  { level: 3, tier: 4, categories: ['attaches', 'controle'] },
+  { level: 4, tier: 1, categories: ['caresses', 'intimite'] },
+  { level: 4, tier: 3, categories: ['fessees'] },
+  { level: 5, tier: 1, categories: ['libre'] },
+  { level: 2, tier: 3, categories: ['caresses', 'intimite'] },
+  { level: 3, tier: 4, categories: ['attaches', 'controle'] },
+  { level: 4, tier: 2, categories: ['intimite'] },
+  { level: 4, tier: 2, categories: ['intimite'] },
+  { level: 3, tier: 3, categories: ['controle', 'baisers', 'caresses'] },
+  { level: 4, tier: 1, categories: ['caresses', 'intimite'] },
+  { level: 4, tier: 2, categories: ['intimite'] },
+  { level: 4, tier: 1, categories: ['caresses', 'intimite'] },
+  { level: 3, tier: 2, categories: ['baisers', 'caresses', 'intimite'] },
+  { level: 3, tier: 3, categories: ['controle', 'baisers', 'caresses'] },
+  { level: 5, tier: 100, categories: ['final', 'intimite'], endChoice: true }
+];
+// Ajouter plus tard des cartes relues manuellement ici, avec de nouveaux identifiants.
+// Le moteur n'engendre aucun défi. Aucun ajout n'est présent dans cette livraison.
+const EXTRA_CARDS = [];
+let originalIndex = 0;
+const CATALOG = Object.entries(decks).flatMap(([oldLevel, cards]) => cards.map((card, oldIndex) => {
+  const i = originalIndex++;
+  return { ...card, ...CARD_METADATA[i], id: 'c' + String(i + 1).padStart(3, '0'), oldLevel: Number(oldLevel), oldIndex };
+})).concat(EXTRA_CARDS);
+function validateCatalog(cards) {
+  if (new Set(cards.map(card => card.id)).size !== cards.length) throw Error('Identifiant de carte dupliqué');
+  for (const c of cards) {
+    if (!/^[a-zA-Z0-9_-]+$/.test(c.id) || !Number.isInteger(c.level) || c.level < 1 || c.level > 5 || !Number.isInteger(c.tier) || c.tier < 1 || c.tier > 1000) throw Error('Classement de carte invalide');
+    if (c.actor != null && !['Sylvain', 'Steph'].includes(c.actor)) throw Error('Joueur de carte invalide');
+    if (c.player !== undefined && !['Sylvain', 'Steph'].includes(c.player)) throw Error('Joueur de quiz invalide');
+    if (typeof c.text !== 'string' || !c.text.trim() || typeof c.target !== 'string' || !Number.isInteger(c.duration) || c.duration < 0) throw Error('Contenu de carte invalide');
+    if (!Array.isArray(c.categories) || !c.categories.length || c.categories.some(k => !Object.hasOwn(CATEGORIES, k))) throw Error('Catégorie inconnue');
+    if (c.level === 1 && (!Array.isArray(c.answers) || c.answers.length < 2 || c.answers.some(a => typeof a !== 'string' || !a.trim()) || !Number.isInteger(c.correct) || !c.answers[c.correct] || !['Sylvain', 'Steph'].includes(c.player))) throw Error('Quiz invalide');
+    if (c.level !== 1 && c.answers) throw Error('Question classée hors quiz');
+    if (c.endChoice && (c.level !== 5 || !c.categories.includes('final'))) throw Error('Finale classée hors niveau 5');
+  }
+}
+validateCatalog(CATALOG);
+const CARD_BY_ID = new Map(CATALOG.map(card => [card.id, card]));
+const defaultPreferences = () => Object.fromEntries(Object.keys(CATEGORIES).map(k => [k, true]));
+function playerOf(card) {
+  if (card.player) return card.player;
+  if (card.actor) return card.actor;
+  if (card.target.includes('Sylvain')) return 'Sylvain';
+  if (card.target.includes('Steph')) return 'Steph';
+  return null;
+}
+function shuffle(items) {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+function eligible(card, preferences) { return card.categories.every(k => preferences[k] === true); }
+function chooseBalanced(pool, count) {
+  const remaining = shuffle(pool), result = [], scores = { Sylvain: 0, Steph: 0 };
+  while (remaining.length && result.length < count) {
+    // Ne privilégier un joueur que si une sélection est nécessaire ; toutes les
+    // cartes restent disponibles, y compris les cartes à deux.
+    const preferred = scores.Sylvain === scores.Steph ? null : scores.Sylvain < scores.Steph ? 'Sylvain' : 'Steph';
+    const at = preferred ? remaining.findIndex(c => playerOf(c) === preferred) : 0;
+    const [card] = remaining.splice(at < 0 ? 0 : at, 1);
+    result.push(card); if (playerOf(card)) scores[playerOf(card)]++;
+  }
+  return result;
+}
+function orderedByIntensity(cards, turnState) {
+  const result = [];
+  const tiers = [...new Set(cards.map(c => c.endChoice ? 1000000 : c.tier))].sort((a, b) => a - b);
+  for (const tier of tiers) {
+    const pending = shuffle(cards.filter(c => (c.endChoice ? 1000000 : c.tier) === tier));
+    while (pending.length) {
+      const opposite = turnState.last === 'Sylvain' ? 'Steph' : turnState.last === 'Steph' ? 'Sylvain' : null;
+      let at = opposite ? pending.findIndex(c => playerOf(c) === opposite) : -1;
+      if (at < 0) {
+        const fewer = turnState.Sylvain === turnState.Steph ? null : turnState.Sylvain < turnState.Steph ? 'Sylvain' : 'Steph';
+        at = fewer ? pending.findIndex(c => playerOf(c) === fewer) : 0;
+      }
+      const [card] = pending.splice(at < 0 ? 0 : at, 1); result.push(card.id);
+      const player = playerOf(card);
+      if (player) { turnState[player]++; turnState.last = player; }
+    }
+  }
+  return result;
+}
+function createPlan(cards, preferences) {
+  validateCatalog(cards);
+  const turns = { Sylvain: 0, Steph: 0, last: null };
+  return LEVELS.map((level, index) => {
+    const pool = cards.filter(c => c.level === index + 1 && eligible(c, preferences));
+    const terminal = shuffle(pool.filter(c => c.endChoice)).slice(0, 1);
+    const selected = chooseBalanced(pool.filter(c => !c.endChoice), Math.max(0, level.quota - terminal.length)).concat(terminal);
+    return orderedByIntensity(selected, turns);
+  });
+}
+
+const $ = id => document.getElementById(id);
+const el = {
+  welcome: $('welcomeScreen'), preferences: $('preferencesScreen'), game: $('gameScreen'), end: $('endScreen'),
+  start: $('startButton'), restore: $('restoreButton'), next: $('nextButton'), skip: $('skipButton'),
+  card: $('card'), target: $('target'), challenge: $('challenge'), answers: $('answers'), feedback: $('feedback'), duration: $('duration'),
+  level: $('levelName'), progress: $('progressText'), bar: $('progressBar'), session: $('sessionStatus'),
+  timerPanel: $('timerPanel'), timerDisplay: $('timerDisplay'), timerBar: $('timerBar'), timerButton: $('timerButton'),
+  pauseOverlay: $('pauseOverlay'), quizOverlay: $('quizResultOverlay'), finalOverlay: $('finalChoiceOverlay'), flash: $('levelFlash')
+};
+const SAVE_KEY = 'sylvain-steph-v25';
+const PREFS_KEY = 'sylvain-steph-preferences-v25';
+const LEGACY_NAMES = ['Quiz à risque', 'Tirage coquin', 'Chaud', 'Très chaud', 'Hard'];
+let game = null, preferences = readPreferences(), isPaused = false, resumeClock = false;
+let timerId = null, timerRunning = false, deadline = 0, flashTimeout = null, audioContext = null;
+const currentCard = () => game?.currentId ? CARD_BY_ID.get(game.currentId) : null;
+const countAt = index => game.plan[index].length;
+const totalCards = () => game.plan.reduce((sum, ids) => sum + ids.length, 0);
+const positionInGame = () => game.plan.slice(0, game.levelIndex).reduce((sum, ids) => sum + ids.length, 0) + game.position;
+function setScreen(screen) {
+  [el.welcome, el.preferences, el.game, el.end].forEach(item => item.classList.toggle('hidden', item !== screen));
+  syncOverlays();
+}
+function syncOverlays() {
+  const active = game && !el.game.classList.contains('hidden');
+  const paused = active && isPaused;
+  el.pauseOverlay.classList.toggle('hidden', !paused);
+  el.quizOverlay.classList.toggle('hidden', !active || isPaused || game.phase !== 'quiz-result');
+  el.finalOverlay.classList.toggle('hidden', !active || isPaused || game.phase !== 'final-choice');
+  document.querySelector('main').inert = Boolean(active && (paused || game.phase === 'quiz-result' || game.phase === 'final-choice'));
+  document.body.classList.toggle('paused', Boolean(paused));
+  const canSkip = active && currentCard() && game.phase === 'playing';
+  el.skip.classList.toggle('hidden', !canSkip);
+  $('pauseSkipButton').classList.toggle('hidden', !canSkip);
+}
+function updateStatus() {
+  const name = game.legacy ? LEGACY_NAMES[game.levelIndex] : LEVELS[game.levelIndex].name;
+  el.level.textContent = `Niveau ${game.levelIndex + 1} · ${name}`;
+  el.progress.textContent = `${game.position} / ${countAt(game.levelIndex)}`;
+  el.bar.style.width = `${countAt(game.levelIndex) ? game.position / countAt(game.levelIndex) * 100 : 100}%`;
+  el.session.textContent = `${game.legacy ? 'Reprise de votre partie précédente' : 'Votre soirée à deux'} · ${positionInGame()} / ${totalCards()} cartes`;
+  el.next.textContent = game.position === countAt(game.levelIndex) ? game.levelIndex === 4 ? 'Terminer' : 'Niveau suivant' : 'Carte suivante';
+  if (!countAt(game.levelIndex)) el.next.textContent = game.levelIndex === 4 ? 'Terminer librement' : 'Passer au niveau suivant';
+}
+function showLevelFlash() {
+  clearTimeout(flashTimeout);
+  $('flashLevel').textContent = `Niveau ${game.levelIndex + 1}`;
+  $('flashName').textContent = game.legacy ? LEGACY_NAMES[game.levelIndex] : LEVELS[game.levelIndex].name;
+  el.flash.classList.add('visible');
+  flashTimeout = setTimeout(() => el.flash.classList.remove('visible'), 950);
+}
+function formatTime(seconds) {
+  const n = Math.ceil(seconds);
+  return `${String(Math.floor(n / 60)).padStart(2, '0')}:${String(n % 60).padStart(2, '0')}`;
+}
+function durationLabel(seconds) {
+  if (!seconds) return 'Sans chrono';
+  const m = Math.floor(seconds / 60), s = seconds % 60;
+  return !m ? `${s} secondes` : !s ? `${m} minute${m > 1 ? 's' : ''}` : `${m} min ${s}`;
+}
+function stopClock() {
+  if (timerRunning && game) game.timer.remaining = Math.max(0, (deadline - performance.now()) / 1000);
+  clearInterval(timerId); timerId = null; timerRunning = false;
+}
+function resetTimer(seconds = 0) {
+  stopClock(); resumeClock = false;
+  if (game) game.timer = { total: seconds, remaining: seconds };
+  el.timerButton.textContent = 'Démarrer'; renderTimer();
+}
+function renderTimer() {
+  const timer = game?.timer || { total: 0, remaining: 0 };
+  el.timerPanel.classList.toggle('hidden', !timer.total);
+  el.timerDisplay.textContent = formatTime(timer.remaining);
+  el.timerBar.style.width = `${timer.total ? Math.max(0, timer.remaining / timer.total * 100) : 0}%`;
+}
+function getAudioContext() {
+  try {
+    const Audio = window.AudioContext || window.webkitAudioContext;
+    if (!audioContext && Audio) audioContext = new Audio();
+    if (audioContext?.state === 'suspended') audioContext.resume().catch(() => {});
+  } catch { /* Audio facultatif. */ }
+  return audioContext;
+}
+function beep(frequency, duration) {
+  try {
+    const context = getAudioContext(); if (!context) return;
+    const oscillator = context.createOscillator(), gain = context.createGain();
+    oscillator.frequency.value = frequency; gain.gain.setValueAtTime(.06, context.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.001, context.currentTime + duration);
+    oscillator.connect(gain); gain.connect(context.destination); oscillator.start(); oscillator.stop(context.currentTime + duration);
+  } catch { /* Le chrono reste indépendant du son. */ }
+}
+function tickTimer() {
+  if (!timerRunning || isPaused || !game) return;
+  const before = Math.ceil(game.timer.remaining);
+  game.timer.remaining = Math.max(0, (deadline - performance.now()) / 1000);
+  const after = Math.ceil(game.timer.remaining); renderTimer();
+  if (after !== before && after > 0 && after <= 5) beep(610 + (5 - after) * 55, .12);
+  if (!after) { stopClock(); el.timerButton.textContent = 'Relancer'; beep(980, .2); }
+  saveGame();
+}
+function toggleTimer() {
+  if (!game || isPaused || game.phase !== 'playing' || !game.timer.total) return;
+  if (timerRunning) { stopClock(); el.timerButton.textContent = 'Reprendre'; }
+  else {
+    if (!game.timer.remaining) game.timer.remaining = game.timer.total;
+    getAudioContext(); deadline = performance.now() + game.timer.remaining * 1000;
+    timerRunning = true; el.timerButton.textContent = 'Pause'; timerId = setInterval(tickTimer, 200);
+  }
+  renderTimer(); saveGame();
+}
+function pauseGame() {
+  if (!game || isPaused || game.phase === 'finished' || el.game.classList.contains('hidden')) return;
+  resumeClock = timerRunning; stopClock(); isPaused = true; syncOverlays(); saveGame(); $('resumeButton').focus();
+}
+function resumeGame() {
+  if (!game) return;
+  isPaused = false; syncOverlays();
+  if (resumeClock && game.timer.remaining > 0) toggleTimer();
+  resumeClock = false; saveGame();
+  (game.phase === 'quiz-result' ? $('continueLevel2Button') : game.phase === 'final-choice' ? $('declineFinalButton') : el.next.disabled ? el.skip : el.next).focus();
+}
+function resetQuestion() {
+  el.card.classList.remove('question-card'); el.answers.replaceChildren(); el.answers.classList.add('hidden');
+  el.feedback.textContent = ''; el.feedback.classList.remove('good', 'bad'); el.feedback.classList.add('hidden');
+  el.next.disabled = false;
+}
+function renderAnswer() {
+  const card = currentCard(), buttons = [...el.answers.children];
+  buttons.forEach(button => { button.disabled = true; }); buttons[card.correct].classList.add('correct');
+  const correct = game.selectedAnswer === card.correct, answer = card.answers[card.correct];
+  el.feedback.classList.toggle('good', correct); el.feedback.classList.toggle('bad', !correct);
+  if (correct) el.feedback.textContent = `Bonne réponse\nLa bonne réponse était : ${answer}\nAucun gage gagné.`;
+  else {
+    buttons[game.selectedAnswer].classList.add('wrong');
+    const winner = card.player === 'Sylvain' ? 'Steph' : 'Sylvain';
+    el.feedback.textContent = `Mauvaise réponse : ${winner} gagne 1 gage à utiliser contre ${card.player}.\nBonne réponse : ${answer}`;
+  }
+  el.feedback.classList.remove('hidden'); el.next.disabled = false;
+}
+function renderCard() {
+  resetQuestion(); const card = currentCard();
+  if (!card) {
+    el.target.textContent = 'Les deux';
+    const empty = countAt(game.levelIndex) === 0;
+    el.challenge.textContent = empty ? 'Aucune carte retenue pour ce niveau avec vos préférences. Vous pouvez continuer.' : game.levelIndex === 4 ? 'Choisissez ensemble la manière de conclure votre soirée.' : 'Touchez « Carte suivante » pour commencer ce niveau.';
+    el.duration.textContent = empty ? 'Vos exclusions sont respectées.' : 'Vous pouvez passer chaque carte sans pénalité.';
+    el.card.classList.toggle('flipped', empty); syncOverlays(); return;
+  }
+  el.target.textContent = card.target; el.challenge.textContent = card.text;
+  if (card.answers) {
+    el.card.classList.add('question-card'); el.answers.classList.remove('hidden');
+    card.answers.forEach((answer, index) => {
+      const button = document.createElement('button'); button.type = 'button'; button.className = 'answer-button'; button.textContent = answer;
+      button.addEventListener('click', () => answerQuestion(index)); el.answers.appendChild(button);
+    });
+    el.duration.textContent = 'Question culture sexe · choisissez une réponse';
+    el.next.disabled = game.selectedAnswer === null;
+    if (game.selectedAnswer !== null) renderAnswer();
+  } else el.duration.textContent = `Durée · ${durationLabel(card.duration)}`;
+  el.card.classList.add('flipped'); syncOverlays();
+}
+function answerQuestion(index) {
+  const card = currentCard();
+  if (!game || isPaused || game.phase !== 'playing' || !card?.answers || game.selectedAnswer !== null || !Number.isInteger(index) || !card.answers[index]) return;
+  game.selectedAnswer = index;
+  if (index !== card.correct) game.penalties[card.player === 'Sylvain' ? 'Steph' : 'Sylvain']++;
+  renderAnswer();
+  if (game.position === countAt(0)) showQuizResult();
+  saveGame();
+}
+function showQuizResult() {
+  game.phase = 'quiz-result';
+  $('quizScore').textContent = `Steph a ${game.penalties.Steph} gage(s) à utiliser contre Sylvain.\nSylvain a ${game.penalties.Sylvain} gage(s) à utiliser contre Steph.`;
+  syncOverlays(); $('continueLevel2Button').focus();
+}
+function enterNextLevel() {
+  resetTimer(); game.levelIndex++; game.position = 0; game.currentId = null; game.selectedAnswer = null; game.phase = 'playing';
+  showLevelFlash(); updateStatus(); renderCard(); syncOverlays();
+}
+function continueToLevel2() {
+  if (!game || isPaused || game.phase !== 'quiz-result') return;
+  enterNextLevel(); saveGame(); el.next.focus();
+}
+function showFinalChoice() {
+  resetTimer(); game.phase = 'final-choice'; syncOverlays(); saveGame(); $('declineFinalButton').focus();
+}
+function drawCard(skipping = false) {
+  if (!game || isPaused || game.phase !== 'playing' || el.game.classList.contains('hidden')) return;
+  if (!skipping && currentCard()?.answers && game.selectedAnswer === null) return;
+  if (game.position === countAt(game.levelIndex)) {
+    if (game.levelIndex === 0 && countAt(0)) { showQuizResult(); saveGame(); return; }
+    if (game.levelIndex === 4) { finishGame(); return; }
+    enterNextLevel();
+    if (!countAt(game.levelIndex)) { saveGame(); return; }
+  }
+  const id = game.plan[game.levelIndex][game.position];
+  const card = CARD_BY_ID.get(id);
+  if (card.endChoice && !game.finalApproved) { showFinalChoice(); return; }
+  resetTimer(card.duration); game.currentId = id; game.position++; game.selectedAnswer = null;
+  el.card.classList.remove('flipped'); void el.card.offsetWidth;
+  renderCard(); updateStatus(); saveGame();
+}
+function skipChallenge() {
+  if (!game || !currentCard() || game.phase !== 'playing') return;
+  if (!game.skipped.includes(game.currentId)) game.skipped.push(game.currentId);
+  if (isPaused) { isPaused = false; resumeClock = false; syncOverlays(); }
+  drawCard(true);
+}
+function acceptFinal() {
+  if (!game || isPaused || game.phase !== 'final-choice') return;
+  game.finalApproved = true; game.phase = 'playing'; syncOverlays(); drawCard(true);
+}
+function declineFinal() {
+  if (!game || isPaused || game.phase !== 'final-choice') return;
+  const id = game.plan[game.levelIndex][game.position];
+  game.skipped.push(id); game.finalDeclined = true; game.position++; game.currentId = null; game.selectedAnswer = null;
+  finishGame();
+}
+function finishGame() {
+  resetTimer(); game.phase = 'finished'; isPaused = false;
+  const revealed = positionInGame() - (game.finalDeclined ? 1 : 0);
+  $('endSummary').textContent = `Les cinq niveaux sont terminés. ${revealed} carte${revealed > 1 ? 's' : ''} découverte${revealed > 1 ? 's' : ''}, ${game.skipped.length} passée${game.skipped.length > 1 ? 's' : ''}. Votre final vous appartient.`;
+  updateStatus(); setScreen(el.end); saveGame(); $('endRestartButton').focus();
+}
+function startGame() {
+  stopClock(); isPaused = false; resumeClock = false; clearTimeout(flashTimeout); el.flash.classList.remove('visible');
+  const selected = createPlan(CATALOG, preferences);
+  game = { version: 25, schema: 1, legacy: false, preferences: { ...preferences }, plan: selected, levelIndex: 0, position: 0, currentId: null,
+    selectedAnswer: null, penalties: { Steph: 0, Sylvain: 0 }, timer: { total: 0, remaining: 0 }, phase: 'playing', skipped: [], finalApproved: false, finalDeclined: false };
+  setScreen(el.game); resetTimer(); renderCard(); updateStatus(); saveGame(); el.next.focus();
+}
+function showHome() {
+  pauseGame(); stopClock(); resumeClock = false; clearTimeout(flashTimeout); el.flash.classList.remove('visible');
+  setScreen(el.welcome); refreshHome(); el.start.focus();
+}
+function readPreferences() {
+  try {
+    const p = JSON.parse(localStorage.getItem(PREFS_KEY));
+    if (p && Object.keys(CATEGORIES).every(k => typeof p[k] === 'boolean')) return Object.fromEntries(Object.keys(CATEGORIES).map(k => [k, p[k]]));
+  } catch { /* Valeurs par défaut lorsque le stockage est indisponible. */ }
+  return defaultPreferences();
+}
+function expectedCounts(p) {
+  return LEVELS.map((level, index) => {
+    const pool = CATALOG.filter(c => c.level === index + 1 && eligible(c, p));
+    return Math.min(level.quota, pool.filter(c => !c.endChoice).length + Math.min(1, pool.filter(c => c.endChoice).length));
+  });
+}
+function readPreferenceForm() { return Object.fromEntries(Object.keys(CATEGORIES).map(k => [k, $('pref-' + k).checked])); }
+function refreshPreferenceCount() {
+  const counts = expectedCounts(readPreferenceForm());
+  $('preferencesCount').textContent = `Jusqu’à ${counts.reduce((a, b) => a + b, 0)} cartes avec ces choix. Un niveau sans carte reste traversable.`;
+}
+function showPreferences() {
+  for (const k of Object.keys(CATEGORIES)) $('pref-' + k).checked = preferences[k];
+  refreshPreferenceCount(); setScreen(el.preferences); $('preferencesTitle').focus();
+}
+function savePreferences(event) {
+  event.preventDefault(); preferences = readPreferenceForm();
+  try { localStorage.setItem(PREFS_KEY, JSON.stringify(preferences)); }
+  catch { $('saveStatus').textContent = 'Préférences conservées pour cette page ; stockage local indisponible.'; }
+  setScreen(el.welcome); refreshHome(); el.start.focus();
+}
+for (const [key, label] of Object.entries(CATEGORIES)) {
+  const option = document.createElement('label'); option.className = 'category-option';
+  const input = document.createElement('input'); input.type = 'checkbox'; input.id = 'pref-' + key; input.name = key;
+  input.checked = preferences[key]; input.addEventListener('change', refreshPreferenceCount);
+  const span = document.createElement('span'); span.textContent = label; option.append(input, span); $('categoryOptions').appendChild(option);
+}
+function saveGame() {
+  if (!game) return;
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(game));
+    $('saveStatus').textContent = 'Partie sauvegardée sur cet appareil.';
+  } catch { $('saveStatus').textContent = 'Sauvegarde indisponible : gardez cette page ouverte pour continuer.'; }
+}
+function validPreferences(p) { return p && Object.keys(CATEGORIES).every(k => typeof p[k] === 'boolean'); }
+function validateGame(s) {
+  if (!s || s.version !== 25 || s.schema !== 1 || typeof s.legacy !== 'boolean' || !validPreferences(s.preferences)) return null;
+  if (!Array.isArray(s.plan) || s.plan.length !== 5 || !Number.isInteger(s.levelIndex) || s.levelIndex < 0 || s.levelIndex > 4) return null;
+  const all = s.plan.flat();
+  if (all.length > 100 || new Set(all).size !== all.length || all.some(id => !CARD_BY_ID.has(id))) return null;
+  for (let index = 0; index < 5; index++) {
+    if (!Array.isArray(s.plan[index])) return null;
+    const cards = s.plan[index].map(id => CARD_BY_ID.get(id));
+    if (cards.some(c => (s.legacy ? c.oldLevel : c.level) !== index + 1)) return null;
+    if (!s.legacy) {
+      if (cards.length > LEVELS[index].quota || cards.some(c => !eligible(c, s.preferences))) return null;
+      const ranks = cards.map(c => c.endChoice ? 1000000 : c.tier);
+      if (ranks.some((rank, i) => i > 0 && rank < ranks[i - 1])) return null;
+      if (cards.filter(c => c.endChoice).length > 1) return null;
+    }
+  }
+  const ids = s.plan[s.levelIndex];
+  if (!Number.isInteger(s.position) || s.position < 0 || s.position > ids.length) return null;
+  if (!['playing', 'quiz-result', 'final-choice', 'finished'].includes(s.phase)) return null;
+  if (typeof s.finalApproved !== 'boolean' || typeof s.finalDeclined !== 'boolean') return null;
+  if (s.currentId !== null && (!s.position || s.currentId !== ids[s.position - 1])) return null;
+  if (s.currentId === null && s.position > 0 && s.phase !== 'finished') return null;
+  const card = s.currentId ? CARD_BY_ID.get(s.currentId) : null;
+  if (s.selectedAnswer !== null && (!Number.isInteger(s.selectedAnswer) || s.selectedAnswer < 0 || !card?.answers?.[s.selectedAnswer])) return null;
+  if (s.phase === 'finished' && (s.levelIndex !== 4 || s.position !== ids.length)) return null;
+  if (s.phase === 'quiz-result' && (s.levelIndex !== 0 || !ids.length || s.position !== ids.length || !card?.answers)) return null;
+  if (s.phase === 'final-choice' && (!CARD_BY_ID.get(ids[s.position])?.endChoice || s.finalApproved)) return null;
+  if (card?.endChoice && !s.finalApproved) return null;
+  if (s.finalDeclined && (s.phase !== 'finished' || s.currentId !== null || s.finalApproved)) return null;
+  const consumed = s.plan.slice(0, s.levelIndex).flat().concat(ids.slice(0, s.position));
+  if (!Array.isArray(s.skipped) || new Set(s.skipped).size !== s.skipped.length || s.skipped.some(id => !consumed.includes(id))) return null;
+  if (!s.penalties || !['Sylvain', 'Steph'].every(player => {
+    const other = player === 'Sylvain' ? 'Steph' : 'Sylvain';
+    const max = s.plan[0].filter(id => CARD_BY_ID.get(id).player === other).length;
+    return Number.isInteger(s.penalties[player]) && s.penalties[player] >= 0 && s.penalties[player] <= max;
+  })) return null;
+  const expectedTimer = ['finished', 'final-choice'].includes(s.phase) ? 0 : card?.duration || 0;
+  if (!s.timer || s.timer.total !== expectedTimer || !Number.isFinite(s.timer.remaining) || s.timer.remaining < 0 || s.timer.remaining > expectedTimer) return null;
+  return s;
+}
+function migrateLegacy(s) {
+  if (!s || ![23, 24].includes(s.version)) return null;
+  const oldCounts = s.version === 23 || s.mode === 'complete' ? [10, 10, 11, 8, 1] : s.mode === 'surprise' ? [4, 5, 6, 4, 1] : null;
+  if (!oldCounts || !Number.isInteger(s.levelIndex) || s.levelIndex < 0 || s.levelIndex > 4 || !Number.isInteger(s.playedInLevel) || s.playedInLevel < 0 || s.playedInLevel > oldCounts[s.levelIndex]) return null;
+  const plans = [];
+  function validOld(ids, level, count) {
+    return Array.isArray(ids) && ids.length === count && new Set(ids).size === ids.length && ids.every(i => Number.isInteger(i) && i >= 0 && i < decks[level].length);
+  }
+  for (let level = 1; level <= 5; level++) {
+    const used = level < s.levelIndex + 1 ? oldCounts[level - 1] : level === s.levelIndex + 1 ? s.playedInLevel : 0;
+    const remaining = s.order?.[level];
+    if (!validOld(remaining, level, oldCounts[level - 1] - used)) return null;
+    let planned = s.plan?.[level];
+    if (s.version === 23) {
+      let before = decks[level].map((_, i) => i).filter(i => !remaining.includes(i));
+      if (level === s.levelIndex + 1 && s.current !== null) {
+        if (!before.includes(s.current)) return null;
+        before = before.filter(i => i !== s.current).concat(s.current);
+      }
+      planned = before.concat(remaining);
+    }
+    if (!validOld(planned, level, oldCounts[level - 1]) || JSON.stringify(planned.slice(used)) !== JSON.stringify(remaining)) return null;
+    plans.push(planned.map(index => CATALOG.find(c => c.oldLevel === level && c.oldIndex === index).id));
+  }
+  if (s.current !== null && (!Number.isInteger(s.current) || !decks[s.levelIndex + 1][s.current])) return null;
+  if ((s.playedInLevel === 0) !== (s.current === null)) return null;
+  if (typeof s.finished !== 'boolean' || (s.version === 24 && typeof s.quizResult !== 'boolean')) return null;
+  const current = s.current === null ? null : CATALOG.find(c => c.oldLevel === s.levelIndex + 1 && c.oldIndex === s.current).id;
+  const finalCard = current && CARD_BY_ID.get(current).endChoice;
+  const quizDone = s.version === 23 ? s.levelIndex === 0 && s.playedInLevel === 10 && s.selectedAnswer !== null : s.quizResult;
+  return validateGame({ version: 25, schema: 1, legacy: true, preferences: defaultPreferences(), plan: plans,
+    levelIndex: s.levelIndex, position: s.playedInLevel, currentId: current, selectedAnswer: s.selectedAnswer, penalties: s.penalties,
+    timer: { total: s.timerTotal, remaining: s.timerRemaining }, phase: s.finished ? 'finished' : quizDone ? 'quiz-result' : 'playing',
+    skipped: [], finalApproved: Boolean(finalCard), finalDeclined: false });
+}
+function readSave() {
+  try {
+    const current = localStorage.getItem(SAVE_KEY);
+    if (current !== null) return validateGame(JSON.parse(current));
+    const legacy = localStorage.getItem('sylvain-steph-v24') ?? localStorage.getItem('sylvain-steph-v23');
+    return migrateLegacy(JSON.parse(legacy));
+  } catch { return null; }
+}
+function restoreGame() {
+  const saved = readSave(); if (!saved) return;
+  stopClock(); game = saved; isPaused = false; resumeClock = false;
+  clearTimeout(flashTimeout); el.flash.classList.remove('visible');
+  setScreen(el.game); renderCard(); renderTimer(); updateStatus();
+  el.timerButton.textContent = game.timer.remaining > 0 ? 'Reprendre' : 'Relancer';
+  if (game.phase === 'finished') finishGame();
+  else { if (game.phase === 'quiz-result') showQuizResult(); pauseGame(); }
+  saveGame();
+}
+function refreshHome() {
+  const counts = expectedCounts(preferences);
+  $('selectionSummary').textContent = `Jusqu’à ${counts.reduce((a, b) => a + b, 0)} cartes selon vos préférences. La carte finale reste un choix.`;
+  const saved = readSave(); el.restore.classList.toggle('hidden', !saved);
+  el.restore.textContent = saved?.legacy ? 'Reprendre la partie précédente' : 'Reprendre la partie';
+}
+el.start.addEventListener('click', startGame);
+el.restore.addEventListener('click', restoreGame);
+$('preferencesButton').addEventListener('click', showPreferences);
+$('preferencesForm').addEventListener('submit', savePreferences);
+$('cancelPreferencesButton').addEventListener('click', () => { setScreen(el.welcome); el.start.focus(); });
+for (const [id, checked] of [['allowAllButton', true], ['excludeAllButton', false]]) $(id).addEventListener('click', () => {
+  Object.keys(CATEGORIES).forEach(k => { $('pref-' + k).checked = checked; }); refreshPreferenceCount();
+});
+$('restartButton').addEventListener('click', showHome); $('endRestartButton').addEventListener('click', showHome);
+el.next.addEventListener('click', () => drawCard()); el.skip.addEventListener('click', skipChallenge);
+$('pauseSkipButton').addEventListener('click', skipChallenge);
+el.timerButton.addEventListener('click', toggleTimer);
+$('pauseButton').addEventListener('click', pauseGame); $('resumeButton').addEventListener('click', resumeGame);
+$('continueLevel2Button').addEventListener('click', continueToLevel2);
+$('acceptFinalButton').addEventListener('click', acceptFinal); $('declineFinalButton').addEventListener('click', declineFinal);
+document.addEventListener('visibilitychange', () => { if (document.hidden) pauseGame(); });
+addEventListener('pagehide', () => { pauseGame(); saveGame(); });
+refreshHome();
+let installPrompt;
+addEventListener('beforeinstallprompt', event => {
+  event.preventDefault(); installPrompt = event; $('installButton').classList.remove('hidden');
+});
+$('installButton').onclick = async () => {
+  if (!installPrompt) return;
+  await installPrompt.prompt(); installPrompt = null; $('installButton').classList.add('hidden');
+};
+addEventListener('appinstalled', () => $('installButton').classList.add('hidden'));
+if ('serviceWorker' in navigator) {
+  const wasControlled = Boolean(navigator.serviceWorker.controller);
+  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(reg => {
+    const update = $('updateButton');
+    const offer = () => { if (reg.waiting && navigator.serviceWorker.controller) update.classList.remove('hidden'); };
+    offer(); reg.addEventListener('updatefound', () => {
+      const worker = reg.installing;
+      worker?.addEventListener('statechange', () => { if (worker.state === 'installed') offer(); });
+    });
+    update.onclick = () => { pauseGame(); saveGame(); reg.waiting?.postMessage('ACTIVATE'); };
+    let reloading = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (wasControlled && !reloading) { reloading = true; pauseGame(); saveGame(); location.reload(); }
+    });
+    navigator.serviceWorker.ready.then(() => { $('offlineStatus').textContent = 'Application prête pour jouer hors connexion.'; });
+    addEventListener('online', () => reg.update().catch(() => {}));
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); });
+  }).catch(() => { $('offlineStatus').textContent = 'Mode hors connexion indisponible pour le moment.'; });
+}
+
+  </script>
+</body>
+</html>
